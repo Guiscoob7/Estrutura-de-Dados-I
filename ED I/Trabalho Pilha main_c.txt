@@ -1,0 +1,238 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include "funcoes.h"
+
+int main() {
+    srand(time(NULL));  // Inicializa a semente para geração de números aleatórios com base no tempo atual
+    int opcao;  // Variável para armazenar a opção escolhida pelo usuário
+    pilhaDosSonhosEstatica *pilhaE = criarPilhaEstatica();  // Cria a pilha estática
+    pilhaDosSonhosDinamica *pilhaD = criarPilhaDinamica();  // Cria a pilha dinâmica
+    Sonho sonho;  // Variável para armazenar os dados de um sonho
+
+    boasVindas();  // Exibe uma mensagem de boas-vindas
+
+    do {
+        exibeMenu();  // Exibe o menu de opções
+        scanf("%d", &opcao);  // Lê a opção escolhida pelo usuário
+        limparbuffer();  // Limpa o buffer de entrada
+        limpar();  // Limpa a tela
+
+        switch(opcao) {
+            case 1:
+                sonho = gerarSonhos();  // Gera dados aleatórios para um novo sonho
+                printf(ORANGE "📋 Escolha o tipo de pilha:\n\n" RESET);
+                printf(LIME "1 - Pilha Estática\n" RESET);
+                printf(AQUA "2 - Pilha Dinâmica\n" RESET);
+                printf(PURPLE "\n🖋️ Digite sua escolha: " RESET);  // Solicita ao usuário a escolha do tipo de pilha
+                int tipoPilha;  // Variável para armazenar o tipo de pilha escolhida
+                scanf("%d", &tipoPilha);  // Lê a escolha do usuário
+                limparbuffer();  // Limpa o buffer de entrada
+
+                // Insere o sonho na pilha escolhida
+                if (tipoPilha == 1) {
+                    if (pushPilhaEstatica(pilhaE, sonho))
+                        printf(LIME "\n🙋 Sonho inserido na pilha estática com sucesso!\n" RESET);  // Confirmação de inserção na pilha estática
+                } else if (tipoPilha == 2) {
+                    pushPilhaDinamica(pilhaD, sonho);  // Insere na pilha dinâmica
+                    printf(AQUA "\n🙆 Sonho inserido na pilha dinâmica com sucesso!\n" RESET);  // Confirmação de inserção na pilha dinâmica
+                } else {
+                    printf(RED "\n⚠️ Opção inválida!\n" RESET);  // Mensagem de erro para opção inválida
+                }
+                limpar();  // Limpa a tela após a operação
+                break;
+            case 2:
+                exibirPilhaEstatica(pilhaE);  // Exibe os elementos da pilha estática
+                printf("\n\n");
+                exibirPilhaDinamica(pilhaD);  // Exibe os elementos da pilha dinâmica
+                limpar();  // Limpa a tela após a exibição
+                break;
+            case 3:
+                // Consulta e exibe os dados do topo da pilha estática
+                printf(LIME "🔍 Consultando o topo da pilha...\n" RESET);  // Mensagem de consulta
+                limpar();  // Limpa a tela
+                if (consultaTopoEstatica(pilhaE, &sonho)) {  // Consulta na pilha estática
+                    printf(ORANGE "📋 Consulta na pilha estática:\n\n" RESET);  // Exibe cabeçalho da consulta
+                    printf(PINK "🧑 Tipo: %s\n" RESET, sonho.tipo);  // Exibe tipo do sonho
+                    printf(LIME "🎉 Intensidade Emocional: %d\n" RESET, sonho.intensidadeEmocional);  // Exibe intensintensidadeEmocional emocional
+                    printf(AQUA "⛓️ Descrição: %s\n\n" RESET, sonho.descricao);  // Exibe descrição do sonho
+                } else {
+                    printf(RED "\n🛑 A pilha estática está vazia.\n\n" RESET);  // Mensagem de pilha vazia
+                }
+
+                // Consulta e exibe os dados do topo da pilha dinâmica
+                if (consultaTopoDinamica(pilhaD, &sonho)) {  // Consulta na pilha dinâmica
+                    printf(PURPLE "📑 Consulta na pilha dinâmica:\n\n" RESET);  // Exibe cabeçalho da consulta
+                    printf(PINK "👧 Tipo: %s\n" RESET, sonho.tipo);  // Exibe tipo do sonho
+                    printf(LIME "🎂 Intensidade Emocional: %d\n" RESET, sonho.intensidadeEmocional);  // Exibe intensintensidadeEmocional emocional
+                    printf(AQUA "🛠️ Descrição: %s\n\n" RESET, sonho.descricao);  // Exibe descrição do sonho
+                } else {
+                    printf(RED "\n⛔ A pilha dinâmica está vazia.\n\n" RESET);  // Mensagem de pilha vazia
+                }
+                limpar();
+                break;
+            case 4:
+                printf(ORANGE "📋 Escolha o tipo de pilha para remover o sonho:\n\n" RESET);  // Solicita a escolha do tipo de pilha para remoção
+                printf(LIME "1 - Pilha Estática\n" RESET);
+                printf(AQUA "2 - Pilha Dinâmica\n" RESET);
+                printf(PURPLE "\n🖊️ Digite sua escolha: " RESET);  // Solicita a escolha do tipo de pilha
+                scanf("%d", &tipoPilha);  // Lê a escolha do usuário
+                limparbuffer();  // Limpa o buffer de entrada
+                limpar();
+                // Remove o sonho da pilha escolhida
+                if (tipoPilha == 1) {
+                    if (popPilhaEstatica(pilhaE, &sonho)) {  // Remove da pilha estática
+                        printf(LIME "🙋‍♂️ Sonho removido da pilha estática com sucesso!\n\n" RESET);  // Confirmação de remoção
+                        printf(PINK "👦 Tipo: %s\n" RESET, sonho.tipo);  // Exibe tipo do sonho removido
+                        printf(LIME "🎊 Intensidade Emocional: %d\n" RESET, sonho.intensidadeEmocional);  // Exibe intensintensidadeEmocional emocional do sonho removido
+                        printf(AQUA "⚖️ Descrição: %s\n" RESET, sonho.descricao);  // Exibe descrição do sonho removido
+                    } else {
+                        printf(RED "🚫 A pilha estática está vazia.\n" RESET);  // Mensagem de pilha vazia
+                    }
+                } else if (tipoPilha == 2) {
+                    if (popPilhaDinamica(pilhaD, &sonho)) {  // Remove da pilha dinâmica
+                        printf(AQUA "🙆‍♂️ Sonho removido da pilha dinâmica com sucesso!\n\n" RESET);  // Confirmação de remoção
+                        printf(PINK "👩 Tipo: %s\n" RESET, sonho.tipo);  // Exibe tipo do sonho removido
+                        printf(LIME "🎈 Intensidade Emocional: %d\n" RESET, sonho.intensidadeEmocional);  // Exibe intensintensidadeEmocional emocional do sonho removido
+                        printf(AQUA "🔨 Descrição: %s\n" RESET, sonho.descricao);  // Exibe descrição do sonho removido
+                    } else {
+                        printf(RED "\n❌ A pilha dinâmica está vazia.\n" RESET);  // Mensagem de pilha vazia
+                    }
+                } else {
+                    printf(RED "\n⚠️ Opção inválida!\n" RESET);  // Mensagem de erro para opção inválida
+                }
+                limpar();  // Limpa a tela após a operação
+                break;
+            case 5: {
+                limpar();
+                double tempos[15];
+                int cont = 0;
+                int entradas[] = {1000, 3000, 5000, 10000, 25000};
+                
+                // Análise da pilha estática
+                analisePilhaEstatica(pilhaE, &sonho, tempos); // Chama a função para analisar a pilha estática
+                
+                // Cores e Estilos
+                limpar();
+                printf("%s🌟 %sTempos de execução - Pilha Estática %s🌟\n\n", CYAN, BOLD, RESET);
+                for (int i = 0; i < 15; i += 3) {
+                    printf("%s🟢 %sQuantidade de Clocks (Inserção - %d entradas) %d: %.6f clocks %s\n", LIGHT_GREEN, BOLD, entradas[cont], i + 1, tempos[i], RESET);
+                    printf("%s🔍 %sQuantindade de Clocks (Exibição - %d entradas) %d: %.6f clocks %s\n", LIGHT_YELLOW, BOLD, entradas[cont], i + 1, tempos[i + 1], RESET);
+                    printf("%s🔴 %sQuantindade de Clocks (Remoção - %d entradas) %d: %.6f clocks %s\n", LIGHT_CYAN, BOLD, entradas[cont++], i + 1, tempos[i + 2], RESET);
+                    printf("\n"); // Espaço entre as iterações
+                }
+                printf("%s✨ Análise completa! Obrigado por utilizar o sistema! ✨%s\n", MAGENTA, RESET);
+                limpar();
+                break;
+            }
+
+            case 6: {
+                limpar();
+                double tempos[15];
+                int cont = 0;
+                int entradas[] = {1000, 3000, 5000, 10000, 25000};
+                
+                // Análise da pilha dinâmica
+                analisePilhaDinamica(pilhaD, &sonho, tempos); // Chama a função para analisar a pilha dinâmica
+                
+                // Cores e Estilos
+                printf("%s🌈 %sTempos de execução - Pilha Dinâmica %s🌈\n\n", LIGHT_BLUE, BOLD, RESET);
+                limpar();
+                for (int i = 0; i < 15; i += 3) {
+                    printf("%s🚀 %sQuantintensidadeEmocional de Clocks (Inserção - %d entradas) %d: %.6f clocks %s\n", LIGHT_YELLOW, BOLD, entradas[cont], i + 1, tempos[i], RESET);
+                    printf("%s👁️ %sQuantintensidadeEmocional de Clocks (Exibição - %d entradas) %d: %.6f clocks %s\n", LIGHT_GREEN, BOLD, entradas[cont], i + 1, tempos[i + 1], RESET);
+                    printf("%s🗑️ %sQuantintensidadeEmocional de Clocks (Remoção - %d entradas) %d: %.6f clocks %s\n", LIGHT_CYAN, BOLD, entradas[cont++], i + 1, tempos[i + 2], RESET);
+                    printf("\n"); // Espaço entre as iterações
+                }
+
+                printf("%s🎉 Análise completa! Obrigado por utilizar o sistema! 🎉%s\n", MAGENTA, RESET);
+                limpar();
+                break;
+            }
+            case 7:
+            printf(ORANGE "📋 Escolha o tipo de pilha para realizar seu sonho:\n\n" RESET);
+            printf(LIME "1 - Pilha Estática dos Sonhos\n" RESET);
+            printf(AQUA "2 - Pilha Dinâmica dos Sonhos\n" RESET);
+            printf(PURPLE "\n🖊️ Digite sua escolha: " RESET);
+            scanf("%d", &tipoPilha);  // Lê a escolha do usuário
+            limparbuffer();  // Limpa o buffer de entrada
+            limpar();  // Limpa a tela
+
+            if (tipoPilha == 1) {
+                // Verifica se a pilha está vazia
+                if (!pilhaVaziaEstatica(pilhaE)) {
+                    if (!realizarSonho()) {  // Desafio para realizar o sonho
+                        if (popPilhaEstatica(pilhaE, &sonho)) {  // Remove da pilha de sonhos
+                            printf(LIME "🌙 Sonho não realizado na pilha estática!\n\n" RESET);
+                            printf(PINK "👤 tipo do Sonhador: %s\n" RESET, sonho.tipo);
+                            printf(LIME "🎉 intensidadeEmocional do Sonhador: %d\n" RESET, sonho.intensidadeEmocional);
+                            printf(AQUA "💭 Sonho: %s\n" RESET, sonho.descricao);
+                        } else {
+                            printf(RED "🚫 Não foi possível realizar o sonho da pilha estática.\n" RESET);
+                        }
+                    } else {  // Caso o sonho tenha sido alcançado
+                        if (popPilhaEstatica(pilhaE, &sonho)) {  // Remove da pilha de sonhos
+                            printf(LIME "🌙 Sonho realizado da pilha estática com sucesso!\n\n" RESET);
+                            printf(PINK "👤 tipo do Sonhador: %s\n" RESET, sonho.tipo);
+                            printf(LIME "🎉 intensidadeEmocional do Sonhador: %d\n" RESET, sonho.intensidadeEmocional);
+                            printf(AQUA "💭 Sonho: %s\n" RESET, sonho.descricao);
+                        } else {
+                            printf(RED "🚫 Não foi possível liberar o sonho da pilha estática.\n" RESET);
+                        }
+                    }
+                } else {
+                    printf(RED "🚫 A pilha estática dos sonhos está vazia.\n" RESET);
+                }
+            } else if (tipoPilha == 2) {
+                // Verifica se a pilha dinâmica está vazia
+                if (!pilhaVaziaDinamica(pilhaD)) {
+                    if (!realizarSonho()) {  // Desafio para realizar o sonho
+                        if (popPilhaDinamica(pilhaD, &sonho)) {  // Remove da pilha dinâmica
+                            printf(AQUA "🌙 Sonho não realizado na pilha dinâmica!\n\n" RESET);
+                            printf(PINK "👤 tipo do Sonhador: %s\n" RESET, sonho.tipo);
+                            printf(LIME "🎉 intensidadeEmocional do Sonhador: %d\n" RESET, sonho.intensidadeEmocional);
+                            printf(AQUA "💭 Sonho: %s\n" RESET, sonho.descricao);
+                        } else {
+                            printf(RED "\n❌ Não foi possível realizar o sonho da pilha dinâmica.\n" RESET);
+                        }
+                    } else {  // Caso o sonho tenha sido alcançado
+                        if (popPilhaDinamica(pilhaD, &sonho)) {  // Remove da pilha dinâmica
+                            printf(AQUA "🌙 Sonho realizado da pilha dinâmica com sucesso!\n\n" RESET);
+                            printf(PINK "👤 tipo do Sonhador: %s\n" RESET, sonho.tipo);
+                            printf(LIME "🎉 intensidadeEmocional do Sonhador: %d\n" RESET, sonho.intensidadeEmocional);
+                            printf(AQUA "💭 Sonho: %s\n" RESET, sonho.descricao);
+                        } else {
+                            printf(RED "🚫 Não foi possível liberar o sonho da pilha dinâmica.\n" RESET);
+                        }
+                    }
+                } else {
+                    printf(RED "🚫 A pilha dinâmica dos sonhos está vazia.\n" RESET);
+                }
+            } else {
+                printf(RED "\n⚠️ Opção inválida! Escolha entre 1 ou 2.\n" RESET);
+            }
+
+            limpar();  // Limpa a tela após a operação
+                break;
+            case 8:
+                printf(BOLD RED "🚶‍♂️ Você abandonou a pilha! " RESET "\n\n");
+                printf(BOLD YELLOW "⏳ " RESET "Espero que tenha sido uma boa escolha! \n");
+                printf(GREEN "💪 Não se preocupe, você pode tentar novamente! " RESET "\n");
+                printf(PINK "🎉 Fica tranquilo, o show continua! " RESET "\n");
+            break;
+            default:
+                printf(RED "\n⚠️ Opção inválida! Por favor, escolha uma opção válida do menu.\n" RESET);  // Mensagem padrão para opção inválida
+                break;  // Para qualquer opção não reconhecida, não faz nada
+        }
+
+    } while (opcao != 8);  // O loop continua até que a opção 7 seja escolhida
+
+    free(pilhaE);  // Libera a memória da pilha estática
+    printf(LIME "♻️ Pilha Estática liberada!\n\n" RESET);  // Mensagem de confirmação de liberação
+    liberarPilhaDinamica(pilhaD);  // Libera a memória da pilha dinâmica
+    printf(LIME "♻️ Pilha Dinâmica liberada!\n" RESET);  // Mensagem de confirmação de liberação
+    printf(GREEN "✅ Obrigado por usar o programa de sonhos! Até a próxima!\n" RESET);  // Mensagem de despedida
+
+    return 0;  // Finaliza o programa com sucesso
+}

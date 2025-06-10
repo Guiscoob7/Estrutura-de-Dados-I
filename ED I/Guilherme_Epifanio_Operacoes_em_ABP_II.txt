@@ -1,0 +1,166 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Estrutura para nó da árvore binária 🌳
+struct NoArvore {
+    struct NoArvore* esq;  // Ponteiro para o filho esquerdo ↖️
+    struct NoArvore* dir;  // Ponteiro para o filho direito ↗️
+    int dado;              // Valor armazenado no nó 📦
+};
+
+typedef struct NoArvore* ArvoreBinaria;  // Definição do tipo da árvore binária 🌲
+
+ArvoreBinaria inicializarArvore() {
+    return NULL;  // Retorna uma árvore vazia 🪶
+}
+
+// Função para buscar valor na árvore 🔍
+ArvoreBinaria buscarValor(ArvoreBinaria raiz, int alvo) {
+    ArvoreBinaria atual = raiz;
+    while (atual) {
+        if (atual->dado == alvo) return atual;  // Valor encontrado ✅
+        atual = (alvo < atual->dado) ? atual->esq : atual->dir;  // Desce para o filho esquerdo ou direito 🔽
+    }
+    return NULL;  // Valor não encontrado ❌
+}
+
+// Função para encontrar o antecessor (máximo da subárvore esquerda) 🧭
+ArvoreBinaria encontrarAntecessor(ArvoreBinaria no) {
+    ArvoreBinaria atual = no->esq;
+    while (atual && atual->dir) {  // Percorre para encontrar o maior valor da subárvore esquerda 🏹
+        atual = atual->dir;
+    }
+    return atual;
+}
+
+// Função para inserir valor na árvore 🌱
+ArvoreBinaria inserirValor(ArvoreBinaria raiz, int valor) {
+    if (!raiz) {  // Se a árvore estiver vazia, cria um novo nó 🆕
+        ArvoreBinaria novoNo = malloc(sizeof(struct NoArvore));
+        if (!novoNo) return raiz;  // Se falhar na alocação, retorna NULL 💥
+        
+        novoNo->dado = valor;   // Atribui o valor ao nó 📑
+        novoNo->esq = novoNo->dir = NULL;  // Inicializa os ponteiros dos filhos como NULL 🛑
+        return novoNo;
+    }
+
+    // Se o valor for menor, insere na subárvore esquerda ↖️
+    // Se o valor for maior, insere na subárvore direita ↗️
+    if (valor < raiz->dado) {
+        raiz->esq = inserirValor(raiz->esq, valor);
+    } else {
+        raiz->dir = inserirValor(raiz->dir, valor);
+    }
+    
+    return raiz;
+}
+
+// Função para remover valor da árvore 🗑️
+ArvoreBinaria removerValor(ArvoreBinaria raiz, int valor) {
+    if (!raiz) return NULL;  // Se não encontrar o valor, retorna NULL 🚫
+    
+    // Se o valor for menor, busca na subárvore esquerda ↖️
+    // Se o valor for maior, busca na subárvore direita ↗️
+    if (valor < raiz->dado) {
+        raiz->esq = removerValor(raiz->esq, valor);
+        return raiz;
+    }
+    
+    if (valor > raiz->dado) {
+        raiz->dir = removerValor(raiz->dir, valor);
+        return raiz;
+    }
+    
+    // Se o nó a ser removido tiver um ou nenhum filho
+    if (!raiz->esq) {
+        ArvoreBinaria temp = raiz->dir;
+        free(raiz);  // Libera a memória do nó removido 💾❌
+        return temp;
+    }
+    
+    if (!raiz->dir) {
+        ArvoreBinaria temp = raiz->esq;
+        free(raiz);  // Libera a memória do nó removido 💾❌
+        return temp;
+    }
+    
+    // Se o nó a ser removido tiver dois filhos, encontra o antecessor e substitui o nó 🛠️
+    ArvoreBinaria antecessor = encontrarAntecessor(raiz);
+    raiz->dado = antecessor->dado;
+    raiz->esq = removerValor(raiz->esq, antecessor->dado);
+    
+    return raiz;
+}
+
+// Função para realizar o percurso em ordem (esquerda, raiz, direita) 🔄
+void percursoEmOrdem(ArvoreBinaria raiz, int* primeiro) {
+    if (!raiz) return;  // Se o nó for NULL, não faz nada 🚫
+    percursoEmOrdem(raiz->esq, primeiro);  // Percorre a subárvore esquerda ↖️
+    printf("%s%d", *primeiro ? "" : " ", raiz->dado);  // Exibe o valor da raiz 👀
+    *primeiro = 0;  // Marca que já passou pela primeira raiz 🌟
+    percursoEmOrdem(raiz->dir, primeiro);  // Percorre a subárvore direita ↗️
+}
+
+// Função para realizar o percurso pré-ordem (raiz, esquerda, direita) 🔄
+void percursoPreOrdem(ArvoreBinaria raiz, int* primeiro) {
+    if (!raiz) return;  // Se o nó for NULL, não faz nada 🚫
+    printf("%s%d", *primeiro ? "" : " ", raiz->dado);  // Exibe o valor da raiz 👀
+    *primeiro = 0;  // Marca que já passou pela primeira raiz 🌟
+    percursoPreOrdem(raiz->esq, primeiro);  // Percorre a subárvore esquerda ↖️
+    percursoPreOrdem(raiz->dir, primeiro);  // Percorre a subárvore direita ↗️
+}
+
+// Função para realizar o percurso pós-ordem (esquerda, direita, raiz) 🔄
+void percursoPosOrdem(ArvoreBinaria raiz, int* primeiro) {
+    if (!raiz) return;  // Se o nó for NULL, não faz nada 🚫
+    percursoPosOrdem(raiz->esq, primeiro);  // Percorre a subárvore esquerda ↖️
+    percursoPosOrdem(raiz->dir, primeiro);  // Percorre a subárvore direita ↗️
+    printf("%s%d", *primeiro ? "" : " ", raiz->dado);  // Exibe o valor da raiz 👀
+    *primeiro = 0;  // Marca que já passou pela primeira raiz 🌟
+}
+
+// Função para processar comandos do usuário ⚙️
+void processarComando(const char* cmd, ArvoreBinaria* raiz) {
+    int val;
+    int primeiro;
+    
+    if (strcmp(cmd, "I") == 0) {  // Inserir valor 🔼
+        scanf("%d", &val);
+        *raiz = inserirValor(*raiz, val);
+    } 
+    else if (strcmp(cmd, "R") == 0) {  // Remover valor ❌
+        scanf("%d", &val);
+        *raiz = removerValor(*raiz, val);
+    }
+    else if (strcmp(cmd, "P") == 0) {  // Procurar valor 🔎
+        scanf("%d", &val);
+        printf("%d %s\n", val, buscarValor(*raiz, val) ? "existe" : "nao existe");
+    }
+    else if (strcmp(cmd, "INFIXA") == 0) {  // Percurso em ordem 🌲
+        primeiro = 1;
+        percursoEmOrdem(*raiz, &primeiro);
+        printf("\n");
+    }
+    else if (strcmp(cmd, "PREFIXA") == 0) {  // Percurso pré-ordem 🌳
+        primeiro = 1;
+        percursoPreOrdem(*raiz, &primeiro);
+        printf("\n");
+    }
+    else if (strcmp(cmd, "POSFIXA") == 0) {  // Percurso pós-ordem 🍂
+        primeiro = 1;
+        percursoPosOrdem(*raiz, &primeiro);
+        printf("\n");
+    }
+}
+
+int main() {
+    char comando[10];  // Variável para armazenar o comando 📝
+    ArvoreBinaria arvore = inicializarArvore();  // Inicializa a árvore vazia 🌱
+    
+    while (scanf("%s", comando) != EOF) {  // Lê os comandos até o fim do arquivo ⏹️
+        processarComando(comando, &arvore);  // Processa o comando 🛠️
+    }
+    
+    return 0;  // Finaliza o programa ✅
+}

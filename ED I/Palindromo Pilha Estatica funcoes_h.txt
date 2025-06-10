@@ -1,0 +1,57 @@
+// funcoes.h - Cabeçalho com definições de constantes e funções para manipulação de filas 📜🔧
+
+#ifndef FUNCOES_H
+#define FUNCOES_H
+
+// Definindo o tamanho máximo da pilha 📏
+#define MAX_PILHA 26
+
+// Definindo códigos de cor ANSI para formatação do texto no terminal 🌈
+#define RESET "\033[0m"  // 🆕 Reseta as configurações de cor
+#define BOLD "\033[1m"  // 💪 Texto em negrito
+#define UNDERLINE "\033[4m"  // 🖊️ Texto sublinhado
+#define GREEN "\033[32m"  // 🍏 Texto verde
+#define YELLOW "\033[33m"  // 🌻 Texto amarelo
+#define CYAN "\033[36m"  // 💧 Texto ciano
+#define MAGENTA "\033[35m"  // 💜 Texto magenta
+#define RED "\033[31m"  // 🔴 Texto vermelho
+#define BLUE "\033[34m"  // 🔵 Texto azul
+#define LIGHT_BLUE "\033[94m"  // 💙 Texto azul claro
+#define LIGHT_YELLOW "\033[93m"  // 🌼 Texto amarelo claro
+#define LIGHT_CYAN "\033[96m"  // 🌊 Texto ciano claro
+#define LIGHT_GREEN "\033[92m"  // 🍏 Texto verde claro
+#define LIGHT_RED "\033[91m"  // 🔴 Texto vermelho claro
+#define PURPLE "\x1B[35m"  // 💜 Texto roxo
+#define ORANGE "\033[38;5;208m"  // 🟠 Texto laranja
+#define DOURADO "\033[1;33m"  // 🏆 Texto dourado
+#define BLACK "\033[0;30m"  // ⚫ Texto preto
+#define LIME "\x1b[38;5;154m"  // 🍈 Texto lima
+#define AQUA "\x1b[38;5;51m"  // 💧 Texto aqua
+#define PINK "\x1b[38;5;200m"  // 🌸 Texto rosa
+
+// Estrutura para representar a pilha estática de chars 📚
+typedef struct {
+    char letra[MAX_PILHA];       // Vetor que armazena os chars, com tamanho máximo definido por MAX_PILHA 📦
+    int topo;                      // Índice do topo da pilha (posição do último elemento) 🔝
+} pilhaEstatica;
+
+// Protótipos das funções 🔧
+
+void limpar();                                // Função para limpar a tela ou interface 🧹
+void limparbuffer();                          // Função para limpar o buffer de entrada 🚿
+void boasVindas();                            // Exibe mensagem de boas-vindas 🎉
+void exibeMenu();                             // Exibe o menu principal de opções 📋
+
+// Funções para manipulação da pilha estática 🗃️
+pilhaEstatica* criarPilhaEstatica(void);   // Cria uma nova pilha estática 💼
+int pilhaVaziaEstatica(pilhaEstatica* Ptp); // Verifica se a pilha está vazia 🚫
+int pilhaCheiaEstatica(pilhaEstatica* Ptp); // Verifica se a pilha está cheia 🛑
+int pushPilhaEstatica(pilhaEstatica* Ptp, char letra); // Empilha um caractere na pilha ⬆️
+int popPilhaEstatica(pilhaEstatica* Ptp, char* letraRemovida); // Desempilha um caractere da pilha ⬇️
+int consultaTopoEstatica(pilhaEstatica* Ptp, char* letraConsultada); // Consulta o caractere no topo da pilha 📖
+void liberarPilhaEstatica(pilhaEstatica *Ptp); // Libera a memória alocada para a pilha ♻️
+
+int processarToken(pilhaEstatica* pilha, char* token, char* nomeDepois); // Processa cada token para verificar palíndromos 🔄
+void substituirCaracteresEspeciais(char *str); // Substitui caracteres não alfanuméricos por '\0' 🧼
+
+#endif // FUNCOES_H

@@ -1,0 +1,97 @@
+// funcoes.h - Cabeçalho com definições de constantes e funções para manipulação de pilhas de sonhos
+
+#ifndef FUNCOES_H
+#define FUNCOES_H
+
+// Definindo o tamanho máximo da pilha estática
+#define MAX_PILHA 25000
+
+// Definindo códigos de cor ANSI para formatação do texto no terminal, 
+// que serão utilizados para personalizar a aparência das saídas
+#define RESET "\033[0m"           // Reseta as configurações de cor
+#define BOLD "\033[1m"            // Texto em negrito
+#define UNDERLINE "\033[4m"       // Texto sublinhado
+#define GREEN "\033[32m"          // Texto verde
+#define YELLOW "\033[33m"         // Texto amarelo
+#define CYAN "\033[36m"           // Texto ciano (azul claro)
+#define MAGENTA "\033[35m"        // Texto magenta
+#define RED "\033[31m"            // Texto vermelho
+#define BLUE "\033[34m"           // Texto azul
+#define LIGHT_BLUE "\033[94m"     // Texto azul claro
+#define LIGHT_YELLOW "\033[93m"   // Texto amarelo claro
+#define LIGHT_CYAN "\033[96m"     // Texto ciano claro
+#define LIGHT_GREEN "\033[92m"    // Texto verde claro
+#define PURPLE "\x1B[35m"         // Texto roxo
+#define ORANGE "\033[38;5;208m"   // Texto laranja
+#define DOURADO "\033[1;33m"      // Texto dourado
+#define BLACK "\033[0;30m"        // Texto preto
+#define LIME "\x1b[38;5;154m"     // Texto verde limão
+#define AQUA "\x1b[38;5;51m"      // Texto azul aquático
+#define PINK "\x1b[38;5;200m"     // Texto rosa
+
+// Estrutura que define os dados de um sonho
+typedef struct {
+    char tipo[50];                 // Armazena o tipo do sonho (ex: pesadelo, sonho lúcido)
+    int intensidadeEmocional;      // Intensidade emocional associada ao sonho (ex: 1 a 10)
+    char descricao[100];           // Descrição detalhada do sonho
+} Sonho;
+
+// Estrutura para representar a pilha estática de sonhos
+typedef struct {
+    Sonho sonho[MAX_PILHA];        // Vetor que armazena os sonhos (máximo de MAX_PILHA elementos)
+    int topo;                      // Índice do topo da pilha (posição do último sonho adicionado)
+} pilhaDosSonhosEstatica;
+
+// Estrutura que define um nó na pilha dinâmica
+typedef struct noDinamico {
+    Sonho sonho;                   // Armazena os dados de um sonho
+    struct noDinamico* prox;       // Ponteiro para o próximo nó (sonho) na pilha
+} noDinamico;
+
+// Estrutura que define a pilha dinâmica de sonhos
+typedef struct {
+    noDinamico* topo;              // Ponteiro que aponta para o topo da pilha dinâmica
+} pilhaDosSonhosDinamica;
+
+
+// Protótipos das funções
+
+// Funções gerais de interface
+void limpar();                      // Função para limpar a tela do terminal
+void limparbuffer();                // Função para limpar o buffer de entrada (input)
+void boasVindas();                  // Exibe uma mensagem de boas-vindas ao usuário
+void exibeMenu();                   // Exibe o menu principal com opções de interação
+
+// Funções para manipulação da pilha estática de sonhos
+pilhaDosSonhosEstatica* criarPilhaEstatica(void);    // Inicializa uma nova pilha estática
+int pilhaVaziaEstatica(pilhaDosSonhosEstatica* Ptp); // Verifica se a pilha está vazia
+int pilhaCheiaEstatica(pilhaDosSonhosEstatica* Ptp); // Verifica se a pilha está cheia
+int pushPilhaEstatica(pilhaDosSonhosEstatica* Ptp, Sonho sonho); // Insere um novo sonho na pilha estática
+int popPilhaEstatica(pilhaDosSonhosEstatica* Ptp, Sonho* sonhoRemovido); // Remove o sonho do topo da pilha estática
+void exibirPilhaEstatica(pilhaDosSonhosEstatica* Ptp); // Exibe todos os sonhos presentes na pilha estática
+int consultaTopoEstatica(pilhaDosSonhosEstatica* Ptp, Sonho* sonhos); // Consulta o sonho do topo da pilha estática
+void liberarPilhaEstatica (pilhaDosSonhosEstatica *Ptp); // Libera a memória alocada pela pilha estática
+void analisePilhaEstatica(pilhaDosSonhosEstatica *pilha, Sonho *sonho, double* tempos); // Função para análise de desempenho
+
+// Funções para manipulação da pilha dinâmica de sonhos
+pilhaDosSonhosDinamica* criarPilhaDinamica(void);    // Inicializa uma nova pilha dinâmica
+int pilhaVaziaDinamica(pilhaDosSonhosDinamica* Ptp); // Verifica se a pilha dinâmica está vazia
+int pushPilhaDinamica(pilhaDosSonhosDinamica* Ptp, Sonho sonho); // Insere um novo sonho na pilha dinâmica
+int popPilhaDinamica(pilhaDosSonhosDinamica* Ptp, Sonho* sonhoRemovido); // Remove o sonho do topo da pilha dinâmica
+void exibirPilhaDinamica(pilhaDosSonhosDinamica* Ptp); // Exibe todos os sonhos presentes na pilha dinâmica
+int consultaTopoDinamica(pilhaDosSonhosDinamica* Ptp, Sonho* sonho); // Consulta o sonho no topo da pilha dinâmica
+void liberarPilhaDinamica (pilhaDosSonhosDinamica *Ptp); // Libera a memória alocada pela pilha dinâmica
+void analisePilhaDinamica(pilhaDosSonhosDinamica *pilha, Sonho *sonho, double* tempos); // Função para análise de desempenho
+
+// Função para gerar dados aleatórios para um sonho
+Sonho gerarDados();  // Gera dados aleatórios (tipo, intensidade emocional e descrição) para um sonho
+
+// Funções auxiliares para gerar dados aleatórios
+char gerarCaractereAleatorio();    // Gera um caractere aleatório (letra)
+void gerarStringAleatoria(char *str, int tamanho); // Gera uma string aleatória de tamanho especificado
+int gerarNumeroAleatorio(int min, int max); // Gera um número aleatório entre valores mínimo e máximo fornecidos
+
+Sonho gerarSonhos();   // Função que gera um sonho completo com dados aleatórios
+int realizarSonho();   // Função que realiza o sonho removendo-o da pilha
+
+#endif // FUNCOES_H

@@ -1,0 +1,176 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "funcoes.h"
+
+// 🌟 Função para verificar se a fila está vazia
+int E_vazia(Fila *Ptf) {
+    // Retorna 1 se a fila estiver vazia (N == 0), caso contrário retorna 0
+    return (Ptf->N == 0) ? 1 : 0;
+}
+
+// 🏠 Função para verificar se a fila está cheia
+int E_cheia(Fila *Ptf) {
+    // Retorna 1 se a fila estiver cheia (N == MAX_FILA), caso contrário retorna 0
+    return (Ptf->N == MAX_FILA) ? 1 : 0;
+}
+
+// 🆕 Função para criar uma nova fila
+Fila *Cria_fila(void) {
+    Fila *Ptf;
+    Ptf = (Fila *)malloc(sizeof(Fila)); // Aloca memória para a nova fila
+    if (Ptf != NULL) {
+        // Inicializa os índices e o contador de elementos
+        Ptf->IF = 0;
+        Ptf->FF = 0;
+        Ptf->N = 0;
+    }
+    return Ptf; // Retorna o ponteiro para a nova fila
+}
+
+// ➕ Função para inserir um elemento na fila
+Fila *Insere_fila(Fila *Ptf, int elem) {
+    // Verifica se a fila é nula ou está cheia
+    if (Ptf == NULL || Ptf->N == MAX_FILA)
+        return Ptf;
+    
+    // Insere o elemento na posição final da fila e atualiza o índice de final
+    Ptf->valor[Ptf->FF] = elem;
+    Ptf->FF = (Ptf->FF + 1) % MAX_FILA;
+    Ptf->N++;
+    return Ptf;
+}
+
+// ➖ Função para remover um elemento da fila
+Fila *Remove_fila(Fila *Ptf, int *elem) {
+    // Verifica se a fila é nula ou está vazia
+    if (Ptf == NULL || Ptf->N == 0)
+        return Ptf;
+
+    // Remove o elemento da posição inicial da fila e atualiza o índice de início
+    *elem = Ptf->valor[Ptf->IF];
+    Ptf->IF = (Ptf->IF + 1) % MAX_FILA;
+    Ptf->N--;
+    return Ptf;
+}
+
+// 🔍 Função para consultar o próximo elemento da fila
+int Consulta_fila(Fila *Ptf, int *elem) {
+    // Verifica se a fila é nula ou está vazia
+    if (Ptf == NULL || Ptf->N == 0)
+        return 0;
+    
+    // Consulta o elemento na posição inicial da fila
+    *elem = (Ptf)->valor[Ptf->IF];
+    return 1; // Retorna 1 indicando sucesso na consulta
+}
+
+// 🗑️ Função para liberar a memória da fila
+Fila *Libera_fila(Fila *Ptf) {
+    // Verifica se a fila é nula
+    if (Ptf == NULL)
+        return Ptf;
+    free(Ptf); // Libera a memória alocada para a fila
+    return NULL; // Retorna NULL para indicar que a fila foi liberada
+}
+
+// 🔗 Função para mesclar duas filas em uma terceira
+void Mesclar_filas(Fila *F1, Fila *F2, Fila *F3) {
+    int elem1, elem2;
+
+    // Enquanto ambas as filas F1 e F2 não estiverem vazias
+    while (!E_vazia(F1) && !E_vazia(F2)) {
+        // Consulta os elementos na frente de cada fila
+        Consulta_fila(F1, &elem1);
+        Consulta_fila(F2, &elem2);
+
+        // Explica o estado atual das filas e os elementos a serem comparados
+        printf(GREEN "🔍 Consulta F1: " RESET RED "%d " PURPLE "|" GREEN " Consulta F2: " RESET RED "%d\n", elem1, elem2);
+
+        // Compara os elementos e decide qual inserir na fila F3
+        if (elem1 >= elem2) {
+            printf(BLUE "\n📥 Elemento " RESET RED "%d " BLUE "de F1 é maior ou igual ao elemento " RESET RED "%d " BLUE "de F2. Inserindo " RESET RED "%d " BLUE "em F3.\n" RESET, elem1, elem2, elem1);
+            Insere_fila(F3, elem1);  // Insere o elemento maior ou igual em F3
+            Remove_fila(F1, &elem1); // Remove o elemento inserido de F1
+            printf("\n");
+            printf(YELLOW "🗑️  Elemento" RESET RED "%d " YELLOW "removido de F1. Fila F1 após remoção: " RESET, elem1);
+            Imprime_fila(F1); // Imprime o estado atualizado de F1
+        } else {
+            printf(BLUE "\n📥 Elemento " RESET RED "%d " BLUE "de F2 é maior que o elemento " RESET RED "%d " BLUE "de F1. Inserindo " RESET RED "%d " BLUE "em F3.\n" RESET, elem2, elem1, elem2);
+            Insere_fila(F3, elem2);  // Insere o elemento menor em F3
+            Remove_fila(F2, &elem2); // Remove o elemento inserido de F2
+            printf("\n");
+            printf(YELLOW "🗑️  Elemento" RESET RED "%d " YELLOW "removido de F2. Fila F2 após remoção: " RESET, elem2);
+            Imprime_fila(F2); // Imprime o estado atualizado de F2
+        }
+        limpar();
+    }
+
+    // Processa os elementos restantes em F1, se houver
+    while (!E_vazia(F1)) {
+        Remove_fila(F1, &elem1);
+        printf(GREEN "\n📥 Elemento " RESET RED "%d " GREEN "removido de F1 e inserido em F3.\n" RESET, elem1);
+        Insere_fila(F3, elem1);
+        printf("\n");
+        printf(YELLOW "🗑️  Fila F1 após remoção: " RESET);
+        Imprime_fila(F1); // Imprime o estado atualizado de F1
+        limpar();
+    }
+
+    // Processa os elementos restantes em F2, se houver
+    while (!E_vazia(F2)) {
+        Remove_fila(F2, &elem2);
+        printf(GREEN "\n📥 Elemento " RESET RED "%d " GREEN "removido de F2 e inserido em F3.\n" RESET, elem2);
+        Insere_fila(F3, elem2);
+        printf("\n");
+        printf(YELLOW "🗑️  Fila F2 após remoção: " RESET);
+        Imprime_fila(F2); // Imprime o estado atualizado de F2
+        limpar();
+    }
+
+    // Exibe o estado final da fila F3 após a mesclagem
+    printf(CYAN "🚀 Fila F3 após a mesclagem: " RESET);
+    Imprime_fila(F3); // Imprime o estado final de F3
+}
+
+// 📋 Função para imprimir os elementos da fila
+void Imprime_fila(Fila *fila) {
+    // Verifica se a fila está vazia
+    if (E_vazia(fila)) {
+        printf(CYAN "🛑 A fila está vazia. %s\n", RESET); // Mensagem de fila vazia em ciano
+        return;
+    }
+
+    int i = fila->IF;
+    printf("| ");
+    // Itera sobre os elementos da fila e imprime cada um
+    for (int count = 0; count < fila->N; count++) {
+        printf(GREEN "%2d " RESET, fila->valor[i]); // Elementos da fila em verde
+        printf("| " RESET);
+        i = (i + 1) % MAX_FILA;
+    }
+    printf("\n");
+}
+
+// 🧹 Função para limpar a tela
+void limpar() {
+    // Mensagem para o usuário pressionar ENTER
+    printf("\n%s🛑 %sPressione ENTER para continuar... %s🛑%s: ", LIGHT_CYAN, ORANGE, LIGHT_CYAN, RESET);
+
+    // Pausa até o usuário pressionar ENTER
+    getchar();
+
+    #ifdef _WIN32
+        system("cls");  // Comando para limpar a tela no Windows
+    #else
+        system("clear");  // Comando para limpar a tela em Unix/Linux
+    #endif
+}
+// Função para exibir mensagens de boas-vindas
+void boasVindas() {
+    printf("\n" BLUE BOLD "╔════════════════════════════════════════════════════════════════════════════╗" RESET "\n");
+    printf(BLUE BOLD "║" RESET " 🚀📥 " GREEN BOLD "Bem-vindo ao" RESET " " CYAN BOLD "Gerenciador de Filas" GREEN " 📥🚀 " BLUE BOLD "                               ║" RESET "\n");
+    printf(BLUE BOLD "║" RESET " 🏃‍♂️🔄 " LIGHT_GREEN "Prepare-se para manipular suas filas com eficiência!" BLUE " 🔄🏃‍♂️ " BLUE BOLD "          ║" RESET "\n");
+    printf(BLUE BOLD "║" RESET " 📊✅ " YELLOW "Organize, insira e remova elementos com facilidade!" BLUE " ✅📊 " BLUE BOLD "             ║" RESET "\n");
+    printf(BLUE BOLD "║" RESET " 💡🗃️ " LIGHT_CYAN "Vamos otimizar seu gerenciamento de dados em filas!" BLUE " 🗃️💡 " BLUE BOLD "             ║" RESET "\n");
+    printf(BLUE BOLD "╚════════════════════════════════════════════════════════════════════════════╝" RESET "\n\n");
+}

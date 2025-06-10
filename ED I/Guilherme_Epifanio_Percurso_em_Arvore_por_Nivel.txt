@@ -1,0 +1,113 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Estrutura de um elemento da árvore de busca 🔗
+typedef struct Elemento {
+    int valor;          // Valor armazenado no elemento 🔢
+    struct Elemento* esq;   // Ponteiro para o elemento à esquerda 👈
+    struct Elemento* dir;   // Ponteiro para o elemento à direita 👉
+} *ArvoreBinaria;
+
+// Função para criar uma árvore vazia 🌱
+ArvoreBinaria criarArvoreVazia() {
+    return NULL;  // Retorna uma árvore sem nenhum elemento 🌿
+}
+
+// Função para inserir um valor na árvore binária 🔧
+ArvoreBinaria adicionarElemento(ArvoreBinaria raiz, const int valor) {
+    // Cria um novo elemento 🧩
+    ArvoreBinaria novoElemento = (ArvoreBinaria)malloc(sizeof(struct Elemento));
+    if (novoElemento == NULL) return raiz;  // Verifica se a alocação falhou 😱
+    novoElemento->valor = valor;
+    novoElemento->esq = NULL;
+    novoElemento->dir = NULL;
+
+    // Se a árvore está vazia, o novo elemento se torna a raiz 🌱
+    if (raiz == NULL) return novoElemento;
+
+    // Encontra a posição para inserir o novo elemento 🧭
+    ArvoreBinaria atual = raiz;
+    ArvoreBinaria anterior = NULL;
+    while (atual != NULL) {
+        anterior = atual;
+        if (valor < atual->valor) {
+            atual = atual->esq;  // Vai para a subárvore esquerda 👈
+        } else {
+            atual = atual->dir;  // Vai para a subárvore direita 👉
+        }
+    }
+
+    // Insere o novo elemento no local adequado 🔑
+    if (valor < anterior->valor) {
+        anterior->esq = novoElemento;  // Insere à esquerda 👈
+    } else {
+        anterior->dir = novoElemento;  // Insere à direita 👉
+    }
+
+    return raiz;
+}
+
+// Função para percorrer a árvore por níveis (breadth-first) 🔄
+void percorrerPorNiveis(ArvoreBinaria raiz) {
+    if (raiz == NULL) return;
+    
+    ArvoreBinaria fila[500];  // Fila para armazenar os elementos 🌐
+    int inicioFila = 0, finalFila = 0;
+    fila[finalFila++] = raiz;
+    int espacamento = 1;  // Controla o espaçamento da saída 📏
+
+    while (inicioFila < finalFila) {
+        ArvoreBinaria elementoAtual = fila[inicioFila++];  // Retira o elemento da frente da fila 🚶
+        
+        if (!espacamento)
+            printf(" ");  // Adiciona um espaço entre os valores exibidos ➖
+        printf("%d", elementoAtual->valor);  // Mostra o valor do elemento 🌟
+        espacamento = 0;
+
+        // Adiciona os filhos à fila 👈👉
+        if (elementoAtual->esq) fila[finalFila++] = elementoAtual->esq;
+        if (elementoAtual->dir) fila[finalFila++] = elementoAtual->dir;
+    }
+}
+
+// Função para liberar a memória alocada para a árvore 🌱
+void liberarArvore(ArvoreBinaria raiz) {
+    if (raiz != NULL) {
+        liberarArvore(raiz->esq);  // Libera a subárvore esquerda 👈
+        liberarArvore(raiz->dir);   // Libera a subárvore direita 👉
+        free(raiz);  // Libera o elemento atual 🧠
+    }
+}
+
+// Função para processar as interações do usuário 📝
+void processarCasos(int totalCasos) {
+    for (int caso = 1; caso <= totalCasos; caso++) {
+        int numeroElementos;
+        scanf("%d", &numeroElementos);  // Lê a quantidade de elementos para a árvore 📊
+        
+        ArvoreBinaria raiz = criarArvoreVazia();  // Inicializa uma nova árvore 🌱
+        
+        for (int k = 0; k < numeroElementos; k++) {
+            int valor;
+            scanf("%d", &valor);  // Lê o valor do elemento a ser inserido 📥
+            raiz = adicionarElemento(raiz, valor);  // Insere o valor na árvore 🛠️
+        }
+        
+        printf("Case %d:\n", caso);  // Exibe o número do case atual 🧩
+        percorrerPorNiveis(raiz);  // Realiza o percurso em largura 🔄
+        printf("\n\n");
+        
+        liberarArvore(raiz);  // Libera a memória após o uso da árvore 🧠
+    }
+}
+
+// Função principal 🚀
+int main() {
+    int casosTeste;
+    scanf("%d", &casosTeste);  // Lê o número de cases de teste 📥
+    
+    processarCasos(casosTeste);  // Inicia o processamento dos cases 📝
+
+    return 0;  // Termina o programa 🏁
+}

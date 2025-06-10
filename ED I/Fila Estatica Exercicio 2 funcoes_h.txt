@@ -1,0 +1,81 @@
+// funcoes.h - Cabeçalho com definições de constantes e funções para manipulação de filas
+
+// Definindo o tamanho máximo da fila
+#define MAX_FILA 10
+
+// Definindo códigos de cor ANSI para formatação do texto no terminal
+// Estes códigos são usados para alterar a cor e estilo do texto exibido no terminal
+#define RESET "\033[0m"           // Código para resetar as configurações de cor e estilo para o padrão
+#define BOLD "\033[1m"            // Código para aplicar negrito ao texto
+#define UNDERLINE "\033[4m"       // Código para sublinhar o texto
+#define GREEN "\033[32m"          // Código para texto na cor verde
+#define YELLOW "\033[33m"         // Código para texto na cor amarelo
+#define CYAN "\033[36m"           // Código para texto na cor ciano
+#define MAGENTA "\033[35m"        // Código para texto na cor magenta
+#define RED "\033[31m"            // Código para texto na cor vermelho
+#define BLUE "\033[34m"           // Código para texto na cor azul
+#define LIGHT_BLUE  "\033[94m"    // Código para texto na cor azul claro
+#define LIGHT_YELLOW  "\033[93m"  // Código para texto na cor amarelo claro
+#define LIGHT_CYAN   "\033[96m"   // Código para texto na cor ciano claro
+#define LIGHT_GREEN   "\033[92m"  // Código para texto na cor verde claro     
+#define PURPLE "\x1B[35m"         // Código para texto na cor roxo
+#define ORANGE "\033[38;5;208m"   // Código para texto na cor laranja
+#define DOURADO "\033[1;33m"      // Código para texto na cor dourado
+#define BLACK "\033[0;30m"        // Código para texto na cor preto
+
+// Definindo uma estrutura para representar a fila
+typedef struct {
+    int valor[MAX_FILA*2];  // Vetor que armazena os elementos da fila, com tamanho máximo definido por MAX_FILA
+    int IF;               // Índice do Início da Fila (posição do primeiro elemento)
+    int FF;               // Índice do Fim da Fila (posição do último elemento)
+    int N;                // Número de elementos presentes na fila
+} Fila;
+
+// Função para verificar se a fila está cheia
+// Retorna 1 se a fila estiver cheia (N == MAX_FILA), 0 caso contrário
+int E_cheia(Fila *Ptf);
+
+// Função para verificar se a fila está vazia
+// Retorna 1 se a fila estiver vazia (N == 0), 0 caso contrário
+int E_vazia(Fila *Ptf);
+
+// Função para criar uma nova fila
+// Aloca memória para a fila e inicializa seus índices e contador
+// Retorna um ponteiro para a fila criada
+Fila *Cria_fila(void);
+
+// Função para liberar a memória alocada para a fila
+// Libera a memória utilizada pela fila e retorna NULL
+Fila *Libera_fila(Fila *Ptf);
+
+// Função para inserir um elemento na fila
+// Insere o elemento na posição final da fila e atualiza os índices
+// Retorna um ponteiro para a fila atualizada
+Fila *Insere_fila(Fila *Ptl, int elem);
+
+// Função para remover um elemento da fila
+// Remove o elemento da posição inicial da fila e atualiza os índices
+// O elemento removido é armazenado no ponteiro *elem
+// Retorna um ponteiro para a fila atualizada
+Fila *Remove_fila(Fila *Ptl, int *elem);
+
+// Função para consultar o primeiro elemento da fila (sem removê-lo)
+// Armazena o elemento consultado no ponteiro *elem
+// Retorna 1 se o elemento foi consultado com sucesso, 0 se a fila estiver vazia
+int Consulta_fila(Fila *Ptl, int *elem);
+
+// Função para mesclar duas filas em uma terceira
+// Insere elementos de F1 e F2 em F3 de forma ordenada
+void Mesclar_filas(Fila *F1, Fila *F2, Fila *F3);
+
+// Função para imprimir os elementos da fila
+// Exibe os elementos da fila no terminal
+void Imprime_fila(Fila *fila);
+
+// Função para limpar a tela do terminal
+// Limpa a tela e aguarda o usuário pressionar ENTER
+void limpar();
+
+// Função para exibir mensagens de boas-vindas
+// Exibe uma mensagem de boas-vindas formatada no terminal
+void boasVindas();

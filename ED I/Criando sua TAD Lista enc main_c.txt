@@ -1,0 +1,168 @@
+            #include "funcoes.h"
+            #include <stdio.h>
+            #include <stdlib.h>
+
+            // Função principal
+            int main() {
+                boasVindas();  // Exibe a mensagem de boas-vindas
+                limpar();      // Limpa a tela
+
+                int opcao, pos, aux;
+                Signo *lista_astral = NULL; // Inicializa um ponteiro para a lista de astrologistas
+                lista_astral = Cria_lista(); // Cria a lista de astrologistas
+                Signo_Enciclopedia signos[12]; // Array para armazenar informações sobre signos
+                inicializarSignos(signos); // Inicializa os dados da enciclopédia astral
+
+                do {
+                    // Exibe o menu de opções para o usuário
+                    printf("\n" CYAN BOLD "✨🌌 Menu Cósmico 🌌✨" RESET "\n");
+                    printf("🌟 " BOLD GREEN "[1]" RESET " 🌠 " BOLD MAGENTA "Inserir Astrologista" RESET " 🌠\n");
+                    printf("🌟 " BOLD GREEN "[2]" RESET " 🛠️ " BOLD YELLOW "Remover Astrologista" RESET " 🛠️\n");
+                    printf("🌟 " BOLD GREEN "[3]" RESET " 🔍 " BOLD BLUE "Exibir Astrologistas" RESET " 🔍\n");
+                    printf("🌟 " BOLD GREEN "[4]" RESET " 💫 " BOLD CYAN "Consultar Compatibilidade" RESET " 💫\n");
+                    printf("🌟 " BOLD GREEN "[5]" RESET " 📜 " BOLD RED "Gravar nas Estrelas" RESET " 📜\n");
+                    printf("🌟 " BOLD GREEN "[6]" RESET " 📚 " BOLD GREEN "Enciclopédia Astral" RESET " 📚\n");
+                    printf("🌟 " BOLD GREEN "[7]" RESET " 🔄 " BOLD MAGENTA "Atualizar Astrologista" RESET " 🔄\n");
+                    printf("🌟 " BOLD GREEN "[8]" RESET " 🔍 " BOLD BLUE "Buscar Astrologista" RESET " 🔍\n");
+                    printf("🌟 " BOLD GREEN "[9]" RESET " 📊 " BOLD LIGHT_GREEN "Exibir Estatísticas" RESET " 📊\n");
+                    printf("🌟 " BOLD GREEN "[10]" RESET " 🚪 " BOLD "Sair" RESET " 🚪\n");
+
+                    // Solicita ao usuário a opção desejada
+                    printf("\n" CYAN BOLD "Escolha uma opção: " RESET);
+                    scanf("%d", &opcao);
+                    limparbuffer(); // Limpa o buffer do teclado para evitar problemas com entrada de dados
+                    limpar();       // Limpa a tela para uma melhor visualização
+
+                    // Processa a opção escolhida pelo usuário
+                    switch (opcao) {
+                        case 1: {
+                            // Inserir Astrologista
+                            if (!E_cheia(lista_astral)) { // Verifica se a lista não está cheia
+                                printf(BOLD MAGENTA "\n✨ Inserir Astrologista ✨\n" RESET);
+                                limpar();
+                                Insere_elem(lista_astral); // Insere um novo astrologista na lista
+                                limpar();
+                            } else {
+                                // A lista está cheia, não é possível adicionar mais astrologistas
+                                printf(RED "⚠️ A lista está cheia. Não é possível adicionar mais astrologistas. ⚠️\n" RESET);
+                            }
+                            break;
+                        }
+                        case 2:
+                            // Remover Astrologista
+                            printf(BOLD MAGENTA "\n🛠️ Remover Astrologista 🛠️\n" RESET);
+                            limpar();
+                            Exibir_lista(lista_astral); // Exibe a lista atual de astrologistas
+                            printf("\n%s%s🔍 %sPor favor, insira a posição do%s%s %sastrologista%s%s que deseja remover:%s ",
+                                   CYAN, BOLD, RESET, BOLD, GREEN, RESET, BOLD, RED, RESET);
+                            scanf("%d", &pos);
+                            limparbuffer();
+                            if (pos >= 1 && pos <= lista_astral->FL) {
+                                // Remove o astrologista da lista na posição especificada
+                                Remove_elem(lista_astral, --pos);
+                            } else {
+                                // Posição inválida fornecida pelo usuário
+                                printf(RED "⚠️ Posição inválida. Tente novamente. ⚠️\n" RESET);
+                            }
+                            limpar();
+                            break;
+                        case 3:
+                            // Exibir Astrologista
+                            printf(BOLD MAGENTA "\n🔍 Exibir Astrologistas 🔍\n" RESET);
+                            limpar();
+                            Exibir_lista(lista_astral); // Exibe todos os astrologistas na lista
+                            limpar();
+                            break;
+                        case 4:
+                            // Consultar Compatibilidade
+                            printf(BOLD MAGENTA "\n💫 Consultar Compatibilidade 💫\n" RESET);
+                            limpar();
+                            Exibir_lista(lista_astral); // Exibe a lista de astrologistas para seleção
+                            printf("%s🌟 %sInsira a posição do primeiro astrologista: %s", LIGHT_GREEN, BOLD, RESET);
+                            scanf("%d", &pos);
+                            limparbuffer();
+
+                            printf("%s🌟 %sInsira a posição do segundo astrologista: %s", LIGHT_GREEN, BOLD, RESET);
+                            scanf("%d", &aux);
+                            limparbuffer();
+                            if (pos >= 1 && pos <= lista_astral->FL && aux >= 1 && aux <= lista_astral->FL) {
+                                // Consulta a compatibilidade entre dois astrologistas
+                                Compatibilidade_Signos(lista_astral, --pos, --aux);
+                            } else {
+                                // Uma ou ambas as posições são inválidas
+                                printf(RED "⚠️ Uma ou ambas as posições são inválidas. Tente novamente. ⚠️\n" RESET);
+                            }
+                            limpar();
+                            break;
+                        case 5:
+                            // Gravar nas estrelas
+                            printf(BOLD MAGENTA "\n📜 Gravar nas Estrelas 📜\n" RESET);
+                            limpar();
+                            Salvar_lista(lista_astral); // Salva a lista de astrologistas em um arquivo
+                            printf(GREEN "✔️ Lista salva com sucesso! ✔️\n" RESET);
+                            limpar();
+                            break;
+                        case 6:
+                            // Enciclopédia Astral
+                            printf(BOLD MAGENTA "\n📚 Enciclopédia Astral 📚\n" RESET);
+                            limpar();
+                            printf("\n" CYAN BOLD "🌟✨ Selecione um Signo para a Enciclopédia ✨🌟" RESET "\n");
+                            exibirSignos(); // Exibe a lista de signos disponíveis
+                            printf("\n" BOLD MAGENTA "Digite o número" RESET " " BOLD "correspondente ao signo desejado:" RESET " 🌟 ");
+                            scanf("%d", &pos);
+                            limparbuffer();
+                            if (pos >= 1 && pos <= 12) {
+                                limpar();
+                                // Exibe informações detalhadas sobre o signo selecionado
+                                exibirInformacoes(signos, --pos);
+                            } else {
+                                // Número inválido fornecido pelo usuário
+                                printf(RED "⚠️ Número inválido. Tente novamente. ⚠️\n" RESET);
+                            }
+                            limpar();
+                            break;
+                        case 7:
+                            // Atualizar Astrologista
+                            printf("\n" CYAN BOLD "🔄 Atualizar Astrologista 🔄" RESET "\n");
+                            limpar();
+                            Exibir_lista(lista_astral); // Exibe a lista de astrologistas
+                            printf("🌟 " BOLD GREEN "Digite a posição do astrologista" RESET " " BOLD "que você deseja atualizar:" RESET " 🌟 ");
+                            scanf("%d", &pos);
+                            limparbuffer();
+                            Atualizar_Astrologista(lista_astral, --pos); // Atualiza o astrologista na posição especificada
+                            limpar();
+                            break;
+                        case 8: {
+                            // Buscar Astrologista
+                            printf(BOLD MAGENTA "\n🔍 Buscar Astrologista 🔍\n" RESET);
+                            limpar();
+                            char Nome[50];
+                            printf("🌟 " BOLD GREEN "Digite o nome do astrologista:" RESET " 🌟 ");
+                            scanf(" %49[^\n]", Nome);
+                            limparbuffer();
+                            Buscar_Astrologista(lista_astral, Nome); // Busca um astrologista pelo nome
+                            limpar();
+                            break;
+                        }
+                        case 9:
+                            // Exibir Estatísticas
+                            printf("📊 Exibir Estatísticas 📊\n");
+                            limpar();
+                            Exibir_Estatisticas(lista_astral); // Exibe estatísticas da lista de astrologistas
+                            limpar();
+                            break;
+                        case 10:
+                            // Sair do programa
+                            printf("🚪 " BOLD "Saindo do programa..." RESET " 🚪\n");
+                            lista_astral = Libera_lista(lista_astral); // Libera a memória alocada para a lista de astrologistas
+                            limpar();
+                            break;
+                        default:
+                            // Opção inválida fornecida pelo usuário
+                            printf(RED "⚠️ Opção inválida. Por favor, escolha um número de 1 a 10. ⚠️\n" RESET);
+                            break;
+                    }
+                } while (opcao != 10); // Loop até que o usuário escolha sair
+
+                return 0; // Finaliza o programa
+            }

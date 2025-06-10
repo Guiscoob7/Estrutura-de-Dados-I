@@ -1,0 +1,231 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Definição da estrutura de nó para a lista encadeada
+typedef struct no {
+  int valor;       // Valor armazenado no nó
+  struct no *prox; // Ponteiro para o próximo nó na lista
+} No;
+
+// Função para liberar a memória alocada para a lista encadeada
+void liberar(No *cabeca) {
+  No *temp;
+  while (cabeca != NULL) {
+    temp = cabeca;
+    cabeca = cabeca->prox;
+    free(temp);
+  }
+}
+
+// Função para limpar a tela e esperar que o usuário pressione ENTER
+void limpar() {
+  printf("\n\nPressione ENTER para continuar...");
+  getchar();
+  // Limpa a tela do console (funciona em sistemas Unix)
+  printf("\e[H\e[2J");
+}
+
+// Função para limpar o buffer de entrada, removendo caracteres extras
+void limparbuffer() {
+  int c;
+  while ((c = getchar()) != '\n' && c != EOF)
+    ;
+}
+
+// Função para exibir os elementos da lista encadeada
+void exibir(No *cabeca, int op) {
+  if (cabeca == NULL) {
+    printf("\nVetor vazio!");
+    return;
+  }
+
+  // Define qual vetor está sendo exibido (par ou ímpar)
+  printf("\n%s", (op == 1) ? "Vetor Par: " : "Vetor Impar: ");
+
+  No *temp = cabeca;
+  while (temp != NULL) {
+    printf("%d ", temp->valor); // Exibe o valor do nó atual
+    temp = temp->prox;          // Avança para o próximo nó
+  }
+}
+
+// Função para inserir um novo elemento na lista encadeada
+void inserir(No **cabeca, int valor, int *tam) {
+  No *novo = malloc(sizeof(No)); // Aloca memória para o novo nó
+  if (novo == NULL) {
+    printf("Erro ao alocar memória\n");
+    return;
+  }
+
+  novo->valor = valor; // Define o valor do novo nó
+  novo->prox = NULL;   // O próximo nó será NULL, pois é o último da lista
+
+  if (*cabeca == NULL) {
+    *cabeca = novo; // Se a lista estiver vazia, o novo nó é a nova cabeça
+  } else {
+    No *temp = *cabeca;
+    while (temp->prox != NULL)
+      temp = temp->prox;
+    temp->prox = novo; // Adiciona o novo nó ao final da lista
+  }
+
+  int op = (valor % 2 == 0) ? 1 : 2; // Define se o valor é par ou ímpar
+  exibir(*cabeca, op);               // Exibe o vetor após a inserção
+  printf("\n\nElemento inserido com sucesso!");
+  (*tam)++; // Incrementa o tamanho da lista
+  limpar(); // Limpa a tela e espera o usuário
+}
+
+// Função para remover a primeira ocorrência de um valor na lista encadeada
+void remover(No **cabeca, int valor) {
+  No *anterior;
+  No *atual;
+  int removido = 0;
+
+  if (atual == NULL) {
+    printf("\nVetor vazio!\n");
+    return;
+  }
+while(1){
+  anterior = NULL;
+  atual = *cabeca;
+  // Percorre a lista até encontrar o valor ou atingir o final
+  while (atual != NULL && atual->valor != valor) {
+    anterior = atual;
+    atual = atual->prox;
+  }
+
+  if (atual == NULL)
+     break;
+
+  // Remove o nó, ajustando os ponteiros
+  (anterior == NULL) ? (*cabeca = atual->prox) : (anterior->prox = atual->prox);
+  No *temp = atual;
+  free(temp);                       // Libera a memória do nó removido
+  removido = 1;
+}
+  if (!removido){
+    printf("\nValor não encontrado!\n");
+    return;
+  }
+                  
+  int op = (valor % 2 == 0) ? 1 : 2; // Define se o valor é par ou ímpar
+  printf("\nElemento(s) removido(s) com sucesso!\n");
+  exibir(*cabeca, op);               // Exibe o vetor após a remoção
+}
+
+// Função para buscar o valor em uma posição específica da lista encadeada
+int buscar(No *cabeca, int posicao) {
+  No *temp = cabeca;
+  int i = 0;
+
+  // Percorre a lista até a posição desejada
+  while (temp != NULL && i < posicao) {
+    temp = temp->prox;
+    i++;
+  }
+
+  // Retorna o valor na posição ou -1 se a posição for inválida
+  if (temp == NULL)
+    return -1;
+  else
+    return temp->valor;
+}
+
+// Função para salvar os elementos da lista em um arquivo
+void salvar(No *cabeca, int op) {
+  FILE *file;
+
+  // Define o nome do arquivo com base na escolha do usuário
+  (op == 1)
+      ? printf("Digite o nome do arquivo para salvar o vetor dos pares: ")
+      : printf("Digite o nome do arquivo para salvar o vetor dos impares: ");
+  char nome[100], nome1[100];
+  scanf("%s", nome);
+  limparbuffer();
+  strcpy(nome1, nome);
+  strcat(nome, ".bin"); // Extensão para o arquivo binário
+  file = fopen(nome, "wb");
+  if (file == NULL) {
+    printf("\nErro ao abrir o arquivo!\n");
+    limpar();
+    return;
+  }
+
+  No *temp = cabeca;
+  // Escreve os valores no arquivo binário
+  while (temp != NULL) {
+    int escrito = fwrite(&(temp->valor), sizeof(int), 1, file);
+    if (escrito != 1) {
+      printf("\nErro ao escrever no arquivo!\n");
+      limpar();
+      return;
+    }
+    temp = temp->prox;
+  }
+  fclose(file);
+
+  // Salva também em um arquivo de texto
+  file = NULL;
+  strcat(nome1, ".txt");
+  file = fopen(nome1, "w");
+  if (file == NULL) {
+    printf("\nErro ao abrir o arquivo!\n");
+    limpar();
+    return;
+  }
+
+  temp = cabeca;
+  // Escreve os valores no arquivo de texto
+  while (temp != NULL) {
+    fprintf(file, "%d\n", temp->valor);
+    temp = temp->prox;
+  }
+  fclose(file);
+  printf("Elemento(s) salvo(s) com sucesso!\n");
+}
+
+// Função para carregar os elementos de um arquivo binário e criar a lista
+// encadeada
+No *ler() {
+  printf("Digite o nome do arquivo para ler o vetor: ");
+  char nome[100];
+  scanf("%s", nome);
+  limparbuffer();
+  strcat(nome, ".bin");
+  FILE *file = fopen(nome, "rb");
+  if (file == NULL) {
+    printf("\nErro ao ler arquivo!\n");
+    limpar();
+    exit(EXIT_FAILURE);
+  }
+
+  No *cabeca = NULL, *atual = NULL;
+  int valor;
+
+  // Lê os valores do arquivo binário e cria a lista encadeada
+  while (fread(&valor, sizeof(int), 1, file) == 1) {
+    No *novo = (No *)malloc(sizeof(No));
+    if (novo == NULL) {
+      printf("\nErro ao alocar memória!\n");
+      limpar();
+      exit(EXIT_FAILURE);
+    }
+    novo->valor = valor;
+    novo->prox = NULL;
+
+    // Insere o novo nó na lista encadeada
+    if (cabeca == NULL)
+      cabeca = novo;
+    else
+      atual->prox = novo;
+
+    atual = novo;
+  }
+
+  printf("\nVetor carregado com sucesso!\n");
+  limpar();
+  fclose(file);
+  return cabeca;
+}

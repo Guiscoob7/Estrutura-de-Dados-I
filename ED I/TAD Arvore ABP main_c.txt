@@ -1,0 +1,123 @@
+//main.c
+
+#include <stdio.h>          // Inclui a biblioteca padrão de entrada e saída 📚
+#include <stdlib.h>         // Inclui a biblioteca padrão de utilidades, como alocação de memória 🧰
+#include <time.h>           // Inclui a biblioteca para manipulação de tempo ⏰
+#include "funcoes.h"        // Inclui o cabeçalho com funções e definições personalizadas 📜
+
+int main() {
+    srand(time(NULL));  // Inicializa a semente para geração de números aleatórios 🌱
+    int opcao, valor;  // Variáveis para armazenar a opção do usuário e o valor do nó
+    Arvore *raiz = NULL;  // Ponteiro inicial da árvore binária de sonhos 🌳
+
+    boasVindas();  // Exibe a mensagem de boas-vindas 🎉
+
+    do {
+        exibeMenu();  // Exibe o menu de opções 📋
+        scanf("%d", &opcao);  // Lê a opção escolhida pelo usuário 🆗
+        limparbuffer();  // Limpa o buffer de entrada 🧹
+        limpar();  // Limpa a tela 🖥️
+
+        switch(opcao) {
+            case 1:
+                valor = gerarNumeroAleatorio(1,100);  // Gera dados de um novo sonho 🎲
+                raiz = inserirNo(raiz, valor);  // Insere o sonho na árvore 🌱
+                printf(LIME "\n🌳 Nota inserida na árvore binária com sucesso!\n" RESET);  // Confirmação de inserção ✔️
+                limpar();  // Limpa a tela 🖥️
+                break;
+
+            case 2:
+                printf(LIME "🔍 Exibindo a árvore de notas (Olhe na horizontal, raiz base <- esquerda / aprofundamento -> direita)...\n" RESET);  // Mensagem de exibição da árvore 🌳
+                limpar();
+                exibirArvore(raiz, 0);  // Função para exibir a árvore 📊
+                limpar();  // Limpa a tela 🖥️
+                break;
+
+            case 3:
+                printf(LIME "🔍 Consultando a nota na árvore...\n" RESET);  // Mensagem de consulta 🔍
+                limpar();
+                printf(PURPLE "🔢 Digite o valor da nota a ser buscado: " RESET);  // Solicita ao usuário o valor a ser buscado
+                scanf("%d", &valor);  // Lê o valor a ser buscado 🆗
+                limparbuffer();
+                int encontrado = -1;  // Inicializa a variável de controle de busca
+                encontrado = buscarNo(raiz, valor);  // Busca o nó pelo valor
+                limpar();  // Limpa a tela 🖥️
+                break;
+
+            case 4:
+                printf(ORANGE "📋 Digite o valor da nota a ser removida: " RESET);  // Solicita ao usuário o valor a ser removido
+                scanf("%d", &valor);  // Lê o valor a ser removido 🆗
+                limparbuffer();
+                encontrado = -1;  // Reseta a variável de controle de busca
+                raiz = removerNo(raiz, valor);  // Remove o nó da árvore 🗑️
+                limpar();  // Limpa a tela 🖥️
+                break;
+
+            case 5:
+                printf(CYAN "📊 Contando o número total de nós na árvore...\n" RESET);  // Nova mensagem de contagem de nós
+                limpar();  // Limpa a tela 🔄
+                printf(CYAN "🌲 Total de Nós na Árvore: %d\n" RESET, contagemNos(raiz));
+                limpar();  // Limpa a tela 🔄 novamente
+                break;
+
+            case 6:
+                printf(CYAN "🔢 Contando o número de folhas e nós não-folha na árvore...\n" RESET);  // Nova mensagem de contagem
+                limpar();  // Limpa a tela 🔄
+                
+                int qtdFolhas = 0;  // Variável para armazenar a quantidade de folhas
+                int qtdNaoFolhas = contagemFolhasNaoFolhas(raiz, &qtdFolhas);  // Chama a função e passa o endereço de qtdFolhas
+                
+                printf(CYAN "🍃 Total de Folhas: %d\n" RESET, qtdFolhas);  // Exibe o número de folhas
+                printf(CYAN "🌿 Total de Galhos (Nós Não-Folhas): %d\n" RESET, qtdNaoFolhas);  // Exibe o número de nós não-folhas
+                
+                limpar();  // Limpa a tela 🔄 novamente
+                break;
+
+            case 7:
+                printf(YELLOW "🌲 Calculando a altura da árvore...\n" RESET);
+                limpar(); // Limpa a tela, se a função estiver definida
+                int altura = alturaArvore(raiz);
+                if (altura != -1) { // Verifica se a árvore não está vazia
+                    printf(PURPLE "📏 A altura da árvore é: %d 🌿\n" RESET, altura);
+                } else {
+                    printf(RED "🌸 A árvore está vazia! 🌸\n" RESET);
+                }
+                limpar();
+                break;
+
+            case 8:
+                printf(YELLOW "🌳🌟 Calculando a maior nota da árvore...\n" RESET);
+                limpar(); // Limpa a tela, se a função estiver definida
+                int maior = maiorArvore(raiz);
+                if (maior != -1) { // Verifica se a árvore não está vazia
+                    printf(PURPLE "✨ A maior nota na árvore é: %d 🌿\n" RESET, maior);
+                } else {
+                    printf(RED "🌸 A árvore está vazia! 🌸\n" RESET);
+                }
+                limpar();
+                break;
+
+            case 9:
+                printf(CYAN "🪞 Espelhando a árvore...\n" RESET);  // Usando o emoji de espelho
+                limpar();
+                espelhoArvore(raiz);
+                printf(GREEN "🌟 A árvore foi espelhada com sucesso!\n" RESET);  // Mantendo o emoji de estrela
+                limpar();  // Limpa a tela, se a função estiver definida
+                break;
+            
+            case 10:
+                printf(LIME "🌳 Encerrando o programa e liberando a memória da árvore...\n" RESET);  // Mensagem de encerramento 🌱
+                liberarArvore(raiz);  // Libera a memória da árvore 🗑️
+                printf(LIME "🌿 Memória liberada com sucesso!\n" RESET);  // Confirmação de liberação de memória ✔️
+                limpar();  // Limpa a tela 🖥️
+                break;
+            
+            default:
+                printf(RED "⚠️ Opção inválida!\n" RESET);  // Mensagem de erro para opção inválida ❌
+                limpar();  // Limpa a tela 🖥️
+                break;
+        }
+    } while (opcao != 10);  // Continua o loop até que o usuário escolha encerrar
+    
+    return 0;  // Finaliza o programa com sucesso 🎉
+}

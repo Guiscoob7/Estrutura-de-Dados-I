@@ -1,0 +1,139 @@
+/*Modificando o código no slide 31 da aula A02
+Nesta tarefa, você fará alterações no código no slide 31 da aula A02 para criar mais pontos.
+
+Usando a interface Ponto.h
+Você precisará criar uma matriz de pontos e testar todas as funções da interface Pontos.h. Siga esses passos:
+
+Crie um vetor de pelo menos 10 pontos.
+Remova um ponto do vetor.
+Acesse as coordenadas de todos os pontos do vetor.
+Calcule a distância entre 2 pontos do vetor.
+Altere as coordenadas de um ponto no vetor.
+Certifique-se de testar minuciosamente cada função da interface Ponto.h.*/
+
+#include "ponto.h" // Inclui o arquivo de cabeçalho da interface Ponto
+#include <stdio.h>
+#include <stdlib.h>
+
+// Função principal
+int main() {
+    int escolha; // Variável para armazenar a escolha do usuário
+    Ponto vetor[MAX_PONTOS]; // Vetor para armazenar os pontos
+    int n = 0; // Número atual de pontos armazenados
+
+    do {
+        // Menu de opções para o usuário
+        printf("Escolha uma opção:\n");
+        printf("1 - Criar ponto\n");
+        printf("2 - Liberar ponto\n");
+        printf("3 - Acessar ponto\n");
+        printf("4 - Atribuir ponto\n");
+        printf("5 - Distância entre pontos\n");
+        printf("6 - Sair\n");
+        printf("Opção: ");
+        scanf("%d", &escolha);
+        limparbuffer(); // Limpa o buffer de entrada para evitar problemas com scanf
+        limpar(); // Limpa a tela
+
+        // Processa a escolha do usuário
+        switch (escolha) {
+        case 1: {
+            // Criar ponto
+            float x, y;
+            printf("Criar ponto\n");
+            limpar();
+            printf("Digite as coordenadas do ponto (x,y): ");
+            scanf("%f %f", &x, &y);
+            limparbuffer();
+            pto_cria(x, y, vetor, &n); // Cria um novo ponto no vetor
+            break;
+        }
+
+        case 2: {
+            // Liberar ponto
+            int indice;
+            printf("Liberar ponto\n");
+            limpar();
+            pto_acessa(vetor, n); // Exibe todos os pontos atuais
+            if (n > 0) {
+                printf("Digite o índice do ponto a ser liberado: ");
+                scanf("%d", &indice);
+                limparbuffer();
+                pto_libera(vetor, &n, indice); // Remove o ponto especificado
+            }
+            limpar();
+            break;
+        }
+
+        case 3:
+            // Acessar ponto
+            printf("Acessar ponto\n");
+            limpar();
+            pto_acessa(vetor, n); // Exibe todos os pontos atuais
+            limpar();
+            break;
+
+        case 4: {
+            // Atribuir ponto
+            float x, y;
+            int indice;
+            printf("Atribuir ponto\n");
+            limpar();
+            pto_acessa(vetor, n); // Exibe todos os pontos atuais
+            if (n > 0) {
+                printf("Digite o índice do ponto a ser atribuído: ");
+                scanf("%d", &indice);
+                limparbuffer();
+                Ponto *p = buscar_ponto(vetor, n, indice); // Busca o ponto pelo índice
+                if (p) {
+                    printf("Digite as novas coordenadas do ponto (x,y): ");
+                    scanf("%f %f", &x, &y);
+                    limparbuffer();
+                    pto_atribui(p, x, y); // Atribui novas coordenadas ao ponto
+                    printf("Ponto atribuído com sucesso!\n");
+                    limpar();
+                    pto_acessa(vetor, n); // Exibe os pontos atualizados
+                }
+            }
+            limpar();
+            break;
+        }
+
+        case 5: {
+            // Distância entre pontos
+            float d;
+            int indice_1, indice_2;
+            printf("Distância entre pontos\n");
+            limpar();
+            pto_acessa(vetor, n); // Exibe todos os pontos atuais
+            if (n > 0) {
+                printf("Digite o índice do ponto 1 para calcular a distância: ");
+                scanf("%d", &indice_1);
+                limparbuffer();
+                printf("Digite o índice do ponto 2 para calcular a distância: ");
+                scanf("%d", &indice_2);
+                limparbuffer();
+                d = pto_distancia(vetor, n, indice_1, indice_2); // Calcula a distância entre os pontos
+                (d != -1) ? printf("A distância entre os pontos é: %.2f\n", d)
+                          : printf("Não foi possível calcular a distância\n");
+            }
+            limpar();
+            break;
+        }
+
+        case 6:
+            // Sair do programa
+            printf("Saindo...\n");
+            limpar();
+            liberar(vetor, &n); // Libera todos os recursos alocados
+            break;
+
+        default:
+            printf("Opção inválida!\n"); // Opção inválida!
+            limpar();
+            break;
+        }
+    } while (escolha != 6); // Continua até o usuário escolher sair
+
+    return 0;
+}

@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "funcoes.h"
+
+// Função principal
+int main() {
+    ListaDuplamenteEncadeada lista;
+    inicializarLista(&lista);
+
+    int valor, i, n;
+
+    // Solicita ao usuário o número de elementos a serem inseridos na lista
+    printf(BLUE "📋 Digite o número de elementos a serem adicionados à lista: " RESET);
+    scanf("%d", &n);
+
+    // Adiciona os elementos à lista
+    for (i = 0; i < n; i++) {
+        printf(MAGENTA "🔢 Digite o valor do elemento %d: " RESET, i + 1);
+        scanf("%d", &valor);
+        adicionarAoFinal(&lista, valor);
+    }
+
+    // Imprime a lista antes da ordenação
+    printf(GREEN "\n🔍 Lista antes da ordenação:\n" RESET);
+    imprimirLista(&lista);
+    limpar();
+
+    // Ordena a lista
+    printf(YELLOW "\n🔄 Ordenando a lista, por favor aguarde..." RESET);
+    ordenarLista(&lista);
+    limpar();
+
+    // Imprime a lista após a ordenação
+    printf(GREEN "✅ Lista após a ordenação:\n" RESET);
+    imprimirLista(&lista);
+
+    printf(CYAN "\n🎉 Programa finalizado com sucesso! 🎉\n" RESET);
+
+    return 0;
+}

@@ -1,0 +1,63 @@
+#ifndef PONTO_H
+#define PONTO_H
+
+// Define o tamanho máximo do vetor de pontos
+#define MAX_PONTOS 100
+
+/* TAD: Ponto (x,y) */
+/* Tipo exportado */
+
+/* Definição do tipo Ponto como uma struct.
+   Representa um ponto no plano cartesiano com coordenadas (x, y). */
+typedef struct {
+    float x; // Coordenada x do ponto
+    float y; // Coordenada y do ponto
+} Ponto;
+
+/* Funções exportadas */
+
+/* Cria um ponto e o adiciona ao vetor de pontos.
+   x, y: Coordenadas do ponto a ser criado.
+   vetor: Vetor onde o ponto será armazenado.
+   n: Ponteiro para o número atual de pontos no vetor (será incrementado). */
+void pto_cria(float x, float y, Ponto vetor[], int *n);
+
+/* Remove um ponto do vetor de pontos.
+   vetor: Vetor onde os pontos estão armazenados.
+   n: Ponteiro para o número atual de pontos no vetor (será decrementado).
+   indice: Índice do ponto a ser removido. */
+void pto_libera(Ponto vetor[], int *n, int indice);
+
+/* Exibe as coordenadas de todos os pontos no vetor.
+   vetor: Vetor onde os pontos estão armazenados.
+   n: Número de pontos no vetor. */
+void pto_acessa(Ponto vetor[], int n);
+
+/* Atribui novas coordenadas a um ponto.
+   p: Ponteiro para o ponto que terá as coordenadas alteradas.
+   x, y: Novas coordenadas para o ponto. */
+void pto_atribui(Ponto *p, float x, float y);
+
+/* Calcula a distância entre dois pontos no vetor.
+   vetor: Vetor onde os pontos estão armazenados.
+   n: Número de pontos no vetor.
+   indice_1, indice_2: Índices dos pontos para os quais a distância será calculada.
+   Retorna: A distância entre os dois pontos. Se algum índice for inválido, retorna -1. */
+float pto_distancia(Ponto vetor[], int n, int indice_1, int indice_2);
+
+/* Funções auxiliares */
+
+/* Limpa o buffer de entrada para evitar problemas com scanf. */
+void limparbuffer(void);
+
+/* Limpa a tela (dependente do sistema operacional). */
+void limpar(void);
+
+/* Busca um ponto no vetor pelo índice.
+   vetor: Vetor onde os pontos estão armazenados.
+   n: Número de pontos no vetor.
+   indice: Índice do ponto a ser buscado.
+   Retorna: Ponteiro para o ponto encontrado, ou NULL se o índice for inválido. */
+Ponto* buscar_ponto(Ponto vetor[], int n, int indice);
+
+#endif

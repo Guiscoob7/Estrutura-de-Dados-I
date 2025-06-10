@@ -1,0 +1,68 @@
+#include "funcoes.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Função principal
+int main() {
+    srand(time(NULL));  // Inicializa a semente do gerador de números aleatórios com o tempo atual
+    boasVindas();  // Exibe a mensagem de boas-vindas
+    limpar();      // Limpa a tela
+
+    int opcao, suicidio, cont, posicao = 0;  // Variáveis de controle e posição
+    char nome[50];  // Buffer para armazenar o nome do participante
+    Pessoa *lista_suicidas; // Ponteiro para a lista de pessoas participantes
+    lista_suicidas = Cria_lista(); // Cria a lista de participantes
+    limpar();       // Limpa a tela para melhor visualização
+
+    // Loop para inserir participantes
+    do {
+        // Solicita ao usuário para inserir o nome de um participante
+        printf("\n%s%s🗂️ %sPor favor, insira o nome do%s%s %ssuicida%s%s que deseja participar:%s ",
+               CYAN, BOLD, RESET, BOLD, GREEN, RESET, BOLD, RED, RESET);
+        scanf("%49[^\n]", nome);  // Lê o nome do participante (máx. 49 caracteres)
+        limparbuffer();  // Limpa o buffer de entrada para evitar problemas na leitura
+        limpar();        // Limpa a tela
+        lista_suicidas = Insere_elem(lista_suicidas, nome);  // Insere o participante na lista
+        printf("%s✅ Suicida adicionado com sucesso!%s\n", GREEN, RESET);  // Confirmação de sucesso
+        limpar();  // Limpa a tela
+        // Pergunta ao usuário se deseja adicionar mais participantes
+        printf("\n%s📋 Você deseja inserir mais?%s\n%s\n[1] - Sim%s\t%s[0] - Não%s\n\n%sEscolha: %s" ,
+               PURPLE, RESET, GREEN, RESET, RED, RESET, ORANGE, RESET);
+        scanf("%d", &opcao);  // Lê a opção escolhida pelo usuário
+        limparbuffer();  // Limpa o buffer de entrada
+        limpar();  // Limpa a tela
+    } while (opcao == 1);  // Continua o loop enquanto o usuário escolher "1" (Sim)
+    
+    printf("%s❌ Inserção Finalizada!%s\n", RED, RESET);  // Indica que a inserção de participantes foi finalizada
+    Exibir_lista(lista_suicidas);  // Exibe a lista de participantes inseridos
+    printf("%s🎮 Hora de Jogar! 🎮%s\n", ORANGE, RESET);  // Indica o início do jogo
+    limpar();  // Limpa a tela
+
+    // Loop do jogo até que reste apenas uma pessoa na lista
+    while (Tamanho_Lista(lista_suicidas) > 1) {
+        Exibir_lista(lista_suicidas);  // Exibe a lista atualizada de participantes
+        suicidio = rand() % Tamanho_Lista(lista_suicidas) + 1;  // Sorteia uma posição aleatória
+        printf("\n%s🎲🎰 Sorteando Número... 🎰🎲%s\n\n", YELLOW, RESET);
+        printf("%s🍀✨ O número sorteado é: %d ✨🍀%s\n", GREEN, suicidio, RESET);  // Exibe o número sorteado
+        if (posicao) {
+            // Informa a última posição de onde a pessoa foi eliminada, se houver
+            printf("\n%s💥⚔️ A última pessoa sorteada estava na posição %d... ⚔️💥%s\n\n", RED, posicao, RESET);
+        }
+        limpar();  // Limpa a tela
+        lista_suicidas = Remove_elem(lista_suicidas, suicidio, &posicao);  // Remove o participante sorteado
+        limpar();  // Limpa a tela
+    }
+
+    // Quando sobrar apenas um participante, exibe a mensagem de ganhador
+    printf("%s🏆🥳 Temos um Ganhador! 🥳🏆%s\n\n", BLUE, RESET);
+    printf("%s🏅✨ O ganhador(a) é %s! ✨🏅%s\n\n", DOURADO, lista_suicidas->nome, RESET);
+    printf("%s🎉🎊 Parabéns! 🎊🎉%s\n", MAGENTA, RESET);  // Parabeniza o ganhador
+
+    Salvar_Ganhador(lista_suicidas);  // Salva o nome do ganhador no arquivo
+    Libera_lista(lista_suicidas);  // Libera a memória alocada para a lista de participantes
+    limpar();  // Limpa a tela
+    printf("🚪 " BOLD "Saindo do programa..." RESET " 🚪\n");  // Mensagem de saída do programa
+
+    return 0; // Finaliza o programa
+}

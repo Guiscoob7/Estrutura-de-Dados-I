@@ -1,0 +1,113 @@
+// Define o número máximo de elementos que a lista pode conter
+#define MAX 12
+
+// Definindo códigos de cor ANSI para formatação do texto no terminal
+#define RESET "\033[0m"           // Código para resetar as configurações de cor e estilo
+#define BOLD "\033[1m"            // Código para texto em negrito
+#define UNDERLINE "\033[4m"       // Código para texto sublinhado
+#define GREEN "\033[32m"          // Código para texto verde
+#define YELLOW "\033[33m"         // Código para texto amarelo
+#define CYAN "\033[36m"           // Código para texto ciano
+#define MAGENTA "\033[35m"        // Código para texto magenta
+#define RED "\033[31m"            // Código para texto vermelho
+#define BLUE "\033[34m"           // Código para texto azul
+#define LIGHT_BLUE  "\033[94m"    // Código para texto azul claro
+#define LIGHT_YELLOW  "\033[93m"  // Código para texto amarelo claro
+#define LIGHT_CYAN   "\033[96m"   // Código para texto ciano claro
+#define LIGHT_GREEN   "\033[92m"  // Código para texto verde claro     
+#define LIGHT_YELLOW   "\033[93m" // Código para texto amarelo claro (repetido)    
+
+// Estrutura para armazenar a data
+typedef struct data {
+  int dia;  // Dia da data
+  int mes;  // Mês da data
+  int ano;  // Ano da data
+} Data;
+
+// Estrutura para armazenar os dados do astro
+typedef struct vetor {
+  char signo_pessoa[50]; // Signo associado à pessoa
+  char nome[50];         // Nome do astrólogo
+  char elemento[50];     // Elemento associado ao signo
+  Data data;             // Data de nascimento do astrólogo
+} Vetor;
+
+// Estrutura principal que contém a lista de astrólogos e o contador de elementos
+struct signo {
+  int FL;                 // Contador de elementos na lista
+  Vetor vetor[MAX];       // Vetor de estruturas Vetor, armazenando até MAX elementos
+};
+
+// Estrutura para armazenar informações detalhadas sobre os signos
+struct signo_enciclopedia {
+  char nome[20];          // Nome do signo
+  char datas[30];         // Período do signo
+  char elemento[20];      // Elemento associado ao signo
+  char qualidade[20];     // Qualidade do signo
+  char regente[20];       // Planeta regente do signo
+  char descricao[200];    // Descrição detalhada do signo
+};
+
+// Define tipos para simplificar o uso das estruturas
+typedef struct signo Signo;                // Define o tipo Signo como um atalho para a estrutura struct signo
+typedef struct signo_enciclopedia Signo_Enciclopedia; // Define o tipo Signo_Enciclopedia como um atalho para a estrutura struct signo_enciclopedia
+
+// Função para limpar a tela e solicitar ao usuário pressionar ENTER para continuar
+void limpar();
+
+// Função para limpar o buffer de entrada, removendo caracteres extras
+void limparbuffer();
+
+// Função para criar uma nova lista de astrólogos e inicializá-la
+Signo* Cria_lista(void);
+
+// Função para inserir um novo astrólogo na lista
+Signo* Insere_elem(Signo* Ptl);
+
+// Função para determinar o signo e o elemento com base na data fornecida
+int determinarSignoEElemento(int dia, int mes, char* signo, char* elemento);
+
+// Função para verificar se a lista está vazia
+int E_vazia(Signo* Ptl);
+
+// Função para verificar se a lista está cheia
+int E_cheia(Signo* Ptl);
+
+// Função para exibir todos os elementos da lista de astrólogos
+void Exibir_lista(Signo* Ptl);
+
+// Função para remover um elemento da lista na posição especificada
+Signo* Remove_elem(Signo* Ptl, int pos);
+
+// Função para salvar a lista de astrólogos em um arquivo de texto
+void Salvar_lista(Signo *Ptl);
+
+// Função para inicializar as informações dos signos da enciclopédia com dados fictícios
+void inicializarSignos(Signo_Enciclopedia *signos);
+
+// Função para exibir a lista de signos disponíveis
+void exibirSignos(void);
+
+// Função para exibir informações detalhadas sobre um signo específico
+void exibirInformacoes(const Signo_Enciclopedia *signos, int index);
+
+// Função para calcular e exibir a compatibilidade entre dois signos com base na lista
+void Compatibilidade_Signos(Signo* Ptl, int pos1, int pos2);
+
+// Função para liberar a memória alocada para a lista de astrólogos
+Signo *Libera_lista(Signo *Ptl);
+
+// Função para exibir uma mensagem de boas-vindas
+void boasVindas();
+
+// Função para atualizar as informações de um astrólogo na lista na posição especificada
+void Atualizar_Astrologista(Signo* Ptl, int pos);
+
+// Função para buscar um astrólogo na lista pelo nome
+void Buscar_Astrologista(Signo* Ptl, char* nome);
+
+// Função para exibir estatísticas relacionadas à lista de astrólogos
+void Exibir_Estatisticas(Signo* Ptl);
+
+// Função para obter o nome do signo com base no índice fornecido
+const char* obterSignoPorIndice(int indice);

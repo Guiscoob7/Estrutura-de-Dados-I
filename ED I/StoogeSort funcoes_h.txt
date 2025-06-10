@@ -1,0 +1,45 @@
+// Cores ANSI
+#define RESET   "\x1b[0m"
+#define RED     "\x1b[31m"
+#define GREEN   "\x1b[32m"
+#define YELLOW  "\x1b[33m"
+#define BLUE    "\x1b[34m"
+#define MAGENTA "\x1b[35m"
+#define CYAN    "\x1b[36m"
+
+
+// Estrutura do Nó da Lista Duplamente Encadeada
+typedef struct No{
+    int data;
+    struct No* prev;
+    struct No* next;
+} No;
+
+// Estrutura da Lista Duplamente Encadeada
+typedef struct ListaDuplamenteEncadeada {
+    No* cabeca;
+    No* cauda;
+} ListaDuplamenteEncadeada;
+
+// Função para criar um novo nó
+No* criarNo(int valor);
+
+// Função para inicializar a lista
+void inicializarLista(ListaDuplamenteEncadeada* lista);
+
+// Função para adicionar um novo nó ao final da lista
+void adicionarAoFinal(ListaDuplamenteEncadeada* lista, int valor);
+
+// Função para imprimir a lista
+void imprimirLista(ListaDuplamenteEncadeada* lista);
+
+// Função para trocar os dados de dois nós
+void trocar(No* a, No* b);
+
+// Função de ordenação Stooge Sort
+void stoogeSort(ListaDuplamenteEncadeada* lista, No* l, No* h, int profundidade);
+
+// Função para ordenar a lista usando Stooge Sort
+void ordenarLista(ListaDuplamenteEncadeada* lista);
+
+void limpar();

@@ -1,0 +1,24 @@
+Explicação, Desafio 1:
+
+A = A + B;
+(acumulei o valor de B a A, para poder usar B)
+
+B = A - B;
+
+como A = A + B, logo B = (A + B) - B.
+
+Assim:
+
+B = A + B - B
+B = A;
+
+A = A - B
+
+como B = A, logo A = (A + B) - A.
+
+A = A + B - A
+A = B;
+
+Assim 
+A = B;
+B = A;

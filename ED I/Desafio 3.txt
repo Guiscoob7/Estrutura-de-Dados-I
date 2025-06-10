@@ -1,0 +1,173 @@
+// Primeira Estruturas de Dados
+
+
+/*Instruções
+Escreva um programa que disponibilize um menu que contenha as seguintes opções:
+
+      Insere Elemento
+      Remova Elemento
+      Consulta Posição
+      Exiba Elementos
+      Grave Elementos
+
+
+  O programa deve permitir ao usuário:
+Inserir números inteiros pares no vetor PAR e números inteiros ímpares no vetor IMPAR.  
+Exibir cada vetor após finalizar as inserções.
+Remover um dado número do vetor correto,  cujo valor foi fornecido pelo usuário.
+Exibir os elementos de um dado vetor
+Gravar os elementos de um dado vetor em um arquivo do tipo texto, cujo nome foi fornecido via teclado.
+
+Além disso:
+os vetores devem ser declarados na função main();
+a função Insere() deve ser capaz de inserir um dado elemento em um dos vetores, de acordo com o seu valor. O elemento deve ser inserido após o ultimo elemento do vetor.
+a função Remove() deve ser capaz de remover a primeira ocorrência de um dado elemento em um dado vetor.
+a função Consulta deve retornar o elemento cuja posição foi dada.
+as funções Exiba() e Grave() devem exibir no monitor ou gravar em um dado arquivo, respectivamente,  os elementos de um dado vetor.
+
+Considerações:
+Como saber onde está o ultimo elemento?
+Como remover a primeira ocorrência de um elemento?
+O que fazer se o elemento não estiver no vetor?
+Como saber o número de elementos de cada vetor?
+Qual o protótipo das funções?*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "funcoes.h"
+int main ()
+{
+  int opcao, tam_par = 0, tam_impar = 0, vetor_escolhido;
+  No *Lista_par = NULL;
+  No *Lista_impar = NULL;
+  do
+    {
+    printf("\t\tMenu:\n");
+    printf("[1] Inserir elemento\n");
+    printf("[2] Remover elemento\n");
+    printf("[3] Consultar posição\n");
+    printf("[4] Exibir elementos\n");
+    printf("[5] Gravar elementos\n");
+    printf("[6] Carregar elementos\n");
+    printf("[7] Sair\n");
+    
+    printf("Escolha uma opção: ");
+    scanf("%d", &opcao);
+    limparbuffer();
+    limpar();
+    switch(opcao)
+    {
+      case 1:{
+        int num;
+        printf("\t\tInserir elemento");
+        limpar();
+        printf("Digite o valor a ser inserido: ");
+        scanf("%d", &num);
+        limparbuffer();
+        (num % 2 == 0) ? inserir (&Lista_par, num, &tam_par) : inserir (&Lista_impar, num, &tam_impar);
+        break;
+      }
+      case 2:{
+        int valor_remover;
+        printf("\t\tRemover elemento");
+        limpar();
+        printf("Escolha o vetor a ter o elemento excluído:\n[1] Vetor Par\n[2] Vetor Impar\nEscreva aqui: ");
+        if((scanf("%d", &vetor_escolhido)) != 1){
+          printf("Erro ao ler o valor!");
+          limparbuffer();
+          break;
+        }
+        limparbuffer();
+        (vetor_escolhido == 1) ? exibir(Lista_par, 1) : exibir(Lista_impar, 2);
+        printf("\n\n");
+        if (vetor_escolhido == 1 || vetor_escolhido == 2){
+          printf("Digite o valor a ser excluido: ");
+          if (scanf("%d", &valor_remover) == -1){
+            printf("Erro ao ler o valor!");
+            limparbuffer();
+            break;
+          }
+          limparbuffer();
+          (vetor_escolhido == 1) ? remover(&Lista_par, valor_remover) : remover(&Lista_impar, valor_remover);
+          limpar();
+        }
+        break;
+      }
+      case 3:
+        printf("\t\tConsultar posição");
+        limpar();
+        printf("Escolha o vetor a ser consultado:\n[1] Vetor Par\n[2] Vetor Impar\nEscreva aqui: ");
+        if((scanf("%d", &vetor_escolhido)) != 1){
+          printf("Erro ao ler o valor!");
+          limparbuffer();
+          break;
+        }
+        limparbuffer();
+        int indice_consulta;
+        if (vetor_escolhido == 1 || vetor_escolhido == 2){
+          printf("Digite a posição a ser consultada: ");
+          if (scanf("%d", &indice_consulta) != 1){
+            printf("Erro ao ler o valor!");
+            limparbuffer();
+            break;
+          }
+          limparbuffer();
+          int valor;
+          (vetor_escolhido == 1) ? (valor = buscar(Lista_par,indice_consulta)) : (valor = buscar(Lista_impar, indice_consulta));
+          (valor == -1) ?  printf("\nPosição inválida!") : printf("\nValor na posição %d: %d", indice_consulta, valor);
+          limpar();
+        }
+        break;
+      case 4:{
+        printf("\t\tExibir elementos");
+        limpar();
+        printf("Escolha o vetor a ser exibido:\n[1] Vetor Par\n[2] Vetor Impar\nEscreva aqui: ");
+        if((scanf("%d", &vetor_escolhido)) != 1){
+          printf("Erro ao ler o valor!");
+          limparbuffer();
+          break;
+        }
+        limparbuffer();
+        if (vetor_escolhido == 1 || vetor_escolhido == 2){
+          (vetor_escolhido == 1) ? exibir(Lista_par,1) : exibir(Lista_impar,2);
+          }
+        limpar();
+        break;
+      }
+      case 5:
+        printf("\t\tGravar elementos\n");
+        limpar();
+        salvar(Lista_par, 1);
+        salvar(Lista_impar, 2);
+        limpar();
+        break;
+      case 6:
+        printf("\t\tCarregar elementos\n");
+        limpar();
+        No* temp = ler();
+        if (temp == NULL){
+          printf("\nErro ao ler o arquivo!\n");
+          break;
+            }
+        (temp->valor % 2 == 0) ? (Lista_par = temp) : (Lista_impar = temp);
+        temp = NULL;
+        limpar();
+        break;
+      case 7:{
+        char nome[100];
+        printf("Insira o seu nome: ");
+        scanf("%99[^\n]", nome);	
+        limpar();
+        printf("\t\tVocê Escolheu Sair\n");
+        printf("\n\nVolte sempre %s!\n", nome);
+        liberar(Lista_par);
+        liberar(Lista_impar);
+        break;
+      default:
+        printf("\t\tOpção inválida");
+        limpar();
+        break;
+      }
+    }
+  } while (opcao != 7);
+}

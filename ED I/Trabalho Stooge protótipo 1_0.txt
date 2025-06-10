@@ -1,0 +1,300 @@
+//funcoes.h
+
+// Definindo códigos de cor ANSI para formatação do texto no terminal
+// Estes códigos são usados para alterar a cor e estilo do texto exibido no terminal
+
+#define RESET "\033[0m"           // Código para resetar as configurações de cor e estilo para o padrão
+#define BOLD "\033[1m"            // Código para aplicar negrito ao texto
+#define UNDERLINE "\033[4m"       // Código para sublinhar o texto
+#define GREEN "\033[32m"          // Código para texto na cor verde
+#define YELLOW "\033[33m"         // Código para texto na cor amarelo
+#define CYAN "\033[36m"           // Código para texto na cor ciano
+#define MAGENTA "\033[35m"        // Código para texto na cor magenta
+#define RED "\033[31m"            // Código para texto na cor vermelho
+#define BLUE "\033[34m"           // Código para texto na cor azul
+#define LIGHT_BLUE  "\033[94m"    // Código para texto na cor azul claro
+#define LIGHT_YELLOW  "\033[93m"  // Código para texto na cor amarelo claro
+#define LIGHT_CYAN   "\033[96m"   // Código para texto na cor ciano claro
+#define LIGHT_GREEN   "\033[92m"  // Código para texto na cor verde claro     
+#define PURPLE "\x1B[35m"         // Código para texto na cor roxo
+#define ORANGE "\033[38;5;208m"   // Código para texto na cor laranja
+#define DOURADO "\033[1;33m"      // Código para texto na cor dourado
+#define BLACK "\033[0;30m"        // Código para texto na cor preto
+
+// Estrutura principal que representa um Emoji
+struct emoji {                
+  struct emoji *prox;  // Ponteiro para o próximo Emoji na lista 
+  struct emoji *ant;   // Ponteiro para o emoji anterior na lista
+  char simbolo[16];    // Representa o símbolo ou nome do emoji (máximo de 15 caracteres + null terminator)
+  int popularidade;    // Popularidade do emoji (ou qualquer outra métrica usada para ordenação)
+};
+
+// Define o tipo `Emoji` como uma forma simplificada de usar a struct `emoji`
+typedef struct emoji Emoji; 
+
+// Estrutura para representar a lista duplamente encadeada de Emojis
+struct listaDuplamenteEncadeada {
+  Emoji* cabeca;       // Ponteiro para o primeiro emoji da lista
+  Emoji* cauda;        // Ponteiro para o último emoji da lista
+};
+
+// Define o tipo `ListaDuplamenteEncadeada` como uma forma simplificada de usar a struct `listaDuplamenteEncadeada`
+typedef struct listaDuplamenteEncadeada ListaDuplamenteEncadeada; 
+
+// Função para limpar a tela e solicitar ao usuário pressionar ENTER para continuar
+void limpar(); 
+// Esta função exibe uma mensagem solicitando ao usuário pressionar ENTER para continuar,
+// e após a entrada, limpa a tela com o comando apropriado para o sistema operacional.
+
+// Função para limpar o buffer de entrada, removendo caracteres extras
+void limparbuffer(); 
+// Esta função esvazia o buffer de entrada para evitar problemas ao processar entradas de múltiplos caracteres.
+
+// Função para remover Emoji(s) da lista com a popularidade especificada
+Emoji* Remove_elem(Emoji* Ptl, int popularidade);
+// Esta função percorre a lista de emojis e remove todos os emojis que possuem a popularidade igual à especificada.
+// A função retorna o ponteiro para a cabeça da lista após as remoções.
+
+// Função para liberar a memória alocada para a lista de Emojis
+Emoji *Libera_lista(Emoji *Ptl);
+// Esta função percorre a lista e libera a memória alocada para cada nó, prevenindo vazamentos de memória.
+// Define a cauda como NULL após a liberação.
+
+// Função para exibir uma mensagem de boas-vindas
+void boasVindas();
+// Exibe uma mensagem estilizada de boas-vindas ao usuário, utilizando cores e emojis para uma apresentação atraente.
+
+// Função para trocar os dados de dois nós
+void trocar(Emoji* a, Emoji* b);
+// Esta função troca os dados (popularidade e símbolo) entre dois emojis fornecidos como parâmetros.
+
+// Função de ordenação Stooge Sort para listas duplamente encadeadas
+void stoogeSort(ListaDuplamenteEncadeada* Ptl, Emoji *l, Emoji *h);
+// Implementa o algoritmo Stooge Sort para ordenar uma lista duplamente encadeada de emojis.
+// A ordenação é feita recursivamente em três partes da lista: início até um terço, primeiro terço até final, e início até dois terços.
+
+// Função para ordenar a lista usando Stooge Sort e exibir o resultado
+void ordenarLista(ListaDuplamenteEncadeada* Ptl);
+// Chama a função `stoogeSort` para ordenar a lista de emojis e, em seguida, exibe a lista ordenada.
+// Inclui mensagens antes e depois da ordenação e limpa a tela para melhor visualização.
+
+
+
+
+//funcoes.c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "funcoes.h"
+
+// Função para limpar a tela e aguardar a pressão de ENTER
+void limpar() {
+    // Solicita ao usuário para pressionar ENTER e limpar a tela
+    printf("\n\n%s🛑 %sPressione ENTER para continuar... %s🛑%s: ", LIGHT_CYAN, LIGHT_YELLOW, LIGHT_CYAN, RESET);
+    getchar();  // Espera a entrada do usuário
+    #ifdef _WIN32
+        system("cls");  // Comando específico para Windows para limpar a tela
+    #else
+        system("clear");  // Comando específico para Linux/Mac para limpar a tela
+    #endif
+}
+
+// Função para limpar o buffer de entrada
+void limparbuffer() {
+    int c;
+    // Remove todos os caracteres do buffer de entrada até o fim da linha ou o EOF
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+// Função para remover emojis com uma determinada popularidade
+Emoji* Remove_elem(ListaDuplamenteEncadeada* Ptl, int popularidade, int *flag) {
+    Emoji* atual = Ptl->cabeca;  // Inicia da cabeça da lista
+    Emoji* aux;
+    *flag = 0;  // Inicializa a flag de remoção como 0 (nenhum emoji removido ainda)
+
+    // Percorre a lista procurando emojis com a popularidade especificada
+    while (atual != NULL) {
+        if (atual->popularidade == popularidade) {
+            printf(BLUE "🗑️ Removendo emoji(s) com popularidade %d...\n\n" RESET, popularidade);
+            
+            // Ajusta os ponteiros da lista duplamente encadeada para remover o emoji
+            if (atual == Ptl->cabeca) {
+                Ptl->cabeca = atual->prox;  // Atualiza a cabeça da lista
+                if (Ptl->cabeca != NULL) {
+                    Ptl->cabeca->ant = NULL;  // Atualiza o ponteiro anterior da nova cabeça
+                }
+            } else {
+                atual->ant->prox = atual->prox;  // Atualiza o próximo do nó anterior
+                if (atual->prox != NULL) {
+                    atual->prox->ant = atual->ant;  // Atualiza o anterior do nó próximo
+                }
+            }
+            if (atual == Ptl->cauda) {
+                Ptl->cauda = atual->ant;  // Atualiza a cauda da lista
+            }
+
+            // Libera a memória do emoji removido
+            aux = atual;
+            atual = atual->prox;
+            free(aux);
+
+            *flag = 1;  // Atualiza a flag indicando que um emoji foi removido
+            printf(GREEN "✅ Emoji(s) com popularidade %d removido com sucesso!\n" RESET, popularidade);
+        } else {
+            atual = atual->prox;  // Move para o próximo emoji
+        }
+    }
+
+    // Mensagem se nenhum emoji com a popularidade especificada foi encontrado
+    if (*flag == 0) {
+        printf(YELLOW "❌ Nenhum emoji com popularidade %d encontrado para remoção.\n" RESET, popularidade);
+    }
+
+    return Ptl->cabeca;  // Retorna a nova cabeça da lista
+}
+
+// Função para consultar um emoji pelo símbolo
+int Consulta_elem(ListaDuplamenteEncadeada* Ptl, const char* emoji) {
+    Emoji* atual = Ptl->cabeca;  // Inicia da cabeça da lista
+
+    // Percorre a lista procurando o emoji com o símbolo especificado
+    while (atual != NULL && strcmp(atual->simbolo, emoji) != 0) {
+        atual = atual->prox;
+    }
+
+    // Verifica se o emoji foi encontrado
+    if (atual == NULL) {
+        printf("%s💔😢 %sEmoji não encontrado! %s😭💧 %s\n", RED, CYAN, BLUE, RESET);
+        return 0;  // Retorna 0 se o emoji não foi encontrado
+    } else {
+        printf("%s😊⭐ %sEmoji encontrado com sucesso! %s🎉⭐ %s\n\n", RED, GREEN, BLUE, RESET);
+        // Exibe detalhes do emoji encontrado
+        printf("%s🌟🔥 %sEmoji: |------[%s]------| %s🚀🌈 %s\n", RED, CYAN, atual->simbolo, MAGENTA, RESET);
+        printf("%s💥💫 %sPopularidade: %d %s⚡🌻 %s\n\n", YELLOW, BLUE, atual->popularidade, MAGENTA, RESET);
+        return 1;  // Retorna 1 se o emoji foi encontrado
+    }
+}
+
+// Função para liberar toda a memória usada pela lista
+Emoji* Libera_lista(ListaDuplamenteEncadeada* Ptl) {
+    Emoji* aux = Ptl->cabeca;  // Inicia da cabeça da lista
+
+    // Percorre a lista liberando a memória de cada emoji
+    while (aux != NULL) {
+        Emoji* temp = aux;
+        aux = aux->prox;
+        free(temp);
+    }
+
+    Ptl->cauda = NULL;  // Define a cauda como NULL após a liberação da memória
+    return Ptl->cabeca;  // Retorna a nova cabeça da lista (que deve ser NULL)
+}
+
+// Função para trocar os dados de dois emojis
+void trocar(Emoji* a, Emoji* b) {
+    int tempPopularidade = a->popularidade;  // Armazena a popularidade de 'a' temporariamente
+    char tempSimbolo[16];
+    strcpy(tempSimbolo, a->simbolo);  // Armazena o símbolo de 'a' temporariamente
+
+    a->popularidade = b->popularidade;  // Troca a popularidade de 'a' com 'b'
+    strcpy(a->simbolo, b->simbolo);  // Troca o símbolo de 'a' com 'b'
+
+    b->popularidade = tempPopularidade;  // Define a popularidade de 'b' para o valor original de 'a'
+    strcpy(b->simbolo, tempSimbolo);  // Define o símbolo de 'b' para o valor original de 'a'
+}
+
+// Função de ordenação Stooge Sort para a lista de emojis
+void stoogeSort(ListaDuplamenteEncadeada* Ptl, Emoji* l, Emoji* h) {
+    // Verifica se a lista é pequena demais para ordenar
+    // Caso base: a lista é vazia, possui um único elemento, ou l e h são o mesmo nó
+    // ou l e h são adjacentes (isto é, l está imediatamente antes de h)
+    if (l == NULL || h == NULL || l == h || l->prox == h) return;
+
+    // Verifica se é necessário trocar os emojis para garantir que 'l' esteja antes de 'h'
+    // Se a popularidade do emoji 'l' for maior do que a de 'h', troca os dados dos emojis
+    if (l->popularidade > h->popularidade) {
+        trocar(l, h);  // Chama a função 'trocar' para trocar os dados dos emojis
+    }
+
+    // Calcula o tamanho da sublista de emojis entre l e h
+    int tamanho = 1;  // Inicializa o tamanho com 1 porque l é um elemento
+    Emoji* temp = l;
+    // Percorre a sublista para contar o número total de elementos
+    while (temp != h) {
+        tamanho++;
+        temp = temp->prox;  // Move para o próximo elemento na lista
+    }
+
+    // Divide a lista em três partes e aplica o Stooge Sort recursivamente
+    // O algoritmo Stooge Sort divide a lista em três partes iguais e ordena as duas partes externas
+    // e a parte central
+    if (tamanho > 2) {  // Só divide se o tamanho da lista for maior que 2
+        int umTerco = tamanho / 3;  // Calcula o tamanho de um terço da lista
+
+        // Determina o início do primeiro terço da sublista
+        Emoji* primeiroTerco = l;
+        for (int i = 0; i < umTerco; i++) {
+            if (primeiroTerco != NULL) primeiroTerco = primeiroTerco->prox;  // Avança um terço da lista
+        }
+
+        // Determina o início do segundo terço da sublista, começando do final e indo para trás
+        Emoji* doisTerco = h;
+        for (int i = 0; i < umTerco; i++) {
+            if (doisTerco != NULL) doisTerco = doisTerco->ant;  // Retrocede um terço da lista
+        }
+
+        // Aplica o Stooge Sort recursivamente nas três partes da lista
+        // Ordena a sublista do início até o final do segundo terço
+        if (primeiroTerco != NULL) stoogeSort(Ptl, l, doisTerco);
+        // Ordena a sublista do início do primeiro terço até o final
+        if (primeiroTerco != NULL && doisTerco != NULL) stoogeSort(Ptl, primeiroTerco, h);
+        // Ordena novamente a sublista do início até o final do segundo terço
+        if (primeiroTerco != NULL) stoogeSort(Ptl, l, doisTerco);
+    }
+}
+
+
+// Função para ordenar a lista de emojis
+void ordenarLista(ListaDuplamenteEncadeada* Ptl) {
+    if (Ptl->cabeca && Ptl->cauda) {
+        printf(CYAN "🔄 Lista Inicial:\n" RESET);
+        ExibirLista(Ptl);  // Exibe a lista inicial (ainda a ser implementado)
+        printf("\n");
+
+        limpar();  // Limpa a tela
+
+        printf(YELLOW "🚀 Iniciando a ordenação com Stooge Sort...\n\n" RESET);
+        stoogeSort(Ptl, Ptl->cabeca, Ptl->cauda);  // Ordena a lista usando Stooge Sort
+
+        printf(GREEN "✅ Lista Ordenada:\n" RESET);
+        ExibirLista(Ptl);  // Exibe a lista ordenada (ainda a ser implementado)
+        printf("\n");
+    } else {
+        printf(RED "❌ A lista está vazia ou não está corretamente inicializada.\n" RESET);
+    }
+}
+
+
+/*
+Maria isso deve ser executado no power shell para rodar emoji
+cd C:\Importante\C (caminho até a pasta em que se encontra o .exe)
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
+.\programa.exe (nome do programa.exe)
+*/
+
+// Função para exibir mensagens de boas-vindas sobre uma lista de emojis
+void boasVindas() {
+    // Exibe uma borda superior da caixa de boas-vindas
+    printf("\n" GREEN BOLD "╔════════════════════════════════════════════════════════════════════════════╗" RESET "\n");
+    // Mensagem de boas-vindas com destaque para a "Lista de Emojis"
+    printf(GREEN BOLD "║" RESET " 🌟🎉 " BOLD GREEN "Bem-vindo à " RESET GREEN BOLD "Lista de Emojis do Zap" RESET GREEN BOLD " 🎉🌟 " GREEN BOLD "                              ║" RESET "\n");
+    // Mensagem sobre explorar emojis
+    printf(GREEN BOLD "║" RESET " 😀😍 " YELLOW "Explore uma seleção divertida de emojis para usar!" RESET GREEN BOLD " 😍😀 " GREEN BOLD "              ║" RESET "\n");
+    // Mensagem sobre escolher ícones e expressões
+    printf(GREEN BOLD "║" RESET " 🎨🖼️ " MAGENTA "Escolha entre uma variedade de ícones e expressões!" RESET GREEN BOLD " 🖼️🎨 " GREEN BOLD "             ║" RESET "\n");
+    // Mensagem sobre personalização com emojis
+    printf(GREEN BOLD "║" RESET " 🛠️✨ " GREEN "Personalize suas mensagens com emojis únicos!" RESET GREEN BOLD " ✨🛠️ " GREEN BOLD "                   ║" RESET "\n");
+    // Exibe uma borda inferior da caixa de boas-vindas
+    printf(GREEN BOLD "╚════════════════════════════════════════════════════════════════════════════╝" RESET "\n\n");
+}

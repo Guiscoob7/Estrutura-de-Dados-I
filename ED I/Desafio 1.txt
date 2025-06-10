@@ -1,0 +1,17 @@
+//Desafio 1
+
+#include <stdio.h>
+
+int main (){
+  int A, B;
+  printf("Valor de A: ");
+  scanf("%d", &A);
+  printf("Valor de B: ");
+  scanf("%d", &B);
+  printf("Antes da Troca:\nA: %d\nB: %d\n", A, B);
+  A = A + B;
+  B = A - B;
+  A = A - B;
+  printf("Depois da Troca:\nA: %d\nB: %d\n", A, B);
+  return 0;
+}

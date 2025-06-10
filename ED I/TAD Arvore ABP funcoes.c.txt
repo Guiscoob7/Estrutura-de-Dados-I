@@ -1,0 +1,321 @@
+//funcoes.c
+
+#include <stdio.h>          // Inclui a biblioteca padrão de entrada e saída 📚
+#include <stdlib.h>         // Inclui a biblioteca padrão de utilidades, como alocação de memória 🧰
+#include <time.h>           // Inclui a biblioteca para manipulação de tempo ⏰
+#include "funcoes.h"        // Inclui o cabeçalho com funções e definições personalizadas 📜
+
+// Função para limpar a tela e aguardar a pressão de ENTER 🚿⏳
+void limpar() 
+{
+    // 🛑 Solicita ao usuário para pressionar ENTER e limpar a tela
+    printf("\n\n%s🛑 %sPressione ENTER para continuar... %s🛑%s: ", LIGHT_CYAN, LIGHT_YELLOW, LIGHT_CYAN, RESET);
+    getchar();  // ⏳ Espera a entrada do usuário
+    #ifdef _WIN32
+        system("cls");  // 🖥️ Comando específico para Windows para limpar a tela
+    #else
+        system("clear");  // 🍏 Comando específico para Linux/Mac para limpar a tela
+    #endif
+}
+
+void limparImediato()
+{
+    #ifdef _WIN32
+        system("cls");  // 🖥️ Comando específico para Windows para limpar a tela
+    #else
+        system("clear");  // 🍏 Comando específico para Linux/Mac para limpar a tela
+    #endif
+}
+
+// Função para limpar o buffer de entrada 🧹
+void limparbuffer() 
+{
+    int c;
+    // 🧹 Remove todos os caracteres do buffer de entrada até o fim da linha ou o EOF
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+/*
+💻 Instruções de execução:
+cd C:\Importante\C (caminho até a pasta em que se encontra o .exe)
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
+.\programa.exe (nome do programa.exe)
+*/
+
+// Função para exibir mensagens de boas-vindas sobre uma fila da morte ⚰️💀
+void boasVindas() 
+{
+    // Exibe uma borda superior da caixa de boas-vindas 🌳🌱
+    printf("\n" GREEN BOLD "╔════════════════════════════════════════════════════════════════════════════╗" RESET "\n");
+    // 🌳🌟 Mensagem de boas-vindas com destaque para a "Árvore dos Sonhos"
+    printf(GREEN BOLD "║" RESET " 🌳🌟 " BOLD GREEN "Bem-vindo à " RESET GREEN BOLD "Árvore dos Sonhos" RESET GREEN BOLD " 🌟🌳 " GREEN BOLD "                                   ║" RESET "\n");
+    // 🌿⏳ Mensagem sobre a espera pela realização dos sonhos
+    printf(GREEN BOLD "║" RESET " 🌿⏳ " YELLOW "A realização dos sonhos leva tempo, aguarde sua vez na árvore!" RESET GREEN BOLD " ⏳🌿 " GREEN BOLD "  ║" RESET "\n");
+    // 🍂🌈 Mensagem sobre as oportunidades na vida
+    printf(GREEN BOLD "║" RESET " 🍂🌈 " MAGENTA "Cada sonho é uma folha, escolha sabiamente seu caminho!" RESET GREEN BOLD " 🌈🍂 " GREEN BOLD "         ║" RESET "\n");
+    // 🌸✨ Mensagem sobre o crescimento e florescimento dos sonhos
+    printf(GREEN BOLD "║" RESET " 🌸✨ " CYAN "Os sonhos crescem com cuidado e esperança!" RESET GREEN BOLD " ✨🌸 " GREEN BOLD "                      ║" RESET "\n");
+    // Exibe uma borda inferior da caixa de boas-vindas 🌳🌱
+    printf(GREEN BOLD "╚════════════════════════════════════════════════════════════════════════════╝" RESET "\n\n");
+    limpar();
+}
+
+// Função para exibir o menu principal com opções ⚰️🔪
+void exibeMenu() {
+    // 🌳 Exibe um menu temático de árvores binárias com emojis
+    printf(GREEN "\n🌳🌱 Bem-vindo ao Gerenciador da Árvore dos Sonhos 🌱🌳\n\n" RESET);
+    printf(YELLOW "📜 Escolha uma ação:\n" RESET);
+    printf(GREEN "🌿 [1] - Plantar Nota (Inserir Nó)\n" RESET);
+    printf(CYAN "🍂 [2] - Exibir Notas (Exibir Árvore)\n" RESET);
+    printf(ORANGE "🔍 [3] - Consultar Nota (Buscar Nó)\n" RESET);
+    printf(RED "🍁 [4] - Remover Nota (Remover Nó)\n" RESET);
+    printf(MAGENTA "🌼 [5] - Contar Notas (Contar Nós)\n" RESET);
+    printf(BLUE "🌳 [6] - Contar Folhas e Galhos (Nós Folhas e Não-Folhas)\n" RESET);
+    printf(YELLOW "🌈 [7] - Calcular Altura da Árvore\n" RESET);
+    printf(ORANGE "🏆 [8] - Calcular Maior Número da Árvore\n" RESET);  
+    printf(PURPLE "🌟 [9] - Espelhar Árvore\n" RESET);  
+    printf(PINK "🌸 [10] - Encerrar e Podar Árvore (Liberar Memória)\n" RESET);
+    printf(YELLOW "\n👉 Faça sua escolha: " RESET);
+}
+
+// Função para inserir um info na árvore binária 🌲
+Arvore* inserirNo(Arvore* raiz, int valor) {      
+    Arvore* novoNo = (Arvore*)malloc(sizeof(Arvore));  // Aloca memória para o nó 🧠
+    novoNo->valor = valor;                             // Atribui o valor ao novo nó 🏷️
+    novoNo->esquerdo = NULL;                           // Inicializa o filho esquerdo como NULL 🚫
+    novoNo->direito = NULL;                            // Inicializa o filho direito como NULL 🚫
+
+    if (raiz == NULL) {  // 🌱 Verifica se a árvore está vazia
+        raiz = novoNo;  // A nova raiz é o novo nó 🌳
+        printf(PINK "\n🌱 Inseri na raiz! info: %d\n" RESET, valor);  // 🌿 Mensagem de inserção na raiz
+        return raiz;  // 🌳 Retorna a nova raiz
+    }
+
+    Arvore* aux = raiz;  // 🔎 Variável auxiliar para percorrer a árvore
+
+    while (aux != NULL) {  // 🔄 Enquanto não chegar ao final da árvore
+        if (valor < aux->valor) {  // 🌿 Insere na subárvore esquerda se o valor for menor
+            if (aux->esquerdo == NULL) {  // 🌱 Se não houver filho à esquerda
+                aux->esquerdo = novoNo;  // 🌱 Cria um novo nó à esquerda
+                printf(LIGHT_GREEN "\n🌱 Inseri na esquerda! info: %d\n" RESET, valor);  // 🌿 Mensagem de inserção na esquerda
+                return raiz;  // 🔙 Retorna a árvore após inserção
+            }
+            aux = aux->esquerdo;  // 👈 Avança para o nó à esquerda
+        } else {  // 👉 Insere na subárvore direita se o valor for maior ou igual
+            if (aux->direito == NULL) {  // 🌱 Se não houver filho à direita
+                aux->direito = novoNo;  // 🌱 Cria um novo nó à direita
+                printf(LIGHT_BLUE "\n🌳 Inseri na direita! info: %d\n" RESET, valor);  // 🌳 Mensagem de inserção na direita
+                return raiz;  // 🔙 Retorna a árvore após inserção
+            }
+            aux = aux->direito;  // 👉 Avança para o nó à direita
+        }
+    }
+    return raiz;  // 🔙 Retorna a árvore completa após a inserção
+}
+
+// Função para exibir a árvore de forma vertical 🌳
+void exibirArvore(Arvore* raiz, int espacos) {
+    if (raiz == NULL) {  // 🌸 Verifica se a árvore está vazia
+        printf(PINK "\n🌸 A árvore está vazia! 🌸\n" RESET);  // 🌼 Mensagem informativa
+        return;  // 🚪 Termina a execução
+    }
+
+    espacos += 10;  // 🔼 Aumenta o espaço para melhor visualização
+
+    if (raiz->direito != NULL)  // 🔍 Se houver filho à direita
+        exibirArvore(raiz->direito, espacos);  // 🌳 Primeiro, imprime a subárvore direita
+
+    printf("\n");  // 📏 Nova linha para separar os níveis
+    for (int i = 10; i < espacos; i++) {
+        printf(" "); // 🌫️ Imprime espaços em branco
+    }
+    
+    printf(LIME "🌲 %d 🌲\n" RESET, raiz->valor); // 🌳 Imprime o valor do nó com cor 🌳
+
+    if (raiz->esquerdo != NULL)  // 🔍 Se houver filho à esquerda
+        exibirArvore(raiz->esquerdo, espacos);  // 🌳 Depois, imprime a subárvore esquerda
+}
+
+// Função para remover um nó da árvore 🔪
+Arvore* removerNo(Arvore* raiz, int valor) {
+    Arvore* atual = raiz;    // 🔎 Ponteiro para percorrer a árvore
+    Arvore* pai = NULL;      // 👨‍👦 Armazena o pai do nó atual
+
+    // Encontrar o nó a ser removido e seu pai 🔍
+    while (atual != NULL && atual->valor != valor) {  // 🔄 Enquanto não encontrar o nó
+        pai = atual;  // 👨‍👦 Armazena o pai do nó atual
+        if (valor < atual->valor)  // 🌿 Se o valor for menor, vai para a subárvore esquerda
+            atual = atual->esquerdo;  // 🌲 Move-se para a esquerda
+        else  // 👉 Se o valor for maior, vai para a subárvore direita
+            atual = atual->direito;   // 🌳 Move-se para a direita
+    }
+
+    // Caso o nó não seja encontrado ❌
+    if (atual == NULL) {
+        printf(RED "\n🚫 Valor %d não encontrado na árvore.\n" RESET, valor);  // 🌼 Mensagem de valor não encontrado
+        return raiz;  // 🔙 Retorna a árvore original
+    }
+
+    // Caso 1: O nó a ser removido não tem filhos (é uma folha) 🌿
+    if (atual->esquerdo == NULL && atual->direito == NULL) {  // 🌳 Verifica se é folha
+        if (pai == NULL)  // 🌱 O nó a ser removido é a raiz
+            return NULL;  // Retorna NULL se a árvore ficar vazia
+        if (pai->esquerdo == atual)  // 🌿 Se o nó a ser removido é o filho esquerdo
+            pai->esquerdo = NULL;  // Desconecta o filho esquerdo
+        else  // 🌳 Se o nó a ser removido é o filho direito
+            pai->direito = NULL;  // Desconecta o filho direito
+        free(atual);  // 🗑️ Libera o nó
+    }
+    // Caso 2: O nó a ser removido tem um único filho (esquerda ou direita) 🌱
+    else if (atual->esquerdo == NULL || atual->direito == NULL) {  // 🌿 Verifica se tem um único filho
+        Arvore* filho = (atual->esquerdo != NULL) ? atual->esquerdo : atual->direito;  // 🌳 Define o filho
+
+        if (pai == NULL)  // 🌱 Se o nó a ser removido é a raiz
+            raiz = filho;  // Atualiza a raiz
+        else if (pai->esquerdo == atual)  // 🌿 Se o nó a ser removido é o filho esquerdo
+            pai->esquerdo = filho;  // Atualiza o ponteiro do pai
+        else  // 🌳 Se o nó a ser removido é o filho direito
+            pai->direito = filho;  // Atualiza o ponteiro do pai
+
+        free(atual);  // 🗑️ Libera o nó atual
+    }
+    // Caso 3: O nó a ser removido tem dois filhos 🌳
+    else {
+        // Encontrar o sucessor (menor valor da subárvore direita) 🌿
+        Arvore* sucessor = atual->direito;  // 🌳 Inicia com o filho direito
+        Arvore* paiSucessor = atual;  // 👨‍👦 Armazena o pai do sucessor
+
+        while (sucessor->esquerdo != NULL) {  // 🔄 Enquanto houver filho à esquerda
+            paiSucessor = sucessor;  // 👨‍👦 Atualiza o pai do sucessor
+            sucessor = sucessor->esquerdo;  // 🌿 Vai até o menor valor à esquerda
+        }
+
+        // Substituir o valor do nó a ser removido pelo valor do sucessor 🌱
+        atual->valor = sucessor->valor;  // 🌳 Atualiza o valor do nó atual
+
+        // Ajustar os ponteiros do sucessor 🔄
+        if (paiSucessor->esquerdo == sucessor)  // 🌿 Se o sucessor é o filho esquerdo
+            paiSucessor->esquerdo = sucessor->direito;  // Desconecta o sucessor
+        else  // 🌳 Se o sucessor é o filho direito
+            paiSucessor->direito = sucessor->direito;  // Desconecta o sucessor
+
+        free(sucessor);  // 🗑️ Remove o sucessor
+    }
+    printf(LIME "\n🌳 Nota removido da árvore com sucesso! ✔️\n" RESET);  // ✅ Confirmação de remoção
+    return raiz;  // 🔙 Retorna a árvore após remoção
+}
+
+// Função de busca iterativa 🔍
+int buscarNo(Arvore* raiz, int valor) {
+    Arvore* atual = raiz;  // 🔎 Ponteiro para percorrer a árvore
+    
+    // Percorre a árvore enquanto não encontra o valor ou atinge um nó nulo 🔄
+    while (atual != NULL) {  // 🔍 Enquanto não for nulo
+        if (valor == atual->valor) {  // ✔️ Se o valor é encontrado
+            printf(GREEN "\n✔️ Valor %d encontrado na árvore!\n" RESET, valor);  // 🌳 Mensagem de valor encontrado
+            return 1;  // 🌼 Retorna 1 se encontrado
+        } else if (valor < atual->valor) {  // 🌿 Se o valor buscado for menor
+            atual = atual->esquerdo;  // 🌲 Move-se para a esquerda
+        } else {  // 👉 Se o valor buscado for maior
+            atual = atual->direito;  // 🌳 Move-se para a direita
+        }
+    }
+
+    printf(RED "\n🚫 Valor %d não encontrado na árvore.\n" RESET, valor);  // 🌼 Mensagem de valor não encontrado
+    return -1;  // 🌸 Retorna -1 se não encontrado
+}
+
+// Função para contar o número total de nós na árvore 🌳
+int contagemNos(Arvore* raiz) {
+    int cont = 0;  // Inicializa o contador
+    if (raiz != NULL) {  // 🌱 Se a raiz não for nula
+        cont += contagemNos(raiz->esquerdo);  // 🌿 Visita a subárvore esquerda e soma os nós
+        cont++;  // 🌳 Conta o nó atual
+        cont += contagemNos(raiz->direito);   // 🌳 Visita a subárvore direita e soma os nós
+    }
+    return cont;  // 🔙 Retorna a contagem total de nós
+}
+
+// Função para contar folhas e nós que não são folhas (internos) 🍂🌳
+int contagemFolhasNaoFolhas(Arvore* raiz, int *qtdFolhas) {
+    int qtdNaoFolhas = 0;  // Inicializa a contagem de nós não-folhas
+    if (raiz != NULL) {  // 🌱 Se a raiz não for nula
+        qtdNaoFolhas += contagemFolhasNaoFolhas(raiz->esquerdo, qtdFolhas);  // 🌿 Subárvore esquerda
+        if (raiz->esquerdo == NULL && raiz->direito == NULL) {
+            (*qtdFolhas)++;  // 🌼 Incrementa se for uma folha
+        } else {
+            qtdNaoFolhas++;  // 🌳 Incrementa se for um nó interno (não folha)
+        }
+        qtdNaoFolhas += contagemFolhasNaoFolhas(raiz->direito, qtdFolhas);  // 🌳 Subárvore direita
+    }
+    return qtdNaoFolhas;  // 🔙 Retorna a contagem de nós não-folhas
+}
+
+// Função para calcular a altura da árvore 🌲
+int alturaArvore(Arvore* raiz) {
+    if (raiz == NULL) {  // 🌱 Se a raiz for nula
+        return -1;  // 🔙 Retorna -1
+    } else {
+        int alturaEsquerda = alturaArvore(raiz->esquerdo);  // 🌿 Calcula a altura da subárvore esquerda
+        int alturaDireita = alturaArvore(raiz->direito);    // 🌳 Calcula a altura da subárvore direita
+        return (alturaEsquerda > alturaDireita) ? alturaEsquerda + 1 : alturaDireita + 1;  // 🔙 Retorna a maior altura
+    }
+}
+
+// Função para encontrar o maior valor na árvore 🌳
+int maiorArvore(Arvore* raiz) {
+    if (raiz == NULL)  // 🌱 Se a raiz for nula
+        return -1;  // 🔙 Retorna -1
+
+    Arvore* atual = raiz;  // 🔎 Inicia com a raiz
+
+    while (atual->direito != NULL)  // 🔄 Enquanto houver filho à direita
+        atual = atual->direito;  // 👉 Move-se para o filho direito
+
+    return atual->valor;  // 🔙 Retorna o maior valor encontrado
+}
+
+// Função para inverter a árvore (espelho) 🔄🌲
+void espelhoArvore(Arvore* raiz) {
+    if (raiz != NULL) {  // 🌱 Se a raiz não for nula
+        Arvore* temp = raiz->esquerdo;  // 🏷️ Armazena o filho esquerdo temporariamente
+        raiz->esquerdo = raiz->direito;  // 🌳 Troca o filho esquerdo com o direito
+        raiz->direito = temp;  // 🌲 Atribui o filho esquerdo temporário ao direito
+
+        espelhoArvore(raiz->esquerdo);  // 🌿 Inverte a subárvore esquerda
+        espelhoArvore(raiz->direito);    // 🌳 Inverte a subárvore direita
+    }
+}
+
+// Função para liberar a árvore da memória 🗑️
+Arvore* liberarArvore(Arvore* raiz) {
+    Arvore* atual = raiz;  // 🔎 Inicia com a raiz
+
+    while (atual != NULL) {  // 🔄 Enquanto não for nulo
+        // Se o nó tem um filho direito, movemos o filho para ser a nova raiz temporária 🔄
+        if (atual->direito != NULL) {
+            Arvore* temp = atual->direito;  // 🏷️ Armazena o filho direito temporariamente
+            atual->direito = NULL;  // 🚫 Desconecta o filho direito
+            raiz = temp;  // 🔄 Atualiza a raiz para o filho direito
+        } 
+        // Se o nó tem um filho esquerdo, movemos o filho esquerdo para ser a nova raiz temporária 🌱
+        else if (atual->esquerdo != NULL) {
+            Arvore* temp = atual->esquerdo;  // 🏷️ Armazena o filho esquerdo temporariamente
+            atual->esquerdo = NULL;  // 🚫 Desconecta o filho esquerdo
+            raiz = temp;  // 🔄 Atualiza a raiz para o filho esquerdo
+        } 
+        // Se não há filhos, liberamos o nó atual e avançamos 🗑️
+        else {
+            free(atual);  // 🗑️ Libera o nó atual
+            raiz = NULL;  // 🌱 Atualiza a raiz para NULL após liberar todos os nós
+            break;  // 🔚 Quando a árvore estiver vazia, paramos
+        }
+        atual = raiz;  // 🔄 Atualiza o ponteiro atual para a nova raiz
+    }
+    return raiz;  // 🔙 Retorna a árvore liberada
+}
+
+// Gera um número aleatório entre min e max 🎲🔢
+int gerarNumeroAleatorio(int min, int max) {
+    return rand() % (max - min + 1) + min;  // 🔄 Gera um número aleatório no intervalo
+}

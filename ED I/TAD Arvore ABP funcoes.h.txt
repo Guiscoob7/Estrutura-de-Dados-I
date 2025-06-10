@@ -1,0 +1,74 @@
+// funcoes.h
+
+/* Instruções 🌟
+   Implemente o TAD Árvore Binária de Pesquisa 🌿 
+   Além das funções básicas (Criar, Inserir, Remover, Buscar) 🛠️, sua Estrutura de dados deve ter:
+   - Uma função que conta o número de nós da árvore 🌱;
+   - Uma função que conta o número de nós não-folha da árvore 🍃;
+   - Uma função que conta o número de nós folha da árvore 🍂;
+   - Uma função que calcula a altura da árvore 📏;
+   - Uma função para achar o maior número da árvore 📈;
+   - Uma função que obtém o espelho de uma árvore, ou seja, troca a subárvore direita pela subárvore esquerda de todos os nós da árvore 🌌:
+*/
+
+#ifndef FUNCOES_H
+#define FUNCOES_H
+
+// 🎨 Definindo códigos de cor ANSI para formatação do texto no terminal 🌈
+// Estes códigos são usados para alterar a cor e estilo do texto exibido no terminal 💬
+#define RESET "\033[0m"           // Código para resetar as configurações de cor e estilo para o padrão ✨
+#define BOLD "\033[1m"            // Negrito 🔥
+#define UNDERLINE "\033[4m"       // Sublinhado ✍️
+#define GREEN "\033[32m"          // Verde 🌿
+#define YELLOW "\033[33m"         // Amarelo 🌟
+#define CYAN "\033[36m"           // Ciano 💧
+#define MAGENTA "\033[35m"        // Magenta 🎨
+#define RED "\033[31m"            // Vermelho 🚨
+#define BLUE "\033[34m"           // Azul 🌊
+#define LIGHT_BLUE  "\033[94m"    // Azul claro 💎
+#define LIGHT_YELLOW  "\033[93m"  // Amarelo claro 🌼
+#define LIGHT_CYAN   "\033[96m"   // Ciano claro 🌀
+#define LIGHT_GREEN   "\033[92m"  // Verde claro 🌱     
+#define PURPLE "\x1B[35m"         // Roxo 🍇
+#define ORANGE "\033[38;5;208m"   // Laranja 🍊
+#define DOURADO "\033[1;33m"      // Dourado 🏆
+#define BLACK "\033[0;30m"        // Preto ⚫
+#define LIME "\x1b[38;5;154m"     // Verde limão 🍈
+#define AQUA "\x1b[38;5;51m"      // Azul água 🌊
+#define PINK "\x1b[38;5;200m"     // Rosa 💖
+
+//////////////////////
+// Árvore Binária 🌳//
+//////////////////////
+
+// Definição da struct de um nó da árvore 🌳
+typedef struct arvore {
+    int valor;               // Valor armazenado no nó 🔢
+    struct arvore* esquerdo; // Ponteiro para o nó à esquerda ↖️
+    struct arvore* direito;  // Ponteiro para o nó à direita ↗️
+} Arvore;
+
+// Funções relacionadas à árvore binária 🌿
+Arvore* inserirNo(Arvore* raiz, int valor);          // Insere um novo nó na árvore ➕
+void exibirArvore(Arvore* raiz, int espaco);         // Exibe os nós da árvore 📊
+Arvore* removerNo(Arvore* raiz, int valor);          // Remove um nó da árvore ➖
+int buscarNo(Arvore* raiz, int valor);               // Busca um nó na árvore 🔍
+Arvore* liberarArvore(Arvore* raiz);                  // Libera a memória da árvore 🗑️
+int contagemNos(Arvore* raiz);                        // Conta o número total de nós na árvore 🌱
+int contagemFolhasNaoFolhas(Arvore* raiz, int *qtdFolhas); // Conta folhas e nós não-folha 🍃
+int alturaArvore(Arvore* raiz);                       // Calcula a altura da árvore 📏
+int maiorArvore(Arvore* raiz);                        // Acha o maior valor da árvore 📈
+void espelhoArvore(Arvore* raiz);                     // Troca subárvores para obter o espelho da árvore 🌌
+
+//////////////////////
+// Funções Gerais 🌍//
+//////////////////////
+
+void limpar();              // ✨ Função para limpar a tela ou interface 🖥️
+void limparImediato();     // 🚀 Limpa a tela imediatamente
+void limparbuffer();        // 🧹 Função para limpar o buffer de entrada 🧼
+void boasVindas();         // 🎉 Exibe mensagem de boas-vindas 🌈
+void exibeMenu();          // 📜 Exibe o menu principal de opções 📋
+int gerarNumeroAleatorio(); // 🎲 Gera um número aleatório 🎰
+
+#endif // FUNCOES_H

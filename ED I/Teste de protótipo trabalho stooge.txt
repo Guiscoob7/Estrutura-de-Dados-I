@@ -1,0 +1,270 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Definindo códigos de cor ANSI para formatação do texto no terminal
+#define RESET "\033[0m"           
+#define BOLD "\033[1m"            
+#define UNDERLINE "\033[4m"       
+#define GREEN "\033[32m"          
+#define YELLOW "\033[33m"         
+#define CYAN "\033[36m"           
+#define MAGENTA "\033[35m"        
+#define RED "\033[31m"            
+#define BLUE "\033[34m"           
+#define LIGHT_BLUE  "\033[94m"    
+#define LIGHT_YELLOW  "\033[93m"  
+#define LIGHT_CYAN   "\033[96m"   
+#define LIGHT_GREEN   "\033[92m"  
+#define PURPLE "\x1B[35m"         
+#define ORANGE "\033[38;5;208m"   
+#define DOURADO "\033[1;33m"      
+#define BLACK "\033[0;30m"        
+
+typedef struct Emoji {
+    char simbolo[10];
+    int popularidade;
+    struct Emoji* prox;
+    struct Emoji* ant;
+} Emoji;
+
+typedef struct ListaDuplamenteEncadeada {
+    Emoji* cabeca;
+    Emoji* cauda;
+} ListaDuplamenteEncadeada;
+
+void limpar() {
+    printf("\n\n%s🛑 %sPressione ENTER para continuar... %s🛑%s: ", LIGHT_CYAN, LIGHT_YELLOW, LIGHT_CYAN, RESET);
+    getchar();
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
+void limparbuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+Emoji* criarEmoji(const char* simbolo, int popularidade) {
+    Emoji* novo = (Emoji*)malloc(sizeof(Emoji));
+    if (novo != NULL) {
+        strcpy(novo->simbolo, simbolo);
+        novo->popularidade = popularidade;
+        novo->prox = NULL;
+        novo->ant = NULL;
+    }
+    return novo;
+}
+
+void adicionarEmoji(ListaDuplamenteEncadeada* lista, const char* simbolo, int popularidade) {
+    Emoji* novo = criarEmoji(simbolo, popularidade);
+    if (lista->cauda == NULL) {
+        lista->cabeca = novo;
+        lista->cauda = novo;
+    } else {
+        lista->cauda->prox = novo;
+        novo->ant = lista->cauda;
+        lista->cauda = novo;
+    }
+}
+
+void imprimirLista(ListaDuplamenteEncadeada* lista) {
+    Emoji* atual = lista->cabeca;
+    while (atual != NULL) {
+        printf("Emoji: %s | Popularidade: %d\n", atual->simbolo, atual->popularidade);
+        atual = atual->prox;
+    }
+}
+
+Emoji* Remove_elem(ListaDuplamenteEncadeada* Ptl, int popularidade, int *flag) {
+    Emoji* atual = Ptl->cabeca;
+    Emoji* aux;
+    *flag = 0;
+
+    while (atual != NULL) {
+        if (atual->popularidade == popularidade) {
+            printf(BLUE "🗑️ Removendo emoji(s) com popularidade %d...\n\n" RESET, popularidade);
+            if (atual == Ptl->cabeca) {
+                Ptl->cabeca = atual->prox;
+                if (Ptl->cabeca != NULL) {
+                    Ptl->cabeca->ant = NULL;
+                }
+            } else {
+                atual->ant->prox = atual->prox;
+                if (atual->prox != NULL) {
+                    atual->prox->ant = atual->ant;
+                }
+            }
+            if (atual == Ptl->cauda) {
+                Ptl->cauda = atual->ant;
+            }
+
+            aux = atual;
+            atual = atual->prox;
+            free(aux);
+
+            *flag = 1;
+            printf(GREEN "✅ Emoji(s) com popularidade %d removido com sucesso!\n" RESET, popularidade);
+        } else {
+            atual = atual->prox;
+        }
+    }
+
+    if (*flag == 0) {
+        printf(YELLOW "❌ Nenhum emoji com popularidade %d encontrado para remoção.\n" RESET, popularidade);
+    }
+
+    return Ptl->cabeca;
+}
+
+int Consulta_elem(ListaDuplamenteEncadeada* Ptl, const char* emoji) {
+    Emoji* atual = Ptl->cabeca;
+
+    while (atual != NULL && strcmp(atual->simbolo, emoji) != 0) {
+        atual = atual->prox;
+    }
+
+    if (atual == NULL) {
+        printf("%s💔😢 %sEmoji não encontrado! %s😭💧 %s\n", RED, CYAN, BLUE, RESET);
+        return 0;
+    } else {
+        printf("%s😊⭐ %sEmoji encontrado com sucesso! %s🎉⭐ %s\n\n", RED, GREEN, BLUE, RESET);
+        printf("%s🌟🔥 %sEmoji: |------[%s]------| %s🚀🌈 %s\n", RED, CYAN, atual->simbolo, MAGENTA, RESET);
+        printf("%s💥💫 %sPopularidade: %d %s⚡🌻 %s\n\n", YELLOW, BLUE, atual->popularidade, MAGENTA, RESET);
+        return 1;
+    }
+}
+
+Emoji* Libera_lista(ListaDuplamenteEncadeada* Ptl) {
+    Emoji* aux = Ptl->cabeca;
+
+    while (aux != NULL) {
+        Emoji* temp = aux;
+        aux = aux->prox;
+        free(temp);
+    }
+
+    Ptl->cauda = NULL;
+    return Ptl->cabeca;
+}
+
+void trocar(Emoji* a, Emoji* b) {
+    int tempPopularidade = a->popularidade;
+    char tempSimbolo[10];
+    strcpy(tempSimbolo, a->simbolo);
+
+    a->popularidade = b->popularidade;
+    strcpy(a->simbolo, b->simbolo);
+
+    b->popularidade = tempPopularidade;
+    strcpy(b->simbolo, tempSimbolo);
+}
+
+void stoogeSort(ListaDuplamenteEncadeada* Ptl, Emoji* l, Emoji* h) {
+    if (l == NULL || h == NULL || l == h || l->prox == h) return;
+
+    if (l->popularidade > h->popularidade) {
+        trocar(l, h);
+    }
+
+    int tamanho = 1;
+    Emoji* temp = l;
+    while (temp != h) {
+        tamanho++;
+        temp = temp->prox;
+    }
+
+    if (tamanho > 2) {
+        int umTerco = tamanho / 3;
+
+        Emoji* primeiroTerco = l;
+        for (int i = 0; i < umTerco; i++) {
+            if (primeiroTerco != NULL) primeiroTerco = primeiroTerco->prox;
+        }
+
+        Emoji* doisTerco = h;
+        for (int i = 0; i < umTerco; i++) {
+            if (doisTerco != NULL) doisTerco = doisTerco->ant;
+        }
+
+        if (primeiroTerco != NULL) stoogeSort(Ptl, l, doisTerco);
+        if (primeiroTerco != NULL && doisTerco != NULL) stoogeSort(Ptl, primeiroTerco, h);
+        if (primeiroTerco != NULL) stoogeSort(Ptl, l, doisTerco);
+    }
+}
+
+void ordenarLista(ListaDuplamenteEncadeada* Ptl) {
+    if (Ptl->cabeca && Ptl->cauda) {
+        printf(CYAN "🔄 Lista Inicial:\n" RESET);
+        imprimirLista(Ptl);
+        printf("\n");
+
+        limpar();
+
+        printf(YELLOW "🚀 Iniciando a ordenação com Stooge Sort...\n\n" RESET);
+        stoogeSort(Ptl, Ptl->cabeca, Ptl->cauda);
+
+        printf(GREEN "✅ Lista Ordenada:\n" RESET);
+        imprimirLista(Ptl);
+        printf("\n");
+    } else {
+        printf(RED "❌ A lista está vazia ou não está corretamente inicializada.\n" RESET);
+    }
+}
+
+// Função para exibir mensagens de boas-vindas sobre uma lista de emojis
+void boasVindas() {
+    // Exibe uma borda superior da caixa de boas-vindas
+    printf("\n" GREEN BOLD "╔════════════════════════════════════════════════════════════════════════════╗" RESET "\n");
+    // Mensagem de boas-vindas com destaque para a "Lista de Emojis"
+    printf(GREEN BOLD "║" RESET " 🌟🎉 " BOLD GREEN "Bem-vindo à " RESET GREEN BOLD "Lista de Emojis do Zap" RESET GREEN BOLD " 🎉🌟 " GREEN BOLD "                              ║" RESET "\n");
+    // Mensagem sobre explorar emojis
+    printf(GREEN BOLD "║" RESET " 😀😍 " YELLOW "Explore uma seleção divertida de emojis para usar!" RESET GREEN BOLD " 😍😀 " GREEN BOLD "              ║" RESET "\n");
+    // Mensagem sobre escolher ícones e expressões
+    printf(GREEN BOLD "║" RESET " 🎨🖼️ " MAGENTA "Escolha entre uma variedade de ícones e expressões!" RESET GREEN BOLD " 🖼️🎨 " GREEN BOLD "             ║" RESET "\n");
+    // Mensagem sobre personalização com emojis
+    printf(GREEN BOLD "║" RESET " 🛠️✨ " GREEN "Personalize suas mensagens com emojis únicos!" RESET GREEN BOLD " ✨🛠️ " GREEN BOLD "                   ║" RESET "\n");
+    // Exibe uma borda inferior da caixa de boas-vindas
+    printf(GREEN BOLD "╚════════════════════════════════════════════════════════════════════════════╝" RESET "\n\n");
+}
+
+int main() {
+    ListaDuplamenteEncadeada* lista = (ListaDuplamenteEncadeada*)malloc(sizeof(ListaDuplamenteEncadeada));
+    if (lista == NULL) {
+        printf(RED "❌ Erro ao alocar memória para a lista.\n" RESET);
+        return 1;
+    }
+
+    lista->cabeca = NULL;
+    lista->cauda = NULL;
+
+    boasVindas();
+
+    adicionarEmoji(lista, "😀", 10);
+    adicionarEmoji(lista, "😂", 20);
+    adicionarEmoji(lista, "🥺", 5);
+    adicionarEmoji(lista, "😎", 15);
+    adicionarEmoji(lista, "🥳", 25);
+
+    ordenarLista(lista);
+
+    const char* emojiParaConsultar = "😂";
+    printf(CYAN "\n🔍 Consultando o emoji: %s\n" RESET, emojiParaConsultar);
+    Consulta_elem(lista, emojiParaConsultar);
+
+    int flag;
+    int popularidadeParaRemover = 15;
+    printf(CYAN "\n🗑️ Removendo emojis com popularidade: %d\n" RESET, popularidadeParaRemover);
+    Remove_elem(lista, popularidadeParaRemover, &flag);
+
+    printf(CYAN "\n🔄 Lista após remoção:\n" RESET);
+    imprimirLista(lista);
+
+    Libera_lista(lista);
+    free(lista);
+
+    return 0;
+}

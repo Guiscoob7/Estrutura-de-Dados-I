@@ -1,0 +1,91 @@
+// funcoes.c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include "funcoes.h"
+
+// Função para limpar a tela e aguardar a pressão de ENTER 🚿⏳
+void limpar() 
+{
+    printf("\n\n%s🛑 %sPressione ENTER para continuar... %s🛑%s: ", LIGHT_CYAN, LIGHT_YELLOW, LIGHT_CYAN, RESET);
+    getchar();  // ⏳ Espera a entrada do usuário
+    #ifdef _WIN32
+        system("cls");  // 🖥️ Comando específico para Windows para limpar a tela
+    #else
+        system("clear");  // 🍏 Comando específico para Linux/Mac para limpar a tela
+    #endif
+}
+
+// Função para limpar o buffer de entrada 🧹
+void limparbuffer() 
+{
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);  // 🧽 Limpa o buffer até encontrar o fim da linha ou o final do arquivo
+}
+
+// Função para exibir mensagens de boas-vindas sobre árvore binária 🌳🌿
+void boasVindas() 
+{
+    printf("\n" PINK BOLD "╔════════════════════════════════════════════════════════════════════════════╗" RESET "\n");
+    printf(PINK BOLD "║" RESET " 🌟✨ " BOLD PINK "Bem-vindo à " RESET PINK BOLD "Árvore Binária de Busca" RESET PINK BOLD " ✨🌟 " PINK BOLD "                          ║" RESET "\n");
+    printf(PINK BOLD "║" RESET " 🌳🌿 " LIGHT_YELLOW "Cada nó da árvore guarda um valor único e organizado!" RESET PINK BOLD " 🌿🌳 " PINK BOLD "       ║" RESET "\n");
+    printf(PINK BOLD "║" RESET " 🌲🌀 " MAGENTA "Explore a árvore, insira, busque e descubra!" RESET PINK BOLD " 🌀🌲 " PINK BOLD "                      ║" RESET "\n");
+    printf(PINK BOLD "║" RESET " 🍃🔍 " GREEN "A eficiência está nas suas ramificações! Vamos começar?" RESET PINK BOLD " 🔍🍃 " PINK BOLD "           ║" RESET "\n");
+    printf(PINK BOLD "╚════════════════════════════════════════════════════════════════════════════╝" RESET "\n\n");
+
+    limpar();  // 🚿 Limpa a tela após a mensagem de boas-vindas
+}
+
+// Função para criar uma árvore binária 🌳
+No* criarArvore(int valor)
+{
+    return criarNo(valor);  // 🌱 Cria o nó raiz da árvore
+}
+
+// Função para criar um novo nó 🌿
+No* criarNo (int valor)
+{
+    No* novoNo = (No*) malloc(sizeof(No));  // 💾 Aloca memória para o novo nó
+    if (novoNo == NULL)  // 🚨 Verifica se a memória foi alocada com sucesso
+    {
+        printf(RED BOLD "❌ Erro ao alocar memória!" RESET);
+        exit(EXIT_FAILURE);  // ❌ Encerra o programa em caso de erro
+    }
+    novoNo->info = valor;
+    novoNo->direita = NULL;  // 👉 Inicializa o ponteiro da direita como NULL
+    novoNo->esquerda = NULL;  // 👈 Inicializa o ponteiro da esquerda como NULL
+    return novoNo;  // 🌿 Retorna o novo nó
+}
+
+// Função para inserir um valor na árvore binária 🌲
+No* inserir (No* arvore, int valor)
+{      
+    No* aux = arvore;  // 🔎 Variável auxiliar para percorrer a árvore
+
+    while (aux != NULL)
+    {
+        if (valor < aux->info)  // 🌿 Insere na subárvore esquerda se o valor for menor
+        {
+            if (aux->esquerda == NULL)
+            {
+                aux->esquerda = criarNo(valor);  // 🌱 Cria um novo nó na esquerda
+                printf(LIGHT_GREEN "🌱 Inseri na esquerda! Valor: %d\n" RESET, valor);  // 🌿 Mensagem de inserção na esquerda
+                return arvore;  // 🔙 Retorna a árvore após inserção
+            }
+            aux = aux->esquerda;  // 👈 Avança para o nó à esquerda
+        }
+        else  // 👉 Insere na subárvore direita se o valor for maior ou igual
+        {
+            if (aux->direita == NULL)
+            {
+                aux->direita = criarNo(valor);  // 🌱 Cria um novo nó na direita
+                printf(LIGHT_BLUE "🌳 Inseri na direita! Valor: %d\n" RESET, valor);  // 🌳 Mensagem de inserção na direita
+                return arvore;  // 🔙 Retorna a árvore após inserção
+            }
+            aux = aux->direita;  // 👉 Avança para o nó à direita
+        }
+    }
+    return arvore;  // 🔙 Retorna a árvore completa após a inserção
+}

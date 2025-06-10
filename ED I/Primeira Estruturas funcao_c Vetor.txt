@@ -1,0 +1,193 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "funcoes.h"
+
+// Função para liberar a memória alocada para o vetor
+void liberar(int *vetor) {
+    free(vetor);
+}
+
+// Função para limpar a tela e esperar o usuário pressionar ENTER
+void limpar() {
+    printf("\n\nPressione ENTER para continuar...");
+    getchar();
+    printf("\e[H\e[2J"); // Limpa a tela no terminal (funciona em sistemas Unix)
+}
+
+// Função para limpar o buffer do teclado
+void limparbuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+// Função para exibir os elementos do vetor
+// 'op' indica o tipo do vetor (1 para par, 2 para ímpar)
+void exibir(int *vetor, int tam, int op) {
+    if (tam == 0) {
+        printf("\nVetor vazio!");
+        return;
+    }
+    // Exibe o título conforme o tipo do vetor
+    printf("\n%s", (op == 1) ? "Vetor Par: " : "Vetor Impar: ");
+    for (int i = 0; i < tam; i++) {
+        printf("%d ", vetor[i]);
+    }
+    printf("\n");
+}
+
+// Função para inserir um elemento no vetor
+void inserir(int **vetor, int *tam, int valor, int *capacidade) {
+    // Se o vetor é NULL, aloca a memória inicial
+    if (*vetor == NULL) {
+        *capacidade = 10; // Definindo capacidade inicial
+        *vetor = malloc(*capacidade * sizeof(int));
+        if (*vetor == NULL) {
+            printf("Erro ao alocar memória\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    // Verifica se é necessário realocar a memória
+    if (*tam >= *capacidade) {
+        *capacidade *= 2; // Dobra a capacidade
+        *vetor = realloc(*vetor, *capacidade * sizeof(int));
+        if (*vetor == NULL) {
+            printf("Erro ao realocar memória\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    // Insere o valor no vetor e atualiza o tamanho
+    (*vetor)[*tam] = valor;
+    (*tam)++;
+
+    // Exibe o vetor atualizado
+    int op = (valor % 2 == 0) ? 1 : 2;
+    exibir(*vetor, *tam, op);
+    printf("\n\nElemento inserido com sucesso!");
+    limpar();
+}
+
+// Função para remover um elemento do vetor
+void remover(int **vetor, int *tam, int valor) {
+    int i, j;
+
+    // Procura o elemento a ser removido
+    for (i = 0; i < *tam; i++) {
+        if ((*vetor)[i] == valor) {
+            break;
+        }
+    }
+
+    // Se o elemento não foi encontrado, exibe mensagem de erro
+    if (i == *tam) {
+        printf("\nValor não encontrado!\n");
+        limpar();
+        return;
+    }
+
+    // Move os elementos para preencher o espaço do elemento removido
+    for (j = i; j < *tam - 1; j++) {
+        (*vetor)[j] = (*vetor)[j + 1];
+    }
+
+    // Atualiza o tamanho do vetor e realoca a memória
+    (*tam)--;
+    *vetor = realloc(*vetor, (*tam) * sizeof(int));
+    if (*tam > 0 && *vetor == NULL) {
+        printf("Erro ao alocar memória\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Exibe o vetor atualizado
+    int op = (valor % 2 == 0) ? 1 : 2;
+    exibir(*vetor, *tam, op);
+    printf("\n\nElemento removido com sucesso!");
+    limpar();
+}
+
+// Função para buscar um valor em uma posição específica do vetor
+int buscar(int *vetor, int tam, int posicao) {
+    if (posicao < 0 || posicao >= tam) {
+        return -1; // Retorna -1 para indicar que a posição é inválida
+    }
+    return vetor[posicao]; // Retorna o valor na posição fornecida
+}
+
+// Função para salvar os elementos do vetor em dois arquivos
+void salvar(int *vetor, int tam, int op) {
+    FILE *file;
+    char nome[100], nome_1[100];
+
+    // Solicita o nome do arquivo ao usuário
+    (op == 1) ? printf("Digite o nome do arquivo para salvar o vetor dos pares: ")
+              : printf("Digite o nome do arquivo para salvar o vetor dos impares: ");
+    scanf("%s", nome);
+    limparbuffer();
+
+    // Adiciona a extensão ".bin" e salva os dados binários
+    strcpy(nome_1, nome);
+    strcat(nome, ".bin");
+    file = fopen(nome, "wb");
+    if (file == NULL) {
+        printf("\nErro ao abrir o arquivo!\n");
+        limpar();
+        return;
+    }
+    if (fwrite(vetor, sizeof(int), tam, file) != tam) {
+        printf("\nErro ao escrever no arquivo!\n");
+        limpar();
+        fclose(file);
+        return;
+    }
+    fclose(file);
+
+    // Adiciona a extensão ".txt" e salva os dados em formato de texto
+    strcat(nome_1, ".txt");
+    file = fopen(nome_1, "w");
+    if (file == NULL) {
+        printf("\nErro ao abrir o arquivo!\n");
+        limpar();
+        return;
+    }
+    for (int i = 0; i < tam; i++) {
+        fprintf(file, "%d\n", vetor[i]);
+    }
+    fclose(file);
+    printf("Elemento(s) salvo(s) com sucesso!\n");
+}
+
+// Função para ler os elementos do vetor de um arquivo binário
+void ler(int **vetor, int *tam, int *capacidade) {
+    printf("Digite o nome do arquivo para ler o vetor: ");
+    char nome[100];
+    scanf("%s", nome);
+    limparbuffer();
+    strcat(nome, ".bin");
+
+    FILE *file = fopen(nome, "rb");
+    if (file == NULL) {
+        printf("\nErro ao ler arquivo!\n");
+        limpar();
+        exit(EXIT_FAILURE);
+    }
+
+    // Calcula o tamanho do arquivo e a capacidade do vetor
+    fseek(file, 0, SEEK_END);
+    long tamanho_arquivo = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    *capacidade = (tamanho_arquivo / sizeof(int)) + 1;
+
+    // Aloca memória para o vetor e lê os dados do arquivo
+    *vetor = malloc(*capacidade * sizeof(int));
+    if (*vetor == NULL) {
+        printf("\nErro ao alocar memória!\n");
+        limpar();
+        exit(EXIT_FAILURE);
+    }
+    *tam = fread(*vetor, sizeof(int), *capacidade, file);
+    fclose(file);
+    printf("\nVetor carregado com sucesso!\n");
+    limpar();
+}

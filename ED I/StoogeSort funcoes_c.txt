@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "funcoes.h"
+
+// Função para criar um novo nó
+No* criarNo(int valor) {
+    No* novoNo = (No*)malloc(sizeof(No));
+    if (novoNo != NULL){
+        novoNo->data = valor;
+        novoNo->prev = NULL;
+        novoNo->next = NULL;
+    }
+    return novoNo;
+}
+
+// Função para inicializar a lista
+void inicializarLista(ListaDuplamenteEncadeada* lista) {
+    lista->cabeca = NULL;
+    lista->cauda = NULL;
+}
+
+// Função para adicionar um novo nó ao final da lista
+void adicionarAoFinal(ListaDuplamenteEncadeada* lista, int valor) {
+    No* novoNo = criarNo(valor);
+    if (lista->cabeca == NULL) {
+        lista->cabeca = lista->cauda = novoNo;
+    } else {
+        lista->cauda->next = novoNo;
+        novoNo->prev = lista->cauda;
+        lista->cauda = novoNo;
+    }
+}
+
+// Função para imprimir a lista
+void imprimirLista(ListaDuplamenteEncadeada* lista) {
+    No* temp = lista->cabeca;
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+// Função para trocar os dados de dois nós
+void trocar(No* a, No* b) {
+    int temp = a->data;
+    a->data = b->data;
+    b->data = temp;
+}
+
+// Função de ordenação Stooge Sort
+void stoogeSort(ListaDuplamenteEncadeada* lista, No* l, No* h, int profundidade) {
+    if (l == NULL || h == NULL || l == h) return;
+
+    if (l->data > h->data) {
+        trocar(l, h);
+        printf("Troca %d e %d:\n", l->data, h->data);
+        imprimirLista(lista);
+        limpar();
+    }
+
+    // Calcular o tamanho da sublista
+    int tamanho = 1;
+    No* temp = l;
+    while (temp != h) {
+        tamanho++;
+        temp = temp->next;
+    }
+
+    // Se o tamanho for maior que 2, aplicamos o Stooge Sort
+    if (tamanho > 2) {
+        int umTerco = tamanho / 3;
+
+        // Encontrar o nó um terço do caminho a partir de l
+        No* primeiroTerco = l;
+        for (int i = 0; i < umTerco; i++) {
+            primeiroTerco = primeiroTerco->next;
+        }
+
+        // Encontrar o nó dois terços do caminho a partir de l
+        No* doisTerco = h;
+        for (int i = 0; i < umTerco; i++) {
+            doisTerco = doisTerco->prev;
+        }
+
+        // Recursão nas três partes
+        stoogeSort(lista, l, doisTerco, profundidade + 1);
+        stoogeSort(lista, primeiroTerco, h, profundidade + 1);
+        stoogeSort(lista, l, doisTerco, profundidade + 1);
+    }
+}
+
+
+// Função para ordenar a lista usando Stooge Sort
+void ordenarLista(ListaDuplamenteEncadeada* lista) {
+    if (lista->cabeca && lista->cauda) {
+        printf("Lista Inicial:\n");
+        imprimirLista(lista);
+        printf("\n");
+        limpar();
+        stoogeSort(lista, lista->cabeca, lista->cauda, 0);
+        printf("Lista Ordenada:\n");
+        imprimirLista(lista);
+    }
+}
+
+// Função para limpar a tela e aguardar o usuário
+void limpar() {
+    // Mensagem para o usuário
+    printf(YELLOW "\n\n🛑 Pressione ENTER para continuar... 🛑" RESET);
+
+    // Pausa até o usuário pressionar ENTER
+    getchar();
+
+    // Limpa a tela do console (funciona em sistemas Unix)
+    printf("\033[H\033[2J");  // Cores e comando de limpar a tela
+}

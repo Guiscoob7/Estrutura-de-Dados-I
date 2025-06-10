@@ -1,0 +1,231 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include "funcoes.h"
+
+int main() {
+    srand(time(NULL));  // Inicializa a semente para geração de números aleatórios com base no tempo atual
+    int opcao;  // Variável para armazenar a opção escolhida pelo usuário
+    filaDaMorteEstatica *filaE = criarFilaEstatica(filaE);  // Cria a fila estática
+    filaDaMorteDinamica *filaD = criarFilaDinamica(filaD);  // Cria a fila dinâmica
+    Pessoas pessoa;  // Variável para armazenar os dados de uma pessoa
+
+    boasVindas();  // Exibe uma mensagem de boas-vindas
+
+    do {
+        exibeMenu();  // Exibe o menu de opções
+        scanf("%d", &opcao);  // Lê a opção escolhida pelo usuário
+        limparbuffer();  // Limpa o buffer de entrada
+        limpar();  // Limpa a tela
+
+        switch(opcao) {
+            case 1:
+                pessoa = gerarProfessores();  // Gera dados aleatórios para uma nova pessoa
+                printf(ORANGE "📋 Escolha o tipo de fila:\n\n" RESET);
+                printf(LIME "1 - Fila Estática\n" RESET);
+                printf(AQUA "2 - Fila Dinâmica\n" RESET);
+                printf(PURPLE "\n🖋️ Digite sua escolha: " RESET);  // Solicita ao usuário a escolha do tipo de fila
+                int tipoFila;  // Variável para armazenar o tipo de fila escolhida
+                scanf("%d", &tipoFila);  // Lê a escolha do usuário
+                limparbuffer();  // Limpa o buffer de entrada
+
+                // Insere a pessoa na fila escolhida
+                if (tipoFila == 1) {
+                    if (inserirFilaEstatica(filaE, pessoa))
+                        printf(LIME "\n🙋 Pessoa inserida na fila estática com sucesso!\n" RESET);  // Confirmação de inserção na fila estática
+                } else if (tipoFila == 2) {
+                    inserirFilaDinamica(filaD, pessoa);  // Insere na fila dinâmica
+                    printf(AQUA "\n🙆 Pessoa inserida na fila dinâmica com sucesso!\n" RESET);  // Confirmação de inserção na fila dinâmica
+                } else {
+                    printf(RED "\n⚠️ Opção inválida!\n" RESET);  // Mensagem de erro para opção inválida
+                }
+                limpar();  // Limpa a tela após a operação
+                break;
+            case 2:
+                exibirFilaEstatica(filaE);  // Exibe os elementos da fila estática
+                printf("\n\n");
+                exibirFilaDinamica(filaD);  // Exibe os elementos da fila dinâmica
+                limpar();  // Limpa a tela após a exibição
+                break;
+            case 3:
+                // Consulta e exibe os dados da fila estática
+                printf(LIME "🔍 Consultando pessoa na fila...\n" RESET);  // Mensagem de consulta
+                limpar();  // Limpa a tela
+                if (consultaFilaEstatica(filaE, &pessoa)) {  // Consulta na fila estática
+                    printf(ORANGE "📋 Consulta na fila estática:\n\n" RESET);  // Exibe cabeçalho da consulta
+                    printf(PINK "🧑 Nome: %s\n" RESET, pessoa.nome);  // Exibe nome da pessoa
+                    printf(LIME "🎉 Idade: %d\n" RESET, pessoa.idade);  // Exibe idade da pessoa
+                    printf(AQUA "⛓️ Crime: %s\n\n" RESET, pessoa.crime);  // Exibe crime cometido pela pessoa
+                } else {
+                    printf(RED "\n🛑 A fila estática está vazia.\n\n" RESET);  // Mensagem de fila vazia
+                }
+
+                // Consulta e exibe os dados da fila dinâmica
+                if (consultaFilaDinamica(filaD, &pessoa)) {  // Consulta na fila dinâmica
+                    printf(PURPLE "📑 Consulta na fila dinâmica:\n\n" RESET);  // Exibe cabeçalho da consulta
+                    printf(PINK "👧 Nome: %s\n" RESET, pessoa.nome);  // Exibe nome da pessoa
+                    printf(LIME "🎂 Idade: %d\n" RESET, pessoa.idade);  // Exibe idade da pessoa
+                    printf(AQUA "🛠️ Crime: %s\n\n" RESET, pessoa.crime);  // Exibe crime cometido pela pessoa
+                } else {
+                    printf(RED "\n⛔ A fila dinâmica está vazia.\n\n" RESET);  // Mensagem de fila vazia
+                }
+                limpar();
+                break;
+            case 4:
+                printf(ORANGE "📋 Escolha o tipo de fila para remover a pessoa:\n\n" RESET);  // Solicita a escolha do tipo de fila para remoção
+                printf(LIME "1 - Fila Estática\n" RESET);
+                printf(AQUA "2 - Fila Dinâmica\n" RESET);
+                printf(PURPLE "\n🖊️ Digite sua escolha: " RESET);  // Solicita a escolha do tipo de fila
+                scanf("%d", &tipoFila);  // Lê a escolha do usuário
+                limparbuffer();  // Limpa o buffer de entrada
+                limpar();
+                // Remove a pessoa da fila escolhida
+                if (tipoFila == 1) {
+                    if (removeFilaEstatica(filaE, &pessoa)) {  // Remove da fila estática
+                        printf(LIME "🙋‍♂️ Pessoa removida da fila estática com sucesso!\n\n" RESET);  // Confirmação de remoção
+                        printf(PINK "👦 Nome: %s\n" RESET, pessoa.nome);  // Exibe nome da pessoa removida
+                        printf(LIME "🎊 Idade: %d\n" RESET, pessoa.idade);  // Exibe idade da pessoa removida
+                        printf(AQUA "⚖️ Crime: %s\n" RESET, pessoa.crime);  // Exibe crime da pessoa removida
+                    } else {
+                        printf(RED "🚫 A fila estática está vazia.\n" RESET);  // Mensagem de fila vazia
+                    }
+                } else if (tipoFila == 2) {
+                    if (removeFilaDinamica(filaD, &pessoa)) {  // Remove da fila dinâmica
+                        printf(AQUA "🙆‍♂️ Pessoa removida da fila dinâmica com sucesso!\n\n" RESET);  // Confirmação de remoção
+                        printf(PINK "👩 Nome: %s\n" RESET, pessoa.nome);  // Exibe nome da pessoa removida
+                        printf(LIME "🎈 Idade: %d\n" RESET, pessoa.idade);  // Exibe idade da pessoa removida
+                        printf(AQUA "🔨 Crime: %s\n" RESET, pessoa.crime);  // Exibe crime da pessoa removida
+                    } else {
+                        printf(RED "\n❌ A fila dinâmica está vazia.\n" RESET);  // Mensagem de fila vazia
+                    }
+                } else {
+                    printf(RED "\n⚠️ Opção inválida!\n" RESET);  // Mensagem de erro para opção inválida
+                }
+                limpar();  // Limpa a tela após a operação
+                break;
+            case 5: {
+                limpar();
+                double tempos[15];
+                int cont = 0;
+                int entradas[] = {1000, 3000, 5000, 10000, 25000};
+                analiseFilaEstatica(filaE, &pessoa, tempos);
+                // Cores e Estilos
+                limpar();
+                printf("%s🌟 %sTempos de execução - Fila Estática %s🌟\n\n", CYAN, BOLD, RESET);
+                for (int i = 0; i < 15; i += 3) {
+                    printf("%s🟢 %sQuantidade de Clocks (Inserção - %d entradas) %d: %.6f clocks %s\n", LIGHT_GREEN, BOLD, entradas[cont], i + 1, tempos[i], RESET);
+                    printf("%s🔍 %sQuantidade de Clocks (Exibição - %d entradas) %d: %.6f clocks %s\n", LIGHT_YELLOW, BOLD, entradas[cont], i + 1, tempos[i + 1], RESET);
+                    printf("%s🔴 %sQuantidade de Clocks (Remoção - %d entradas) %d: %.6f clocks %s\n", LIGHT_CYAN, BOLD, entradas[cont++], i + 1, tempos[i + 2], RESET);
+                    printf("\n"); // Espaço entre as iterações
+                }
+                printf("%s✨ Análise completa! Obrigado por utilizar o sistema! ✨%s\n", MAGENTA, RESET);
+                limpar();
+                break;
+            }
+            case 6: {
+                limpar();
+                double tempos[15];
+                int cont = 0;
+                int entradas[] = {1000, 3000, 5000, 10000, 25000};
+                
+                analiseFilaDinamica(filaD, &pessoa, tempos); // Chama a função para analisar a fila dinâmica
+                
+                // Cores e Estilos
+                printf("%s🌈 %sTempos de execução - Fila Dinâmica %s🌈\n\n", LIGHT_BLUE, BOLD, RESET);
+                limpar();
+                for (int i = 0; i < 15; i += 3) {
+                    printf("%s🚀 %sQuantidade de Clocks (Inserção - %d entradas) %d: %.6f clocks %s\n", LIGHT_YELLOW, BOLD, entradas[cont], i + 1, tempos[i], RESET);
+                    printf("%s👁️ %sQuantidade de Clocks (Exibição - %d entradas) %d: %.6f clocks %s\n", LIGHT_GREEN, BOLD, entradas[cont], i + 1, tempos[i + 1], RESET);
+                    printf("%s🗑️ %sQuantidade de Clocks (Remoção - %d entradas) %d: %.6f clocks %s\n", LIGHT_CYAN, BOLD, entradas[cont++], i + 1, tempos[i + 2], RESET);
+                    printf("\n"); // Espaço entre as iterações
+                }
+
+                printf("%s🎉 Análise completa! Obrigado por utilizar o sistema! 🎉%s\n", MAGENTA, RESET);
+                limpar();
+                break;
+            }
+            case 7:
+                printf(ORANGE "📋 Escolha o tipo de fila para desafiar um condenado:\n\n" RESET);  // Solicita a escolha do tipo de fila
+                printf(LIME "1 - Fila Estática\n" RESET);
+                printf(AQUA "2 - Fila Dinâmica\n" RESET);
+                printf(PURPLE "\n🖊️ Digite sua escolha: " RESET);  // Solicita a escolha do tipo de fila
+                scanf("%d", &tipoFila);  // Lê a escolha do usuário
+                limparbuffer();  // Limpa o buffer de entrada
+                limpar();  // Limpa a tela
+
+                if (tipoFila == 1) {
+                    // Verifica se a fila está vazia (chama a função correta)
+                    if (!filaVaziaEstatica(filaE)) {
+                        if (!desafiarCondenado()) {  // Chama a função para desafiar o condenado
+                            if (removeFilaEstatica(filaE, &pessoa)) {  // Remove da fila estática
+                                printf(LIME "🙋‍♂️ Pessoa executada da fila estática com sucesso!\n\n" RESET);  // Confirmação de remoção
+                                printf(PINK "👦 Nome: %s\n" RESET, pessoa.nome);  // Exibe nome da pessoa removida
+                                printf(LIME "🎊 Idade: %d\n" RESET, pessoa.idade);  // Exibe idade da pessoa removida
+                                printf(AQUA "⚖️ Crime: %s\n" RESET, pessoa.crime);  // Exibe crime da pessoa removida
+                            } else {
+                                printf(RED "🚫 Não foi possível remover a pessoa da fila estática.\n" RESET);  // Caso falhe a remoção
+                            }
+                        } else {  // Caso o condenado tenha sido liberado
+                            if (removeFilaEstatica(filaE, &pessoa)) {  // Remove da fila estática
+                                printf(LIME "🙋‍♂️ Pessoa liberada da fila estática com sucesso!\n\n" RESET);  // Confirmação de remoção
+                                printf(PINK "👦 Nome: %s\n" RESET, pessoa.nome);  // Exibe nome da pessoa removida
+                                printf(LIME "🎊 Idade: %d\n" RESET, pessoa.idade);  // Exibe idade da pessoa removida
+                                printf(AQUA "⚖️ Crime: %s\n" RESET, pessoa.crime);  // Exibe crime da pessoa removida
+                            } else {
+                                printf(RED "🚫 Não foi possível remover a pessoa da fila estática.\n" RESET);  // Caso falhe a remoção
+                            }
+                        }
+                    } else {
+                        printf(RED "🚫 A fila estática está vazia.\n" RESET);  // Mensagem caso a fila esteja vazia
+                    }
+                } else if (tipoFila == 2) {
+                    // Verifica se a fila dinâmica está vazia (chama a função correta)
+                    if (!filaVaziaDinamica(filaD)) {
+                        if (!desafiarCondenado()) {  // Chama a função para desafiar o condenado
+                            if (removeFilaDinamica(filaD, &pessoa)) {  // Remove da fila dinâmica
+                                printf(AQUA "🙆‍♂️ Pessoa executada da fila dinâmica com sucesso!\n\n" RESET);  // Confirmação de remoção
+                                printf(PINK "👩 Nome: %s\n" RESET, pessoa.nome);  // Exibe nome da pessoa removida
+                                printf(LIME "🎈 Idade: %d\n" RESET, pessoa.idade);  // Exibe idade da pessoa removida
+                                printf(AQUA "🔨 Crime: %s\n" RESET, pessoa.crime);  // Exibe crime da pessoa removida
+                            } else {
+                                printf(RED "\n❌ Não foi possível remover a pessoa da fila dinâmica.\n" RESET);  // Caso falhe a remoção
+                            }
+                        } else {  // Caso o condenado tenha sido liberado
+                            if (removeFilaDinamica(filaD, &pessoa)) {  // Remove da fila dinâmica
+                                printf(AQUA "🙆‍♂️ Pessoa liberada da fila dinâmica com sucesso!\n\n" RESET);  // Confirmação de remoção
+                                printf(PINK "👩 Nome: %s\n" RESET, pessoa.nome);  // Exibe nome da pessoa removida
+                                printf(LIME "🎈 Idade: %d\n" RESET, pessoa.idade);  // Exibe idade da pessoa removida
+                                printf(AQUA "🔨 Crime: %s\n" RESET, pessoa.crime);  // Exibe crime da pessoa removida
+                            } else {
+                                printf(RED "🚫 Não foi possível remover a pessoa da fila dinâmica.\n" RESET);  // Caso falhe a remoção
+                            }
+                        }
+                    } else {
+                        printf(RED "🚫 A fila dinâmica está vazia.\n" RESET);  // Mensagem caso a fila dinâmica esteja vazia
+                    }
+                } else {
+                    printf(RED "\n⚠️ Opção inválida! Escolha entre 1 ou 2.\n" RESET);  // Mensagem de erro para opção inválida
+                }
+
+                limpar();  // Limpa a tela após a operação
+            break;
+            case 8:
+                printf(BOLD RED "🚶‍♂️ Você abandonou a fila! " RESET "\n\n");
+                printf(BOLD YELLOW "⏳ " RESET "Espero que tenha sido uma boa escolha! \n");
+                printf(GREEN "💪 Não se preocupe, você pode tentar novamente! " RESET "\n");
+                printf(PINK "🎉 Fica tranquilo, o show continua! " RESET "\n");
+            break;
+            default:
+                printf(RED "\n⚠️ Opção inválida! Por favor, escolha uma opção válida do menu.\n" RESET);  // Mensagem padrão para opção inválida
+                limpar();
+            break;  // Para qualquer opção não reconhecida, não faz nada
+        }
+
+    } while (opcao != 8);  // O loop continua até que a opção 7 seja escolhida
+
+    free(filaE);  // Libera a memória da fila estática
+    printf(LIME "\n♻️ Fila Estática liberada!\n\n" RESET);  // Mensagem de confirmação de liberação
+    filaD = liberarFilaDinamica(filaD);  // Libera a memória da fila dinâmica
+    return 0;  // Retorna 0 para indicar que o programa terminou com sucesso
+}

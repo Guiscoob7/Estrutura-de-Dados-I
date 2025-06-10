@@ -1,0 +1,486 @@
+//funcoes.c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+#include "funcoes.h"
+
+#define TAM_SEQUENCIA 4
+
+// Função para limpar a tela e aguardar a pressão de ENTER 🚿⏳
+void limpar() 
+{
+    // 🛑 Solicita ao usuário para pressionar ENTER e limpar a tela
+    printf("\n\n%s🛑 %sPressione ENTER para continuar... %s🛑%s: ", LIGHT_CYAN, LIGHT_YELLOW, LIGHT_CYAN, RESET);
+    getchar();  // ⏳ Espera a entrada do usuário
+    #ifdef _WIN32
+        system("cls");  // 🖥️ Comando específico para Windows para limpar a tela
+    #else
+        system("clear");  // 🍏 Comando específico para Linux/Mac para limpar a tela
+    #endif
+}
+
+void limparImediato()
+{
+    #ifdef _WIN32
+        system("cls");  // 🖥️ Comando específico para Windows para limpar a tela
+    #else
+        system("clear");  // 🍏 Comando específico para Linux/Mac para limpar a tela
+    #endif
+}
+
+// Função para limpar o buffer de entrada 🧹
+void limparbuffer() 
+{
+    int c;
+    // 🧹 Remove todos os caracteres do buffer de entrada até o fim da linha ou o EOF
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+/*
+💻 Instruções de execução:
+cd C:\Importante\C (caminho até a pasta em que se encontra o .exe)
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
+.\programa.exe (nome do programa.exe)
+*/
+
+// Função para exibir mensagens de boas-vindas sobre uma fila da morte ⚰️💀
+void boasVindas() 
+{
+    // Exibe uma borda superior da caixa de boas-vindas 🌌💤
+    printf("\n" BLUE BOLD "╔════════════════════════════════════════════════════════════════════════════╗" RESET "\n");
+    // 🌙💭 Mensagem de boas-vindas com destaque para a "Pilha dos Sonhos"
+    printf(BLUE BOLD "║" RESET " 🌙💭 " BOLD BLUE "Bem-vindo à " RESET BLUE BOLD "Pilha dos Sonhos" RESET BLUE BOLD " 💭🌙 " BLUE BOLD "                                    ║" RESET "\n");
+    // 🌌✨ Mensagem sobre o poder dos sonhos
+    printf(BLUE BOLD "║" RESET " 🌌✨ " LIGHT_YELLOW "Os sonhos são a chave para a imaginação, entre e descubra!" RESET BLUE BOLD " ✨🌌 " BLUE BOLD "      ║" RESET "\n");
+    // 🌠💤 Mensagem sobre os sonhos que aguardam
+    printf(BLUE BOLD "║" RESET " 🌠💤 " MAGENTA "Cada sonho aqui é único, prepare-se para se surpreender!" RESET BLUE BOLD " 💤🌠 " BLUE BOLD "        ║" RESET "\n");
+    // 💫🌙 Mensagem sobre o mistério dos sonhos
+    printf(BLUE BOLD "║" RESET " 💫🌙 " GREEN "Mergulhe na sua mente e deixe os sonhos fluírem!" RESET BLUE BOLD " 🌙💫 " BLUE BOLD "                ║" RESET "\n");
+    // Exibe uma borda inferior da caixa de boas-vindas 🌌💤
+    printf(BLUE BOLD "╚════════════════════════════════════════════════════════════════════════════╝" RESET "\n\n");
+    limpar();
+}
+
+// Função para exibir o menu principal com opções ⚰️🔪
+void exibeMenu() 
+{
+    printf(RED "\n🕯️💤 Bem-vindo ao Gerenciador da Pilha de Sonhos 💤🕯️\n\n" RESET);
+    printf(YELLOW "📜 Escolha seu destino:\n" RESET);
+    printf(RED "🌌 [1] - Adicionar Sonho\n" RESET);  
+    printf(GREEN "🌠 [2] - Exibir Sonhos\n" RESET);  
+    printf(BLUE "🔍 [3] - Consultar Sonho\n" RESET);  
+    printf(CYAN "🗑️ [4] - Remover Sonho\n" RESET);  
+    printf(MAGENTA "⏳ [5] - Analisar Tempo da Pilha Estática\n" RESET);  
+    printf(DOURADO "📊 [6] - Analisar Tempo da Pilha Dinâmica\n" RESET);  
+    printf(RED "🚪 [7] - Realizar Sonho\n" RESET);  
+    printf(YELLOW "📍 [8] - Sair do Gerenciador de Sonhos\n" RESET);  
+    printf(YELLOW "\n👉 Faça sua escolha: " RESET);
+}
+
+
+pilhaDosSonhosEstatica* criarPilhaEstatica(void)
+{
+    pilhaDosSonhosEstatica *Ptp;
+    Ptp = (pilhaDosSonhosEstatica*) malloc(sizeof(pilhaDosSonhosEstatica));
+    if (Ptp != NULL)
+        Ptp->topo = -1;
+    return Ptp;
+}
+
+pilhaDosSonhosDinamica* criarPilhaDinamica(void){
+    pilhaDosSonhosDinamica *Ptp = (pilhaDosSonhosDinamica*) malloc(sizeof(pilhaDosSonhosDinamica));
+    if (Ptp != NULL)
+        Ptp->topo = NULL;
+    return Ptp;
+}
+
+int pilhaVaziaEstatica(pilhaDosSonhosEstatica* Ptp)
+{
+    if (Ptp == NULL)
+        return -1;
+    return Ptp->topo == -1;
+}
+
+int pilhaCheiaEstatica(pilhaDosSonhosEstatica* Ptp)
+{
+    if (Ptp == NULL)
+        return -1;
+    return Ptp->topo == MAX_PILHA-1;
+}
+
+int pilhaVaziaDinamica(pilhaDosSonhosDinamica* Ptp)
+{
+    if (Ptp == NULL)
+        return -1;
+    return Ptp->topo == NULL;
+}
+
+int pushPilhaEstatica(pilhaDosSonhosEstatica* Ptp, Sonho sonho)
+{
+    if (Ptp == NULL || pilhaCheiaEstatica(Ptp)) {
+    printf("Erro: Pilha nula ou cheia. ❌\n");
+    return -1;
+}
+
+    Ptp->topo++;
+    Ptp->sonho[Ptp->topo] = sonho;
+    return 1;
+}
+
+int pushPilhaDinamica(pilhaDosSonhosDinamica* Ptp, Sonho sonho)
+{
+    if (Ptp == NULL)
+        return -1;
+
+    noDinamico* novoNo = (noDinamico*) malloc(sizeof(noDinamico));
+    if (novoNo == NULL)
+        return -1;
+
+    novoNo->sonho = sonho;
+    novoNo->prox = Ptp->topo;
+    Ptp->topo = novoNo;
+    return 1;
+}
+
+int popPilhaEstatica(pilhaDosSonhosEstatica* Ptp, Sonho* sonhoRemovido) {
+    if (Ptp == NULL || pilhaVaziaEstatica(Ptp)) {
+        return 0;
+    }
+
+    *sonhoRemovido = Ptp->sonho[Ptp->topo];
+    Ptp->topo--;
+    return 1;
+}
+
+int popPilhaDinamica(pilhaDosSonhosDinamica* Ptp, Sonho* sonhoRemovido) {
+    if (Ptp == NULL || Ptp->topo == NULL) {
+        return 0;
+    }
+
+    noDinamico* noRemovido = Ptp->topo;
+    *sonhoRemovido = noRemovido->sonho;
+    Ptp->topo = noRemovido->prox;
+
+    free(noRemovido);
+    return 1;
+}
+
+void exibirPilhaEstatica(pilhaDosSonhosEstatica* Ptp) {
+    if (Ptp == NULL || pilhaVaziaEstatica(Ptp)) {
+        printf(RED "\n💤 A pilha está vazia ou nula.\n" RESET);
+        return;
+    }
+
+    printf(LIGHT_CYAN BOLD "📚 Conteúdo da Pilha Estática:\n\n" RESET);
+    for (int i = Ptp->topo; i >= 0; i--) {
+        printf(LIGHT_YELLOW "🌟 Sonho #%d:\n" RESET, i + 1);
+        printf(PINK "  🔮 Tipo: %s\n" RESET, Ptp->sonho[i].tipo);
+        printf(LIME "  💭 Intensidade Emocional: %d\n" RESET, Ptp->sonho[i].intensidadeEmocional);
+        printf(CYAN "  📜 Descrição: %s\n\n" RESET, Ptp->sonho[i].descricao);
+    }
+}
+
+void exibirPilhaDinamica(pilhaDosSonhosDinamica* Ptp) {
+    if (Ptp == NULL || Ptp->topo == NULL) {
+        printf(RED "\n💤 A pilha está vazia ou nula.\n" RESET);
+        return;
+    }
+
+    printf(LIGHT_BLUE BOLD "📚 Conteúdo da Pilha Dinâmica:\n\n" RESET);
+    noDinamico* atual = Ptp->topo;
+    int contador = 1;
+
+    while (atual != NULL) {
+        printf(LIGHT_GREEN "✨ Sonho #%d:\n" RESET, contador);
+        printf(PINK "  🔮 Tipo: %s\n" RESET, atual->sonho.tipo);
+        printf(LIME "  💭 Intensidade Emocional: %d\n" RESET, atual->sonho.intensidadeEmocional);
+        printf(CYAN "  📜 Descrição: %s\n\n" RESET, atual->sonho.descricao);
+
+        atual = atual->prox;  // Passa para o próximo nó
+        contador++;
+    }
+}
+
+
+int consultaTopoEstatica(pilhaDosSonhosEstatica* Ptp, Sonho *sonhos)
+{
+    if (Ptp->topo == -1) {  // Verifica se a pilha está vazia
+        printf("⚠️ A pilha está vazia!\n");
+        return 0;  // Retorna 0 para indicar que não foi possível consultar
+    }
+
+    *sonhos = Ptp->sonho[Ptp->topo];
+    return 1;
+}
+
+int consultaTopoDinamica(pilhaDosSonhosDinamica* Ptp, Sonho* sonho)
+{
+    if (Ptp->topo == NULL) {  // Verifica se a pilha está vazia
+        printf("⚠️ A pilha está vazia!\n");
+        return 0;  // Retorna 0 para indicar que não foi possível consultar
+    }
+
+    *sonho = Ptp->topo->sonho;
+    return 1;
+}
+
+void liberarPilhaEstatica (pilhaDosSonhosEstatica *Ptp)
+{
+    if (Ptp != NULL)
+    {
+        free(Ptp);
+        printf(LIME "♻️ Pilha Estática liberada com sucesso!\n" RESET);
+    }
+}
+
+void liberarPilhaDinamica (pilhaDosSonhosDinamica *Ptp)
+{
+    if (Ptp != NULL)
+    {
+        noDinamico *temp;
+        while (Ptp->topo != NULL)
+        {
+            temp = Ptp->topo;
+            Ptp->topo = Ptp->topo->prox;
+            free(temp);
+        }
+    }
+    free(Ptp);
+    printf(AQUA "♻️ Pilha Dinâmica liberada com sucesso!\n" RESET);
+}
+
+// Função para gerar professores aleatórios com "crimes" engraçados
+Sonho gerarSonhos()
+{
+    Sonho sonho;
+    strcpy(sonho.tipo, "");
+    strcpy(sonho.descricao, "");
+    int max = 19;
+    int min = 0;
+
+    // Lista de tipos de sonhos
+    char *tipos[] = {
+        "Pesadelo com monstros",
+        "Sonho de voar sem asas",
+        "Sonho em que cai de uma grande altura",
+        "Sonho de perder os dentes",
+        "Sonho de ser perseguido por algo",
+        "Sonho com um futuro alternativo",
+        "Sonho com fogo e destruição",
+        "Sonho com pessoas falecidas",
+        "Sonho em que se está preso em um lugar",
+        "Sonho em que se ganha um prêmio inesperado",
+        "Sonho com animais falantes",
+        "Sonho de se tornar invisível",
+        "Sonho com uma festa mágica",
+        "Sonho de viajar para o passado",
+        "Sonho com superpoderes",
+        "Sonho de ser um herói",
+        "Sonho com uma casa gigante",
+        "Sonho de voar em um foguete",
+        "Sonho em que se encontra um tesouro"};
+
+    // Lista de descrições de sonhos
+    char *descricoes[] = {
+        "Você está sendo perseguido por uma criatura monstruosa que aparece em cada canto.",
+        "Você começa a flutuar no ar, como se estivesse voando, mas sem qualquer controle.",
+        "Você está em um prédio muito alto e, de repente, começa a cair sem parar.",
+        "De repente, você percebe que está perdendo todos os seus dentes, um por um.",
+        "Você corre desesperado, mas há algo ou alguém que te persegue sem parar.",
+        "Você acorda em um mundo paralelo, onde tudo é muito diferente da sua realidade.",
+        "O fogo toma conta de tudo ao seu redor, destruindo casas e árvores, mas você não consegue escapar.",
+        "Você encontra um ente querido, mas percebe que ele não está mais entre os vivos.",
+        "Você tenta abrir a porta para sair, mas está trancado em uma sala sem saída.",
+        "Você encontra um bilhete que diz que você ganhou um prêmio enorme, mas ninguém mais parece saber de nada.",
+        "Você conversa com um cachorro que começa a te contar segredos sobre o universo.",
+        "Você fica invisível e começa a observar todos ao seu redor, mas logo percebe que está perdido.",
+        "Você está em uma festa maravilhosa, cheia de pessoas que você nunca conheceu, mas se sente em casa.",
+        "Você consegue viajar no tempo e encontra um momento que você gostaria de reviver.",
+        "Você descobre que tem poderes especiais, como super força ou teletransporte.",
+        "Você se vê salvando o mundo de um grande desastre e se torna um herói de verdade.",
+        "Você se perde em uma casa gigantesca, cheia de quartos e passagens secretas.",
+        "Você decola em um foguete, indo para o espaço e descobrindo planetas desconhecidos.",
+        "Você encontra um mapa antigo e começa a procurar por um tesouro enterrado."};
+
+    // Escolher tipo de sonho e descrição aleatórios
+    strcpy(sonho.tipo, tipos[gerarNumeroAleatorio(min, max)]);
+    sonho.intensidadeEmocional = gerarNumeroAleatorio(min, max); // Gera a intensidade emocional
+    strcpy(sonho.descricao, descricoes[gerarNumeroAleatorio(min, max)]);
+
+    return sonho;
+}
+
+// Gera dados aleatórios para um sonho 🎲🌙
+Sonho gerarDados()  
+{
+    Sonho sonho;
+    gerarStringAleatoria(sonho.tipo, 22);  // Gera um tipo aleatório para o sonho
+    sonho.intensidadeEmocional = gerarNumeroAleatorio(1,100); // Gera a intensidade emocional
+    gerarStringAleatoria(sonho.descricao, 44); // Gera uma descrição aleatória para o sonho
+    return sonho;
+}
+
+// Gera um caractere aleatório (letra maiúscula ou minúscula) 🎲🔠
+char gerarCaractereAleatorio() 
+{
+    int tipo = rand() % 2;
+    if (tipo == 0) return 'a' + rand() % 26;
+    else return 'A' + rand() % 26;
+}
+
+// Gera uma string aleatória com tamanho especificado 🎲✏️
+void gerarStringAleatoria(char *str, int tamanho) 
+{
+    for (int i = 0; i < tamanho; i++)
+        str[i] = gerarCaractereAleatorio();
+    str[tamanho - 1] = '\0';  // Corrige a posição do terminador nulo
+}
+
+// Gera um número aleatório entre 1 e 100 🎲🔢
+int gerarNumeroAleatorio(int min, int max) 
+{
+    return rand() % (max - min + 1) + min;
+}
+
+void analisePilhaEstatica(pilhaDosSonhosEstatica *pilha, Sonho *sonho, double* tempos) {
+    double start, finish;
+    int cont = 0;
+    int entradas[] = {1000, 3000, 5000, 10000, 25000};
+
+    for (int i = 0; i < 5; i++) {
+        // Medindo o tempo de inserção
+        start = (double) clock();
+        for (int j = 0; j < entradas[i]; j++) {
+            pushPilhaEstatica(pilha, gerarDados()); // Insere um sonho na pilha
+        }
+        finish = (double) clock();
+        tempos[cont++] = finish - start; // Armazenando o tempo de inserção
+
+        // Medindo o tempo de exibição
+        start = (double) clock();
+        exibirPilhaEstatica(pilha); // Exibe os sonhos na pilha
+        finish = (double) clock();
+        tempos[cont++] = finish - start; // Armazenando o tempo de exibição
+
+        // Medindo o tempo de remoção
+        start = (double) clock();
+        for (int j = 0; j < entradas[i]; j++) {
+            popPilhaEstatica(pilha, sonho); // Remove um sonho da pilha
+        }
+        finish = (double) clock();
+        tempos[cont++] = finish - start; // Armazenando o tempo de remoção
+    }
+}
+
+void analisePilhaDinamica(pilhaDosSonhosDinamica *pilha, Sonho *sonho, double* tempos) {
+    double start, finish;
+    int cont = 0;
+    int entradas[] = {1000, 3000, 5000, 10000, 25000};
+
+    for (int i = 0; i < 5; i++) {
+        // Medindo o tempo de inserção
+        start = (double) clock();
+        for (int j = 0; j < entradas[i]; j++) {
+            pushPilhaDinamica(pilha, gerarDados()); // Insere um sonho na pilha
+        }
+        finish = (double) clock();
+        tempos[cont++] = finish - start; // Armazenando o tempo de inserção
+
+        // Medindo o tempo de exibição
+        start = (double) clock();
+        exibirPilhaDinamica(pilha); // Exibe os sonhos na pilha
+        finish = (double) clock();
+        tempos[cont++] = finish - start; // Armazenando o tempo de exibição
+
+        // Medindo o tempo de remoção
+        start = (double) clock();
+        for (int j = 0; j < entradas[i]; j++) {
+            popPilhaDinamica(pilha, sonho); // Remove um sonho da pilha
+        }
+        finish = (double) clock();
+        tempos[cont++] = finish - start; // Armazenando o tempo de remoção
+    }
+}
+
+// Função para gerar uma sequência de números aleatórios
+void gerarSequencia(int *sequencia, int tamanho) {
+    for (int i = 0; i < tamanho; i++) {
+        sequencia[i] = rand() % 10; // Números de 0 a 9
+    }
+}
+
+// Função para exibir a sequência de números por um curto período
+void exibirSequencia(int *sequencia, int tamanho) {
+    printf(GREEN "✨ A sequência dos seus sonhos será exibida por 3 segundos! Lembre-se bem...\n\n" RESET);
+    printf("\t\t");
+    for (int i = 0; i < tamanho; i++) {
+        printf(YELLOW "%d " RESET, sequencia[i]);
+    }
+    printf("\n");
+
+    sleep(3);  // Espera 3 segundos para o jogador memorizar
+
+    limparImediato();
+    printf(RED "\n💥 A sequência desapareceu! Você tem 10 segundos para adivinhar... Vamos lá!\n" RESET);
+}
+
+// Função para desafiar o jogador a adivinhar a sequência
+int realizarSonho() {
+    int sequencia[TAM_SEQUENCIA];
+    int tentativa[TAM_SEQUENCIA];
+    int acertou = 0;
+
+    srand(time(NULL));  // Inicializa o gerador de números aleatórios
+
+    // Gera a sequência dos sonhos
+    gerarSequencia(sequencia, TAM_SEQUENCIA);
+
+    // Exibe a sequência para o jogador por um curto tempo
+    exibirSequencia(sequencia, TAM_SEQUENCIA);
+
+    // Espera 10 segundos para o jogador tentar adivinhar
+    printf(CYAN "\n⏳ Você tem 10 segundos para tentar adivinhar a sequência dos seus sonhos. Comece agora!\n" RESET);
+    sleep(1);  // Pequena pausa antes de começar
+
+    time_t start_time = time(NULL);  // Registra o tempo de início
+
+    // Tenta adivinhar a sequência automaticamente até acertar ou o tempo acabar
+    while (time(NULL) - start_time < 10) {  // Enquanto não passar 10 segundos
+        // Gera uma nova tentativa aleatória
+        gerarSequencia(tentativa, TAM_SEQUENCIA);
+
+        // Exibe a tentativa gerada para o jogador (opcional)
+        printf(MAGENTA "Tentativa gerada: ");
+        for (int i = 0; i < TAM_SEQUENCIA; i++) {
+            printf("%d ", tentativa[i]);
+        }
+        printf("\n");
+
+        // Verifica se a tentativa está correta
+        int acerto = 1;
+        for (int i = 0; i < TAM_SEQUENCIA; i++) {
+            if (sequencia[i] != tentativa[i]) {
+                acerto = 0;
+                break;
+            }
+        }
+
+        if (acerto) {
+            acertou = 1;
+            break;  // Se acertou, sai do loop
+        }
+    }
+
+    if (acertou) {
+        printf(GREEN "🎉 Parabéns, você acertou a sequência! Você realizou o seu sonho!\n" RESET);
+        limpar();
+    } else {
+        printf(RED "💥 Que pena, você errou a sequência. Seu sonho ainda está distante...\n" RESET);
+        limpar();
+    }
+
+    return acertou;
+}

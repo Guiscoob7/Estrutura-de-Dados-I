@@ -1,0 +1,121 @@
+#include "ponto.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+  int escolha;     // Variável para armazenar a escolha do usuário no menu
+  Ponto *p = NULL; // Ponteiro para o primeiro ponto da lista
+
+  do {
+    printf("Escolha uma opção:\n");
+    printf("1 - Criar ponto\n");
+    printf("2 - Liberar ponto\n");
+    printf("3 - Acessar ponto\n");
+    printf("4 - Atribuir ponto\n");
+    printf("5 - Distância entre pontos\n");
+    printf("6 - Sair\n");
+    printf("Opção: ");
+    scanf("%d", &escolha); // Lê a escolha do usuário
+    limparbuffer();        // Limpa o buffer de entrada
+    limpar();              // Limpa a tela
+
+    switch (escolha) {
+    case 1: {
+      // Caso 1: Criar um novo ponto
+      float x, y;
+      printf("Criar ponto\n");
+      limpar();
+      printf("Digite as coordenadas do ponto (x,y): ");
+      scanf("%f %f", &x, &y); // Lê as coordenadas do ponto
+      limparbuffer();
+      pto_cria(x, y, &p); // Cria o ponto e adiciona à lista
+      printf("\nPonto criado com sucesso!\n");
+      limpar();
+      pto_acessa(p); // Exibe todos os pontos da lista
+      limpar();
+      break;
+    }
+
+    case 2: {
+      // Caso 2: Liberar um ponto específico
+      int indice;
+      printf("Liberar ponto\n");
+      limpar();
+      pto_acessa(p); // Exibe todos os pontos da lista
+      if (p != NULL) {
+        printf("Digite o índice do ponto a ser liberado: ");
+        scanf("%d", &indice); // Lê o índice do ponto a ser removido
+        limparbuffer();
+        pto_libera(&p, indice); // Libera a memória do ponto selecionado
+      }
+      limpar();
+      break;
+    }
+
+    case 3:
+      // Caso 3: Acessar e exibir todos os pontos
+      printf("Acessar ponto\n");
+      limpar();
+      pto_acessa(p); // Exibe todos os pontos da lista
+      limpar();
+      break;
+
+    case 4: {
+      // Caso 4: Atribuir novas coordenadas a um ponto específico
+      float x, y;
+      int indice;
+      printf("Atribuir ponto\n");
+      limpar();
+      pto_acessa(p); // Exibe todos os pontos da lista
+      if (p != NULL) {
+        printf("Digite o indice do ponto a ser atribuido: ");
+        scanf("%d", &indice); // Lê o índice do ponto a ser modificado
+        limparbuffer();
+        buscar_ponto(p, indice); // Busca o ponto na lista
+        printf("Digite as novas coordenadas do ponto (x,y): ");
+        scanf("%f %f", &x, &y); // Lê as novas coordenadas
+        limparbuffer();
+        pto_atribui(p, x, y); // Atribui as novas coordenadas ao ponto
+        printf("Ponto atribuido com sucesso!\n");
+        limpar();
+        pto_acessa(p); // Exibe todos os pontos da lista
+      }
+      limpar();
+      break;
+    }
+
+    case 5: {
+      // Caso 5: Calcular a distância entre dois pontos
+      float d;
+      int indice_1, indice_2;
+      printf("Distância entre pontos\n");
+      limpar();
+      pto_acessa(p); // Exibe todos os pontos da lista
+      if (p != NULL) {
+        printf("Digite o índice do ponto 1 para calcular a distância: ");
+        scanf("%d", &indice_1); // Lê o índice do primeiro ponto
+        limparbuffer();
+        printf("Digite o índice do ponto 2 para calcular a distância: ");
+        scanf("%d", &indice_2); // Lê o índice do segundo ponto
+        limparbuffer();
+        d = pto_distancia(p, indice_1,
+                          indice_2); // Calcula a distância entre os dois pontos
+        // Exibe a distância calculada ou mensagem de erro
+        (d != -1) ? printf("A distância entre os pontos é: %.2f\n", d)
+                  : printf("Não foi possível calcular a distância\n");
+      }
+      limpar();
+      break;
+    }
+
+    case 6:
+      // Caso 6: Sair do programa
+      printf("Saindo...\n");
+      limpar();
+      liberar(p); // Libera toda a memória alocada para os pontos antes de sair
+      break;
+    }
+  } while (escolha != 6); // Repete o loop até que o usuário escolha sair
+
+  return 0;
+}

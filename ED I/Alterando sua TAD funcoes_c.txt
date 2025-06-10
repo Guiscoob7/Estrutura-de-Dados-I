@@ -1,0 +1,769 @@
+#include "funcoes.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Função para limpar a tela e solicitar ao usuário pressionar ENTER para
+// continuar
+
+void limpar() {
+    // Mensagem para o usuário
+    printf("\n\n%s🛑 %sPressione ENTER para continuar... %s🛑%s: ", LIGHT_CYAN, LIGHT_YELLOW, LIGHT_CYAN, RESET);
+
+    // Pausa até o usuário pressionar ENTER
+    getchar();
+
+    // Limpa a tela do console (funciona em sistemas Unix)
+    printf("\033[H\033[2J");  // Cores e comando de limpar a tela
+}
+
+
+// Função para limpar o buffer de entrada, removendo caracteres extras
+void limparbuffer() {
+  int c;
+  while ((c = getchar()) != '\n' && c != EOF);
+}
+
+Signo *Libera_lista(Signo *Ptl) {
+  Signo* aux = Ptl;
+  while (aux != NULL){
+    Signo* temp = aux;
+    aux = aux->prox;
+    free(temp);
+  }
+  return NULL;
+}
+
+Signo *Cria_lista(void) {
+  return NULL;
+}
+
+Signo *Insere_elem(Signo *Ptl) {
+    
+    Signo *novo = malloc(sizeof(Signo));
+    // Verifica se a alocação de memória foi bem-sucedida
+    if (novo == NULL) {  
+        printf("%s🚫 Erro ao alocar memória!%s\n", RED, RESET);
+        return Ptl;
+    }
+    // Inserir o nome do astrologista
+    printf("%s🔮 Insira o nome do astrologista: %s", LIGHT_CYAN, RESET);
+    scanf("%49[^\n]", novo->vetor.nome);
+    limparbuffer();
+
+    // Inserir o dia do nascimento
+    printf("%s📅 Insira o dia do nascimento: %s", BLUE, RESET);
+    scanf("%d", &novo->vetor.data.dia);
+    limparbuffer();
+
+    // Inserir o mês do nascimento
+    printf("%s📅 Insira o mês do nascimento: %s", BLUE, RESET);
+    scanf("%d", &novo->vetor.data.mes);
+    limparbuffer();
+
+    // Inserir o ano do nascimento
+    printf("%s📅 Insira o ano do nascimento: %s", BLUE, RESET);
+    scanf("%d", &novo->vetor.data.ano);
+    limparbuffer();
+
+    // Determinar signo e elemento
+    if ((determinarSignoEElemento(
+            novo->vetor.data.dia, novo->vetor.data.mes,
+            novo->vetor.signo_pessoa, novo->vetor.elemento))) {
+        printf("%s🚫 Processo de Inserção Cancelado!%s\n", RED, RESET);
+        free(novo);
+        return Ptl;
+    }
+
+    novo->prox = NULL;
+    if (Ptl == NULL){
+      Ptl = novo;
+    }
+    else{
+      Signo* temp = Ptl;
+      while (temp->prox != NULL){
+         temp = temp->prox;
+      }
+      temp->prox = novo;
+      
+    }
+    printf("%s✅ Astrologista inserido com sucesso!%s\n", GREEN, RESET);
+    return Ptl;
+}
+
+int determinarSignoEElemento(int dia, int mes, char *signo, char *elemento) {
+  if (mes == 1) {
+    strcpy(signo, (dia <= 20) ? "Capricórnio" : "Aquário");
+    strcpy(elemento, (dia <= 20) ? "Terra" : "Ar");
+  } else if (mes == 2) {
+    strcpy(signo, (dia <= 19) ? "Aquário" : "Peixes");
+    strcpy(elemento, (dia <= 19) ? "Ar" : "Água");
+  } else if (mes == 3) {
+    strcpy(signo, (dia <= 20) ? "Peixes" : "Áries");
+    strcpy(elemento, (dia <= 20) ? "Água" : "Fogo");
+  } else if (mes == 4) {
+    strcpy(signo, (dia <= 20) ? "Áries" : "Touro");
+    strcpy(elemento, (dia <= 20) ? "Fogo" : "Terra");
+  } else if (mes == 5) {
+    strcpy(signo, (dia <= 21) ? "Touro" : "Gêmeos");
+    strcpy(elemento, (dia <= 21) ? "Terra" : "Ar");
+  } else if (mes == 6) {
+    strcpy(signo, (dia <= 21) ? "Gêmeos" : "Câncer");
+    strcpy(elemento, (dia <= 21) ? "Ar" : "Água");
+  } else if (mes == 7) {
+    strcpy(signo, (dia <= 22) ? "Câncer" : "Leão");
+    strcpy(elemento, (dia <= 22) ? "Água" : "Fogo");
+  } else if (mes == 8) {
+    strcpy(signo, (dia <= 23) ? "Leão" : "Virgem");
+    strcpy(elemento, (dia <= 23) ? "Fogo" : "Terra");
+  } else if (mes == 9) {
+    strcpy(signo, (dia <= 23) ? "Virgem" : "Libra");
+    strcpy(elemento, (dia <= 23) ? "Terra" : "Ar");
+  } else if (mes == 10) {
+    strcpy(signo, (dia <= 23) ? "Libra" : "Escorpião");
+    strcpy(elemento, (dia <= 23) ? "Ar" : "Água");
+  } else if (mes == 11) {
+    strcpy(signo, (dia <= 22) ? "Escorpião" : "Sagitário");
+    strcpy(elemento, (dia <= 22) ? "Água" : "Fogo");
+  } else if (mes == 12) {
+    strcpy(signo, (dia <= 21) ? "Sagitário" : "Capricórnio");
+    strcpy(elemento, (dia <= 21) ? "Fogo" : "Terra");
+  } else {
+    printf("Data de nascimento inválida.\n");
+    return 1;
+  }
+  return 0;
+}
+
+int E_vazia(Signo *Ptl) {
+  if (Ptl == NULL)
+    return 1;
+  return 0;
+}
+
+
+const char *obterMes(int numeroDoMes) {
+    // Array de strings contendo os nomes dos meses
+    static const char *meses[] = {
+        "Janeiro", "Fevereiro", "Março",    "Abril",   "Maio",     "Junho",
+        "Julho",   "Agosto",    "Setembro", "Outubro", "Novembro", "Dezembro"
+    };
+
+    // Verifica se o número do mês está dentro do intervalo válido
+    if (numeroDoMes < 1 || numeroDoMes > 12) {
+        printf("%s🚫 %sNúmero do mês inválido!%s\n", RED, CYAN, RESET); // Mensagem de erro
+        return NULL;
+    }
+
+    // Retorna o nome do mês correspondente
+    return meses[numeroDoMes - 1];
+}
+
+void Exibir_lista(Signo *Ptl) {
+
+    // Verifica se a lista está vazia
+    if (E_vazia(Ptl) == 1) {
+        printf("%s%s🔍 %sA lista está vazia! Nada para exibir.%s\n", LIGHT_BLUE, BOLD, RESET, RESET);
+        return;
+    }
+    Signo *aux = Ptl;
+    int cont = 0;
+    // Exibe todos os elementos da lista
+    printf("%s%s📋 %sLista de Astrologistas:%s\n", MAGENTA, BOLD, RESET, RESET);
+    while (aux != NULL) {
+        // Imprime o número e nome do astrologista
+        printf("\n%s%s%d. %s%s%s\n", LIGHT_GREEN, BOLD, ++cont, LIGHT_YELLOW, aux->vetor.nome, RESET);
+
+        // Imprime a data de nascimento com formatação
+        printf("   %s🌟 Data de nascimento: %02d/%s/%04d%s\n", MAGENTA, 
+               aux->vetor.data.dia,
+               obterMes(aux->vetor.data.mes),
+               aux->vetor.data.ano, RESET);
+
+        // Imprime o signo
+        printf("   %s🔮 Signo: %s%s%s\n", GREEN, BOLD, aux->vetor.signo_pessoa, RESET);
+
+        // Imprime o elemento
+        printf("   %s🌱 Elemento: %s%s%s\n", CYAN, BOLD, aux->vetor.elemento, RESET);
+        aux = aux->prox;
+    }
+    printf("\n%s%s✨ Fim da lista! ✨%s\n", MAGENTA, BOLD, RESET);
+}
+
+
+Signo *Remove_elem(Signo *Ptl, int pos){
+
+    // Verifica se a posição é válida
+    if (pos < 0 || pos > Quantidade_Elementos(Ptl)) {
+        printf("%s⚠️ Erro: Posição inválida!%s\n", RED, RESET);
+        return Ptl;
+    }
+
+    // Remove o elemento da lista
+    if (Ptl == NULL) {
+        printf("%s🔍 A lista já está vazia!%s\n", YELLOW, RESET);
+        return Ptl;
+    }
+
+    // Move os elementos para preencher o espaço do elemento removido
+    Signo* atual = Ptl;
+    Signo* anterior = NULL;
+    int cont = 0;
+
+    while (atual != NULL && cont < pos){
+        anterior = atual;
+        atual = atual->prox;
+        cont++;
+    }
+
+    if (pos == 0){
+        Ptl = Ptl->prox;
+    }
+    else{
+        anterior->prox = atual->prox;
+    }
+    free(atual);
+
+    // Exibe a confirmação de remoção
+    printf("%s🗑️ Removendo o %dº astrologista...%s\n", MAGENTA, pos + 1, RESET);
+
+    // Mensagem de sucesso
+    printf("%s✅ Astrologista removido com sucesso!%s\n", GREEN, RESET);
+
+    return Ptl;
+}
+
+void Salvar_lista(Signo *Ptl) {
+    FILE *file;
+
+    // Solicita ao usuário o nome do arquivo
+    printf("%s🔹 %sDigite o nome do arquivo para salvar a lista%s: %s", CYAN, BOLD, RESET, RESET);
+    char nome[100];
+    int cont = 0;
+    scanf("%s", nome);
+    limparbuffer();
+    strcat(nome, ".txt"); // Adiciona a extensão para o arquivo textual
+    file = fopen(nome, "w");
+
+    // Verifica se o arquivo foi aberto corretamente
+    if (file == NULL) {
+        printf("%s❌ %sErro ao abrir o arquivo!%s\n", RED, BOLD, RESET);
+        limpar();
+        return;
+    }
+
+    // Mensagem de introdução no arquivo
+    fprintf(file,
+            "🌟✨ As estrelas, distantes e onipotentes, apenas contemplam o movimento "
+            "incessante das engrenagens do destino. Sabem que, a cada passo, uma "
+            "nova direção já foi traçada antes de ser percorrida. Com seu "
+            "conhecimento do futuro, elas moldam o passado e observam o "
+            "presente. Embora vejam o que nos é invisível, são tão cínicas que "
+            "nunca revelariam o que sabem. ✨🌟\n\n");
+
+    // Grava cada elemento da lista no arquivo
+    Signo *aux = Ptl;
+    while (aux != NULL) {
+        fprintf(file, "%d. %s\n", ++cont, aux->vetor.nome);
+        fprintf(file, "   🌟 Data de nascimento: %02d/%s/%04d\n", 
+                aux->vetor.data.dia,
+                obterMes(aux->vetor.data.mes),
+                aux->vetor.data.ano);
+        fprintf(file, "   🔮 Signo: %s\n", aux->vetor.signo_pessoa);
+        fprintf(file, "   🌱 Elemento: %s\n\n", aux->vetor.elemento);
+        aux = aux->prox;
+    }
+
+    // Fecha o arquivo
+    fclose(file);
+    printf("%s✅ %sElemento(s) salvo(s) com sucesso!%s\n", GREEN, BOLD, RESET);
+}
+
+
+// Função para inicializar os dados dos signos
+void inicializarSignos(Signo_Enciclopedia *signos) {
+  // Inicializando os signos com dados fictícios e descrições
+  strcpy(signos[0].nome, "Áries");
+  strcpy(signos[0].datas, "21 mar - 19 abr");
+  strcpy(signos[0].elemento, "Fogo");
+  strcpy(signos[0].qualidade, "Cardinal");
+  strcpy(signos[0].regente, "Marte");
+  strcpy(signos[0].descricao,
+         "Áries é o primeiro signo do zodíaco, simbolizando novos começos e "
+         "liderança. Pessoas de Áries são conhecidas por sua energia, "
+         "entusiasmo e coragem.");
+
+  strcpy(signos[1].nome, "Touro");
+  strcpy(signos[1].datas, "20 abr - 20 mai");
+  strcpy(signos[1].elemento, "Terra");
+  strcpy(signos[1].qualidade, "Fixo");
+  strcpy(signos[1].regente, "Vênus");
+  strcpy(signos[1].descricao,
+         "Touro é um signo de estabilidade e praticidade. Pessoas de Touro são "
+         "conhecidas por sua determinação, confiabilidade e apreciação do "
+         "conforto material.");
+
+  strcpy(signos[2].nome, "Gêmeos");
+  strcpy(signos[2].datas, "21 mai - 20 jun");
+  strcpy(signos[2].elemento, "Ar");
+  strcpy(signos[2].qualidade, "Mutável");
+  strcpy(signos[2].regente, "Mercúrio");
+  strcpy(signos[2].descricao,
+         "Gêmeos é o signo da comunicação e adaptabilidade. Pessoas de Gêmeos "
+         "são versáteis, curiosas e têm um talento para lidar com várias "
+         "informações ao mesmo tempo.");
+
+  strcpy(signos[3].nome, "Câncer");
+  strcpy(signos[3].datas, "21 jun - 22 jul");
+  strcpy(signos[3].elemento, "Água");
+  strcpy(signos[3].qualidade, "Cardinal");
+  strcpy(signos[3].regente, "Lua");
+  strcpy(signos[3].descricao,
+         "Câncer é o signo das emoções e da família. Pessoas de Câncer são "
+         "sensíveis, protetoras e muito ligadas às suas raízes e aos seus "
+         "entes queridos.");
+
+  strcpy(signos[4].nome, "Leão");
+  strcpy(signos[4].datas, "23 jul - 22 ago");
+  strcpy(signos[4].elemento, "Fogo");
+  strcpy(signos[4].qualidade, "Fixo");
+  strcpy(signos[4].regente, "Sol");
+  strcpy(
+      signos[4].descricao,
+      "Leão é o signo da autoconfiança e da criatividade. Pessoas de Leão são "
+      "carismáticas, generosas e gostam de estar no centro das atenções.");
+
+  strcpy(signos[5].nome, "Virgem");
+  strcpy(signos[5].datas, "23 ago - 22 set");
+  strcpy(signos[5].elemento, "Terra");
+  strcpy(signos[5].qualidade, "Mutável");
+  strcpy(signos[5].regente, "Mercúrio");
+  strcpy(signos[5].descricao,
+         "Virgem é o signo da análise e do detalhe. Pessoas de Virgem são "
+         "práticas, meticulosas e têm um grande talento para organizar e "
+         "melhorar sistemas.");
+
+  strcpy(signos[6].nome, "Libra");
+  strcpy(signos[6].datas, "23 set - 22 out");
+  strcpy(signos[6].elemento, "Ar");
+  strcpy(signos[6].qualidade, "Cardinal");
+  strcpy(signos[6].regente, "Vênus");
+  strcpy(signos[6].descricao, "Libra é o signo da harmonia e da justiça. "
+                              "Pessoas de Libra são diplomáticas, equilibradas "
+                              "e têm um forte senso estético e de parceria.");
+
+  strcpy(signos[7].nome, "Escorpião");
+  strcpy(signos[7].datas, "23 out - 21 nov");
+  strcpy(signos[7].elemento, "Água");
+  strcpy(signos[7].qualidade, "Fixo");
+  strcpy(signos[7].regente, "Plutão");
+  strcpy(signos[7].descricao,
+         "Escorpião é o signo da transformação e da intensidade. Pessoas de "
+         "Escorpião são apaixonadas, determinadas e têm um profundo "
+         "entendimento das emoções humanas.");
+
+  strcpy(signos[8].nome, "Sagitário");
+  strcpy(signos[8].datas, "22 nov - 21 dez");
+  strcpy(signos[8].elemento, "Fogo");
+  strcpy(signos[8].qualidade, "Mutável");
+  strcpy(signos[8].regente, "Júpiter");
+  strcpy(signos[8].descricao,
+         "Sagitário é o signo da aventura e da expansão. Pessoas de Sagitário "
+         "são otimistas, curiosas e têm um grande desejo de explorar o mundo e "
+         "buscar conhecimento.");
+
+  strcpy(signos[9].nome, "Capricórnio");
+  strcpy(signos[9].datas, "22 dez - 19 jan");
+  strcpy(signos[9].elemento, "Terra");
+  strcpy(signos[9].qualidade, "Cardinal");
+  strcpy(signos[9].regente, "Saturno");
+  strcpy(signos[9].descricao,
+         "Capricórnio é o signo da ambição e da disciplina. Pessoas de "
+         "Capricórnio são responsáveis, práticas e têm um forte desejo de "
+         "alcançar seus objetivos e construir segurança.");
+
+  strcpy(signos[10].nome, "Aquário");
+  strcpy(signos[10].datas, "20 jan - 18 fev");
+  strcpy(signos[10].elemento, "Ar");
+  strcpy(signos[10].qualidade, "Fixo");
+  strcpy(signos[10].regente, "Urano");
+  strcpy(
+      signos[10].descricao,
+      "Aquário é o signo da inovação e da individualidade. Pessoas de Aquário "
+      "são originais, humanitárias e têm uma visão progressista do futuro.");
+
+  strcpy(signos[11].nome, "Peixes");
+  strcpy(signos[11].datas, "19 fev - 20 mar");
+  strcpy(signos[11].elemento, "Água");
+  strcpy(signos[11].qualidade, "Mutável");
+  strcpy(signos[11].regente, "Netuno");
+  strcpy(signos[11].descricao,
+         "Peixes é o signo da intuição e da empatia. Pessoas de Peixes são "
+         "sonhadoras, compassivas e têm uma conexão profunda com as emoções e "
+         "a espiritualidade.");
+}
+
+// Função para exibir informações detalhadas de um signo baseado no índice fornecido
+void exibirInformacoes(const Signo_Enciclopedia *signos, int index) {
+    // Exibe o título da seção de informações do signo
+    printf("%s📜 Informações do Signo:%s\n", MAGENTA, RESET);
+    // Exibe o nome do signo
+    printf("%s🌟 Signo:%s %s\n", CYAN, RESET, signos[index].nome);
+    // Exibe as datas associadas ao signo
+    printf("%s📅 Datas:%s %s\n", CYAN, RESET, signos[index].datas);
+    // Exibe o elemento associado ao signo
+    printf("%s🌿 Elemento:%s %s\n", GREEN, RESET, signos[index].elemento);
+    // Exibe a qualidade do signo
+    printf("%s🔧 Qualidade:%s %s\n", YELLOW, RESET, signos[index].qualidade);
+    // Exibe o regente do signo
+    printf("%s👑 Regente:%s %s\n", CYAN, RESET, signos[index].regente);
+    // Exibe a descrição do signo
+    printf("%s📝 Descrição:%s %s\n\n", MAGENTA, RESET, signos[index].descricao);
+}
+
+// Função para exibir a lista de signos do zodíaco com seus respectivos emojis
+void exibirSignos(void) {
+    // Exibe a lista de signos do zodíaco com formatação e emojis
+    printf("%s🌟 Lista dos Signos do Zodíaco:%s\n", MAGENTA, RESET);
+    printf("%s[1] - %sÁries%s 🐏\n", GREEN, BLUE, RESET);
+    printf("%s[2] - %sTouro%s 🐂\n", GREEN, BLUE, RESET);
+    printf("%s[3] - %sGêmeos%s 👯\n", GREEN, BLUE, RESET);
+    printf("%s[4] - %sCâncer%s 🦀\n", GREEN, BLUE, RESET);
+    printf("%s[5] - %sLeão%s 🦁\n", GREEN, BLUE, RESET);
+    printf("%s[6] - %sVirgem%s 🌾\n", GREEN, BLUE, RESET);
+    printf("%s[7] - %sLibra%s ⚖️\n", GREEN, BLUE, RESET);
+    printf("%s[8] - %sEscorpião%s 🦂\n", GREEN, BLUE, RESET);
+    printf("%s[9] - %sSagitário%s 🏹\n", GREEN, BLUE, RESET);
+    printf("%s[10] - %sCapricórnio%s 🐐\n", GREEN, BLUE, RESET);
+    printf("%s[11] - %sAquário%s 🌊\n", GREEN, BLUE, RESET);
+    printf("%s[12] - %sPeixes%s 🐟\n", GREEN, BLUE, RESET);
+}
+
+// Função para calcular e exibir a compatibilidade entre dois signos, com base nas suas posições
+void Compatibilidade_Signos(Signo* Ptl, int pos1, int pos2) {
+
+    // Array com os nomes dos signos do zodíaco
+    const char* signos[] = {
+        "Áries", "Touro", "Gêmeos", "Câncer", "Leão", "Virgem", "Libra", "Escorpião", "Sagitário", "Capricórnio", "Aquário", "Peixes"
+    };
+
+    // Matriz de compatibilidade onde cada célula [i][j] representa a compatibilidade entre o signo i e o signo j
+    int Matriz_Compatibilidade[12][12] = {
+        { 85, 60, 75, 50, 90, 55, 80, 65, 95, 70, 85, 60 }, // Áries
+        { 60, 85, 55, 80, 65, 90, 60, 85, 70, 95, 55, 80 }, // Touro
+        { 75, 55, 85, 60, 80, 65, 90, 55, 85, 60, 95, 70 }, // Gêmeos
+        { 50, 80, 60, 85, 55, 90, 65, 95, 60, 85, 70, 90 }, // Câncer
+        { 90, 65, 80, 55, 85, 60, 75, 55, 95, 70, 85, 60 }, // Leão
+        { 55, 90, 65, 85, 60, 85, 55, 80, 65, 95, 60, 85 }, // Virgem
+        { 80, 60, 90, 65, 75, 55, 85, 60, 80, 65, 95, 70 }, // Libra
+        { 65, 85, 55, 95, 55, 80, 60, 85, 65, 90, 70, 85 }, // Escorpião
+        { 95, 70, 85, 60, 95, 65, 80, 65, 85, 60, 75, 55 }, // Sagitário
+        { 70, 95, 60, 85, 70, 95, 65, 90, 60, 85, 55, 80 }, // Capricórnio
+        { 85, 55, 95, 70, 85, 60, 95, 70, 75, 55, 85, 60 }, // Aquário
+        { 60, 80, 70, 90, 60, 85, 70, 85, 55, 80, 60, 85 }  // Peixes
+    };
+
+     // Verifica se as posições são válidas
+    if (pos1 < 0 || pos1 >= Quantidade_Elementos(Ptl) || pos2 < 0 || pos2 >= Quantidade_Elementos(Ptl)) {
+        printf("%s⚠️ Erro: Posição inválida!%s\n", RED, RESET);
+        return;
+    }
+
+    Signo* aux = Ptl;
+    int indice1 = -1, indice2 = -1;
+    int cont = 0;
+    // Encontra os índices dos signos com base nas posições fornecidas
+    while (aux != NULL){
+        if (cont == pos1){
+            for (int i = 0; i < 12; i++){
+                if (strcmp(signos[i], aux->vetor.signo_pessoa) == 0){
+                    indice1 = i;
+                    break;
+                }
+            }
+        }
+        if (cont == pos2){
+            for (int i = 0; i < 12; i++){
+                if (strcmp(signos[i], aux->vetor.signo_pessoa) == 0){
+                    indice2 = i;
+                    break;
+                }
+            }
+        }
+        aux = aux->prox;
+        cont++;
+    }
+
+    // Verifica se ambos os signos foram encontrados na lista
+    if (indice1 == -1 || indice2 == -1) {
+        printf("%s⚠️ Erro: Um ou ambos os signos não foram encontrados.%s\n", RED, RESET);
+        return;
+    }
+
+    // Imprime o resultado da compatibilidade com formatação e cores
+    printf("\n%s🌟 Compatibilidade entre %s%s%s e %s%s%s:%s\n",
+        CYAN, BLUE, signos[indice1], RESET, BLUE, signos[indice2], RESET, RESET);
+    printf("%s\nCompatibilidade: %d%%%s\n", YELLOW, Matriz_Compatibilidade[indice1][indice2], RESET);
+}
+
+
+// Função para exibir mensagens de boas-vindas
+
+/*
+cd C:\Importante\C
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+.\programa.exe
+*/
+
+void boasVindas() {
+    printf("\n" CYAN BOLD "╔══════════════════════════════════════════════════════════════════════════╗" RESET "\n");
+    printf(CYAN BOLD "║" RESET " 🌟✨ " RED BOLD "Bem-vindo ao " RESET MAGENTA "Programa de Astrologia" CYAN " ✨🌟 " CYAN BOLD "                           ║" RESET "\n");
+    printf(CYAN BOLD "║" RESET " 🌞🌜 " YELLOW "Descubra a compatibilidade dos signos e muito mais!" CYAN " 🌛🌝 " CYAN BOLD "           ║" RESET "\n");
+    printf(CYAN BOLD "║" RESET " 🔮🪐 " GREEN "Que os astros estejam a seu favor!" CYAN " 🪐🔮 " CYAN BOLD "                            ║" RESET "\n");
+    printf(CYAN BOLD "║" RESET " 🌠🌌 " MAGENTA "Vamos explorar o universo dos signos juntos!" CYAN " 🌌🌠 " CYAN BOLD "                  ║" RESET "\n");
+    printf(CYAN BOLD "╚══════════════════════════════════════════════════════════════════════════╝" RESET "\n\n");
+}
+
+// Função para atualizar as informações de um astrologista na lista
+void Atualizar_Astrologista(Signo* Ptl, int pos) {
+    // Verifica se o ponteiro da lista é válido e se a posição fornecida é válida
+    if (Ptl == NULL || pos < 0 || pos >= Quantidade_Elementos(Ptl)) {
+        printf("%s❌ Erro: Astrologista não encontrado!%s\n", RED, RESET);
+        return;
+    }
+    Signo *aux = Ptl;
+    int cont = 0;
+    while (cont < pos){
+        aux = aux->prox;
+        cont++;
+    }
+    // Solicita ao usuário para atualizar as informações do astrologista na posição fornecida
+    printf("%s🔄 Atualize as informações do Astrologista %d:%s\n", CYAN, pos + 1, RESET);
+
+    // Atualiza o nome do astrologista
+    printf("%sInsira o novo nome: %s", LIGHT_GREEN, RESET);
+    scanf(" %49[^\n]", aux->vetor.nome);
+    limparbuffer();
+
+    // Atualiza o dia de nascimento
+    printf("%sInsira o novo dia de nascimento: %s", LIGHT_GREEN, RESET);
+    scanf("%d", &aux->vetor.data.dia);
+    limparbuffer();
+
+    // Atualiza o mês de nascimento
+    printf("%sInsira o novo mês de nascimento: %s", LIGHT_GREEN, RESET);
+    scanf("%d", &aux->vetor.data.mes);
+    limparbuffer();
+
+    // Atualiza o ano de nascimento
+    printf("%sInsira o novo ano de nascimento: %s", LIGHT_GREEN, RESET);
+    scanf("%d", &aux->vetor.data.ano);
+    limparbuffer();
+
+    // Atualiza o signo e elemento com base na nova data de nascimento
+    determinarSignoEElemento(aux->vetor.data.dia, aux->vetor.data.mes,
+                             aux->vetor.signo_pessoa, aux->vetor.elemento);
+
+    // Confirmação de sucesso
+    printf("%s✅ Astrologista atualizado com sucesso!%s\n", GREEN, RESET);
+}
+
+// Função para buscar um astrologista pelo nome na lista
+void Buscar_Astrologista(Signo* Ptl, char* nome) {
+    // Verifica se o ponteiro da lista é válido
+    if (Ptl == NULL) {
+        printf("%s❌ Erro: Lista vazia!%s\n", RED, RESET);
+        return;
+    }
+
+    int encontrado = 0;
+    Signo* aux = Ptl;
+    // Percorre a lista procurando pelo nome do astrologista
+    while (aux != NULL) {
+        // Compara o nome do astrologista usando uma comparação case-insensitive
+        if (strcasecmp(aux->vetor.nome, nome) == 0) {
+            // Exibe as informações do astrologista encontrado
+            printf("%s🌟 Astrologista Encontrado! 🌟%s\n\n", CYAN, RESET);
+            printf("%s📝 Nome: %s%s\n", GREEN, RESET, aux->vetor.nome);
+            printf("%s📅 Data de nascimento: %d/%s/%d%s\n", MAGENTA, aux->vetor.data.dia,
+                   obterMes(aux->vetor.data.mes), aux->vetor.data.ano, RESET);
+            printf("%s♌ Signo: %s%s\n", BLUE, aux->vetor.signo_pessoa, RESET);
+            printf("%s🌈 Elemento: %s%s\n\n", YELLOW, aux->vetor.elemento, RESET);
+            encontrado = 1;
+            break;
+        }
+        aux = aux->prox;
+    }
+
+    if (!encontrado) {
+        printf("%s🔍🙁 Astrologista não encontrado! 🙁🔍%s\n", RED, RESET);
+    }
+}
+
+
+// Função para obter o nome do signo com base no índice
+const char* obterSignoPorIndice(int indice) {
+    // Array de strings contendo os nomes dos signos
+    static const char* signos[] = {
+        "Áries", "Touro", "Gêmeos", "Câncer", "Leão", 
+        "Virgem", "Libra", "Escorpião", "Sagitário", 
+        "Capricórnio", "Aquário", "Peixes"
+    };
+
+    // Verifica se o índice está dentro do intervalo válido e retorna o nome do signo
+    if (indice >= 0 && indice < 12) {
+        return signos[indice];
+    }
+    return "Desconhecido";
+}
+
+// Função para exibir estatísticas dos signos presentes na lista de astrologistas
+void Exibir_Estatisticas(Signo* Ptl) {
+    
+    // Emojis representando os signos
+    const char* emojis[] = {
+        "♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"
+    };
+
+    // Nomes dos signos
+    const char* signos[] = {
+        "Áries", "Touro", "Gêmeos", "Câncer", "Leão", 
+        "Virgem", "Libra", "Escorpião", "Sagitário", 
+        "Capricórnio", "Aquário", "Peixes"
+    };
+
+    // Verifica se a lista foi inicializada e se não está vazia
+    if (Ptl == NULL || E_vazia(Ptl) == 1) {
+        printf("%s❌ Lista não inicializada ou vazia!%s\n", RED, RESET);
+        return;
+    }
+
+    int total = Quantidade_Elementos(Ptl);
+    int signos_count[12] = {0}; // Array para contar o número de astrologistas por signo
+    Signo* aux = Ptl;
+    // Conta o número de astrologistas para cada signo
+    while (aux != NULL){
+        for (int j = 0; j < 12; j++) {
+            if (strcmp(aux->vetor.signo_pessoa, obterSignoPorIndice(j)) == 0) {
+                signos_count[j]++;
+                break;
+            }
+        }
+            aux = aux->prox;
+    }
+    
+
+    // Exibe as estatísticas da lista
+    printf("%s📊 Estatísticas da Lista:%s\n", MAGENTA, RESET);
+    printf("%sTotal de Astrologistas: %d%s\n", CYAN, total, RESET);
+
+    // Exibe o número de astrologistas para cada signo com seus respectivos emojis
+    for (int i = 0; i < 12; i++) {
+        printf("%s%s %s: %d%s %s %.1f%%%s\n", BOLD, emojis[i], signos[i], signos_count[i], RESET, GREEN, (signos_count[i]/(float)total)*100, RESET);
+    }
+}
+
+// Função que conta o número de elementos em uma lista encadeada de Signos
+int Quantidade_Elementos(Signo* Ptl){
+    Signo* aux = Ptl; // Ponteiro auxiliar para iterar pela lista
+    int cont = 0; // Contador de elementos
+    while (aux != NULL){ // Enquanto houver elementos na lista
+        cont++; // Incrementa o contador
+        aux = aux->prox; // Move para o próximo elemento
+    }
+    return cont; // Retorna a quantidade de elementos
+}
+
+// Função que divide a lista em duas metades e retorna o início da segunda metade
+Signo* Dividir_Lista(Signo* Ptl){
+
+    // Verifica se a lista está vazia ou tem apenas um elemento
+    if (!Ptl || !Ptl->prox)
+        return Ptl;
+    
+    Signo* Anda_2 = Ptl; // Ponteiro que avança duas posições na lista
+    Signo* Anda_1 = Ptl; // Ponteiro que avança uma posição na lista
+    Signo* Anterior = NULL; // Ponteiro para o elemento anterior
+
+    // Avança os ponteiros para encontrar o meio da lista
+    while (Anda_2 && Anda_2->prox){
+        Anda_2 = Anda_2->prox->prox; // Anda duas posições
+        Anterior = Anda_1; // Atualiza o ponteiro anterior
+        Anda_1 = Anda_1->prox; // Anda uma posição
+    }
+
+    // Divide a lista
+    Anterior->prox = NULL;
+    return Anda_1; // Retorna o início da segunda metade da lista
+}
+
+// Função que junta duas listas ordenadas em uma única lista ordenada
+Signo *Juntar_Lista(Signo* Esquerda, Signo* Direita){
+
+    // Se uma das listas estiver vazia, retorna a outra lista
+    if(!Esquerda) return Direita;
+    if(!Direita) return Esquerda;
+
+    Signo *Cabeca = NULL; // Cabeça da lista resultante
+    Signo **Atual = &Cabeca; // Ponteiro para o ponteiro atual na lista resultante
+
+    // Junta as duas listas ordenadas
+    while (Esquerda && Direita){
+        if (strcasecmp(Esquerda->vetor.nome, Direita->vetor.nome) <= 0){
+            *Atual = Esquerda; // Adiciona o elemento da lista esquerda
+            Esquerda = Esquerda->prox; // Avança na lista esquerda
+        }
+        else{
+            *Atual = Direita; // Adiciona o elemento da lista direita
+            Direita = Direita->prox; // Avança na lista direita
+        }
+        Atual = &((*Atual)->prox); // Avança o ponteiro atual na lista resultante
+    }
+    // Adiciona os elementos restantes da lista não vazia
+    *Atual = (Esquerda) ? Esquerda : Direita;
+    return Cabeca; // Retorna a lista resultante
+}
+
+// Função que ordena uma lista encadeada de Signos usando o algoritmo Merge Sort
+Signo *Ordenar(Signo * Cabeca){
+    
+    // Verifica se a lista está vazia ou tem apenas um elemento
+    if (!Cabeca || !Cabeca->prox)
+        return Cabeca;
+
+    Signo *Meio = Dividir_Lista(Cabeca); // Divide a lista em duas metades
+    Signo *Esquerda = Ordenar(Cabeca); // Ordena a primeira metade
+    Signo *Direita = Ordenar(Meio); // Ordena a segunda metade
+
+    // Junta as duas metades ordenadas
+    return Juntar_Lista(Esquerda, Direita);
+}
+
+// Função que remove elementos repetidos de uma lista ordenada de Signos
+Signo *Remove_elem_repetido(Signo *Ptl){
+
+    // Lista Vazia
+    if (Ptl == NULL) {
+        return Ptl;
+    }
+
+    // Cria um nó fictício para simplificar a remoção de elementos repetidos
+    Signo Inutil;
+    Inutil.prox = Ptl;
+    Signo* atual = &Inutil; // Ponteiro para o nó fictício
+
+    // Percorre a lista removendo elementos repetidos
+    while (atual->prox && atual->prox->prox){
+        // Compara o nome dos elementos atuais e próximos
+        if (strcasecmp(atual->prox->vetor.nome, atual->prox->prox->vetor.nome) == 0){
+            Signo *temp = atual->prox; // Guarda o elemento repetido
+            atual->prox = atual->prox->prox; // Remove o elemento repetido
+            free(temp); // Libera a memória do elemento removido
+        }
+        else
+            atual = atual->prox; // Avança para o próximo elemento
+    }
+
+    return Inutil.prox; // Retorna a lista sem elementos repetidos
+}
+

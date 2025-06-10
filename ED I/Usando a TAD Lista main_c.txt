@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "llaeas.h"
+
+// Função principal
+int main (){
+    // Criação da lista usando a função Cria_lista()
+    Lista *Ptl = Cria_lista();
+    int elem = 0;
+
+    // Loop para inserção de elementos até o usuário digitar -1
+    while (!E_cheia(Ptl) && elem != -1){
+        printf("Digite um elemento ou -1 para finalizar: ");
+        scanf("%d", &elem);
+        limparbuffer(); // Função para limpar o buffer de entrada
+
+        // Se o elemento for maior que 0 ou igual, insere na lista
+        if (elem >= 0){
+            Ptl = Insere_elem(Ptl, elem); // Insere o elemento na lista
+            Exibir_lista(Ptl); // Exibe a lista após a inserção
+        }
+        limpar(); // Função para limpar a tela
+    }
+
+    // Exibe a lista final após todas as inserções
+    Exibir_lista(Ptl);
+
+    // Solicita ao usuário o elemento que deseja remover
+    printf("Digite o elemento que deseja remover: ");
+    scanf("%d", &elem);
+    limparbuffer(); // Limpa o buffer de entrada
+
+    // Remove o elemento da lista
+    Ptl = Remove_elem(Ptl, elem);
+    limpar(); // Limpa a tela
+
+    // Exibe a lista após a remoção do elemento
+    Exibir_lista(Ptl);
+    limpar(); // Limpa a tela novamente
+
+    // Salva a lista resultante em um arquivo de texto
+    Salvar_lista(Ptl);
+    limpar(); // Limpa a tela
+
+    // Libera a memória alocada pela lista
+    Ptl = Libera_lista(Ptl);
+
+    // Mensagem final indicando que o programa terminou
+    printf("Programa finalizado!\n");
+    return 0;
+}

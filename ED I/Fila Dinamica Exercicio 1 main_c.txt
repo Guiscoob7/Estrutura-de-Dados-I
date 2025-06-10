@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "funcoes.h"
+
+// 🌟 Função principal
+int main() {
+    boasVindas();  // 🎉 Exibe mensagem de boas-vindas
+    limpar();      // 🧹 Limpa o console
+
+    Fila* filas[4];  // 📂 Array de filas para armazenar os números
+    for (int i = 0; i < 4; i++)
+        filas[i] = Cria_Fila();  // 🛠️ Inicializa cada fila
+
+    int num;  // 🔢 Variável para armazenar o número convertido
+    char frase[50];  // 📝 Array para armazenar a entrada do usuário
+
+    printf(LIGHT_GREEN BOLD "🌟 Bem-vindo ao manipulador de filas! 🚀" RESET "\n\n");
+
+    // ✏️ Solicita a entrada de números ao usuário
+    printf(YELLOW "✏️  Digite diversos números inteiros e aperte " RESET RED "ENTER: " RESET);
+    scanf("%49[^\n]", frase);  // 📥 Lê uma linha de números inteiros
+    limparbuffer();  // 🧹 Limpa o buffer de entrada
+
+    char *token = strtok(frase, " ");  // ✂️ Separa a string em tokens (números)
+    while (token != NULL)
+    {
+        num = atoi(token);  // 🔄 Converte o token em número inteiro
+        filas[0] = Insere_Fila(filas[0], num);  // ➕ Insere o número na primeira fila
+        token = strtok(NULL, " ");  // 👉 Vai para o próximo token
+    }
+    limpar();  // 🧹 Limpa a tela
+
+    // 🔄 Processa e organiza os números nas respectivas filas
+    printf(BLUE BOLD "🔄 Processando os números e organizando nas filas... ⏳" RESET "\n");
+    Manipular_fila(filas);  // 🛠️ Chama a função que manipula as filas
+    limpar();  // 🧹 Limpa a tela
+
+    // 📋 Exibe o conteúdo da primeira fila (todos os números)
+    printf(BLACK "📋 Fila Original F (todos os números): " RESET);
+    Exibir_Fila(filas[0]);  // 👀 Mostra os números inseridos na fila F
+    printf("\n");
+    limpar();  // 🧹 Limpa a tela
+
+    // 🔢 Exibe a fila com múltiplos de 2
+    printf(CYAN "🔢 Fila F2 (múltiplos de 2): " RESET);
+    Exibir_Fila(filas[1]);  // 👀 Mostra os múltiplos de 2
+    printf("\n");
+    limpar();  // 🧹 Limpa a tela
+
+    // 📈 Exibe a fila com múltiplos de 3
+    printf(LIGHT_CYAN "📈 Fila F3 (múltiplos de 3): " RESET);
+    Exibir_Fila(filas[2]);  // 👀 Mostra os múltiplos de 3
+    printf("\n");
+    limpar();  // 🧹 Limpa a tela
+
+    // ❗ Exibe a fila com os outros valores
+    printf(RED "❗ Fila F4 (outros valores): " RESET);
+    Exibir_Fila(filas[3]);  // 👀 Mostra os valores que não são múltiplos de 2 ou 3
+    printf("\n");
+    limpar();  // 🧹 Limpa a tela
+
+    // 🧹 Libera todas as filas e limpa a memória
+    printf(ORANGE BOLD "🧹 Liberando todas as filas... 🗑️" RESET "\n");
+    for (int i = 0; i < 4; i++)
+        filas[i] = Libera_fila(filas[i]);  // 🚮 Libera a memória de cada fila
+    limpar();  // 🧹 Limpa a tela
+
+    // ✅ Mensagem de finalização com sucesso
+    printf(PURPLE BOLD "✅ Todas as filas foram liberadas com sucesso! 🎉" RESET "\n");
+    printf(BLACK BOLD "👀 Programa Finalizado!" RESET "\n");
+
+    return 0;  // 🔚 Fim do programa
+}

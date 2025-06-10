@@ -1,0 +1,516 @@
+//funcoes.c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+#include "funcoes.h"
+
+#define TAM_SEQUENCIA 5
+
+// Função para limpar a tela e aguardar a pressão de ENTER 🚿⏳
+void limpar() 
+{
+    // 🛑 Solicita ao usuário para pressionar ENTER e limpar a tela
+    printf("\n\n%s🛑 %sPressione ENTER para continuar... %s🛑%s: ", LIGHT_CYAN, LIGHT_YELLOW, LIGHT_CYAN, RESET);
+    getchar();  // ⏳ Espera a entrada do usuário
+    #ifdef _WIN32
+        system("cls");  // 🖥️ Comando específico para Windows para limpar a tela
+    #else
+        system("clear");  // 🍏 Comando específico para Linux/Mac para limpar a tela
+    #endif
+}
+
+void limparImediato()
+{
+    #ifdef _WIN32
+        system("cls");  // 🖥️ Comando específico para Windows para limpar a tela
+    #else
+        system("clear");  // 🍏 Comando específico para Linux/Mac para limpar a tela
+    #endif
+}
+
+// Função para limpar o buffer de entrada 🧹
+void limparbuffer() 
+{
+    int c;
+    // 🧹 Remove todos os caracteres do buffer de entrada até o fim da linha ou o EOF
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+/*
+💻 Instruções de execução:
+cd C:\Importante\C (caminho até a pasta em que se encontra o .exe)
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
+.\programa.exe (nome do programa.exe)
+*/
+
+// Função para exibir mensagens de boas-vindas sobre uma fila da morte ⚰️💀
+void boasVindas() 
+{
+    // Exibe uma borda superior da caixa de boas-vindas ⚰️💀
+    printf("\n" RED BOLD "╔════════════════════════════════════════════════════════════════════════════╗" RESET "\n");
+    // 💀⚔️ Mensagem de boas-vindas com destaque para a "Fila da Morte"
+    printf(RED BOLD "║" RESET " 💀⚔️ " BOLD RED "Bem-vindo à " RESET RED BOLD "Fila da Morte" RESET RED BOLD " ⚔️💀 " RED BOLD "                                       ║" RESET "\n");
+    // ☠️⏳ Mensagem sobre o fim iminente na fila
+    printf(RED BOLD "║" RESET " ☠️⏳ " YELLOW "A morte é inevitável, aguarde sua vez na fila!" RESET RED BOLD " ⏳☠️ " RED BOLD "                  ║" RESET "\n");
+    // ⚰️💉 Mensagem sobre o destino cruel que aguarda
+    printf(RED BOLD "║" RESET " ⚰️💉 " MAGENTA "Seu destino está selado, escolha seu crime final!" RESET RED BOLD " 💉⚰️ " RED BOLD "               ║" RESET "\n");
+    // 🗡️🔥 Mensagem sobre o julgamento sombrio
+    printf(RED BOLD "║" RESET " 🗡️🔥 " GREEN "O julgamento é implacável, só resta o fim!" RESET RED BOLD " 🔥🗡️ " RED BOLD "                      ║" RESET "\n");
+    // Exibe uma borda inferior da caixa de boas-vindas ⚰️💀
+    printf(RED BOLD "╚════════════════════════════════════════════════════════════════════════════╝" RESET "\n\n");
+    limpar();
+}
+
+// Função para exibir o menu principal com opções ⚰️🔪
+void exibeMenu() 
+{
+    // 💀 Exibe um menu sombrio e com emojis apropriados ao tema da morte
+    printf(RED "\n🕯️⚰️ Bem-vindo ao Gerenciador da Fila da Morte ⚰️🕯️\n\n" RESET);
+    printf(YELLOW "📜 Escolha seu destino:\n" RESET);
+    printf(RED "🔪 [1] - Adicionar Condenado\n" RESET);  
+    printf(GREEN "⚖️ [2] - Exibir Condenados\n" RESET);  
+    printf(BLUE "🩸 [3] - Consultar Condenado\n" RESET);  
+    printf(CYAN "⚔️ [4] - Executar Condenado\n" RESET);  
+    printf(MAGENTA "📉 [5] - Analisar Tempo da Fila Estática\n" RESET);  
+    printf(DOURADO "📊 [6] - Analisar Tempo da Fila Dinâmica\n" RESET);  
+    printf(PINK "🩸 [7] - Desafiar Condenado\n" RESET);  // Agora opção 7
+    printf(RED "🚪 [8] - Abandonar a Fila\n" RESET);  // Agora opção 8
+    printf(YELLOW "\n👉 Faça sua escolha: " RESET);  
+}
+
+
+
+// Função para criar a fila estática da "morte" ⚰️🛠️
+filaDaMorteEstatica* criarFilaEstatica(filaDaMorteEstatica *fila) 
+{
+    fila = (filaDaMorteEstatica*)malloc(sizeof(filaDaMorteEstatica));
+    if (fila) {
+        fila->IF = 0;
+        fila->FF = 0;
+        fila->N = 0;
+    } else {
+        printf(RED "⚠️ Erro ao criar a fila estática da morte!\n" RESET);
+    }
+    return fila;
+}
+
+// Função para criar a fila dinâmica da "morte" ⚰️🔄
+filaDaMorteDinamica* criarFilaDinamica(filaDaMorteDinamica *fila) 
+{
+    fila = (filaDaMorteDinamica*)malloc(sizeof(filaDaMorteDinamica));
+    if (fila) {
+        fila->Prim = NULL;
+        fila->Ult = NULL;
+    } else {
+        printf(RED "⚠️ Erro ao criar a fila dinâmica da morte!\n" RESET);
+    }
+    return fila;
+}
+
+// Verifica se a fila estática está cheia 📋🟡
+int filaCheiaEstatica(filaDaMorteEstatica* fila) 
+{
+    return (fila->N == MAX_FILA);
+}
+
+// Verifica se a fila estática está vazia 📋⚪
+int filaVaziaEstatica(filaDaMorteEstatica* fila) 
+{
+    return (fila->N == 0);
+}
+
+// Verifica se a fila dinâmica está vazia 📋⚪🔄
+int filaVaziaDinamica(filaDaMorteDinamica* fila) 
+{
+    return (fila->Prim == NULL);
+}
+
+// Libera os nós da fila dinâmica ♻️🔄
+filaDaMorteDinamica* liberarFilaDinamica(filaDaMorteDinamica* fila) {
+    noDinamico* aux;
+    while (fila->Prim != NULL) {
+        aux = fila->Prim;
+        fila->Prim = fila->Prim->prox;
+        free(aux);
+    }
+    fila->Prim = NULL;
+    fila->Ult = NULL;
+    printf(GREEN "♻️ Fila Dinâmica liberada!\n\n" RESET);
+    return fila;
+}
+
+// Insere uma pessoa na fila estática 👤📋
+int inserirFilaEstatica(filaDaMorteEstatica* fila, Pessoas dados) 
+{
+    if (!filaCheiaEstatica(fila)) {
+        fila->Pessoa[fila->FF] = dados;
+        fila->FF = (fila->FF + 1) % MAX_FILA;
+        fila->N++;
+        return 1;
+    } else {
+        printf(RED "⚠️ A fila da morte está cheia! Nenhuma nova pessoa pode ser adicionada.\n" RESET);
+        return 0;
+    }
+}
+
+// Insere uma pessoa na fila dinâmica 👤🔄
+void inserirFilaDinamica(filaDaMorteDinamica* fila, Pessoas dados) 
+{
+    noDinamico* novo = (noDinamico*)malloc(sizeof(noDinamico));
+    if (novo) {
+        novo->Pessoa = dados;
+        novo->prox = NULL;
+        if (fila->Ult == NULL) {
+            fila->Prim = novo;
+        } else {
+            fila->Ult->prox = novo;
+        }
+        fila->Ult = novo;
+    }
+}
+
+// Função para gerar professores aleatórios com "crimes" engraçados
+Pessoas gerarProfessores()
+{
+    Pessoas pessoa;
+    strcpy(pessoa.nome, "");
+    strcpy(pessoa.crime, "");
+    int max = 19;
+    int min = 0;
+
+    // Lista de nomes
+    char *nomes[] = {
+        "Adriano Mendonça Rocha",
+        "Alessandra Aparecida Paulino",
+        "Ana Cláudia Martinez",
+        "Andre Luiz Naves de Oliveira",
+        "Caio Augusto Rodrigues dos Santos",
+        "Claudiney Ramos Tinoco",
+        "Daniel Stefany Duarte Caetano",
+        "Daniele Carvalho Oliveira",
+        "Diego Nunes Molinos",
+        "Gustavo de Lima Prado",
+        "Mara Alves Soares",
+        "Mirella Silva Junqueira",
+        "Sara Luzia de Melo",
+        "Thiago Henrique Pereira Silva",
+        "Victor Sobreira",
+        "Vânia de Fatima Lemes de Miranda",
+        "Kárita Barbosa dos Santos",
+        "Thiago Pirola Ribeiro",
+        "Danilo Elias de Oliveira",
+        "Jair Rocha do Prado"};
+
+    // Lista de crimes engraçados
+    char *crimes[] = {
+        "Passou 50 páginas de dever para casa",
+        "Explicou a matéria com memes sem graça",
+        "Usou piadas ruins para ensinar álgebra",
+        "Esqueceu de apagar o quadro por três aulas seguidas",
+        "Fez uma prova surpresa no dia do jogo da Copa",
+        "Canta para acordar os alunos na aula de manhã",
+        "Prometeu revisar a prova e nunca o fez",
+        "Escreveu com letra ilegível no quadro",
+        "Usa slides com fontes minúsculas",
+        "Atrasou a aula por discutir a série favorita",
+        "Esqueceu de passar presença por um mês",
+        "Deu aula no último dia antes das férias",
+        "Fez chamada no primeiro minuto de aula",
+        "Disse que 'a prova vai ser fácil' e não foi",
+        "Colocou pergunta de matéria não ensinada na prova",
+        "Usou vídeos de 2005 para explicar tecnologia",
+        "Diz que vai soltar cedo, mas solta tarde",
+        "Passou tarefa no grupo de WhatsApp à meia-noite",
+        "Exige trabalho em grupo e não forma os grupos",
+        "Usou o tempo da aula para contar histórias pessoais"};
+
+    // Escolher um nome e crime aleatório
+    strcpy(pessoa.nome, nomes[gerarNumeroAleatorio(min, max)]);
+    pessoa.idade = gerarNumeroAleatorio(25, 65); // Idade entre 25 e 65
+    strcpy(pessoa.crime, crimes[gerarNumeroAleatorio(min, max)]);
+    return pessoa;
+}
+// Gera dados aleatórios de uma pessoa 🎲👤
+Pessoas gerarDados() 
+{
+   Pessoas pessoa;
+   gerarStringAleatoria(pessoa.nome, 22);
+   pessoa.idade = gerarNumeroAleatorio(1 , 100);
+   gerarStringAleatoria(pessoa.crime, 44);
+   return pessoa;
+}
+
+// Gera um caractere aleatório (letra maiúscula ou minúscula) 🎲🔠
+char gerarCaractereAleatorio() 
+{
+    int tipo = rand() % 2;
+    if (tipo == 0) return 'a' + rand() % 26;
+    else return 'A' + rand() % 26;
+}
+
+// Gera uma string aleatória com tamanho especificado 🎲✏️
+void gerarStringAleatoria(char *str, int tamanho) 
+{
+    for (int i = 0; i < tamanho; i++)
+        str[i] = gerarCaractereAleatorio();
+    str[tamanho] = '\0';
+}
+
+// Gera um número aleatório entre min e max 🎲🔢
+int gerarNumeroAleatorio(int min, int max) {
+    return rand() % (max - min + 1) + min;
+}
+
+// Exibe os condenados da fila estática 👤⚖️⚰️
+void exibirFilaEstatica(filaDaMorteEstatica* fila) 
+{
+    if (fila->N == 0) {
+        printf(RED "⚠️ A fila estática está vazia. Nenhum condenado à espera...\n\n" RESET);
+        return;
+    }
+    // ⚰️ Exibe os condenados presentes na fila estática
+    printf(GREEN "📜 Condenados na fila estática:\n\n" RESET);
+    
+    // Ajustando o índice para percorrer a fila corretamente
+    int i = fila->IF;
+    int count = 0; // Contador para limitar o número de condenados exibidos
+
+    while (count < fila->N) {
+        // Numerando cada condenado na fila com destaque
+        printf(YELLOW BOLD "👤 Condenado #%d:\n" RESET, count + 1);
+        
+        // 🪦 Exibindo os dados de cada condenado na fila
+        printf(BLUE "🪦 Nome: %s\n" RESET, fila->Pessoa[i].nome);
+        printf(CYAN "⏳ Idade: %d\n" RESET, fila->Pessoa[i].idade);
+        printf(MAGENTA "🚔 Crime: %s\n\n" RESET, fila->Pessoa[i].crime);
+        
+        // Incrementa o índice de forma circular
+        i = (i + 1) % MAX_FILA; // Supondo MAX_FILA como o tamanho máximo da fila
+        
+        count++;
+    }
+
+    // Mensagem de encerramento
+    printf(GREEN BOLD "🏴 Todos os condenados da fila estática foram exibidos.\n\n" RESET);
+}
+
+
+// Exibe os condenados da fila dinâmica 👤🔄⚔️
+void exibirFilaDinamica(filaDaMorteDinamica* fila)
+{
+    if (fila->Prim == NULL) {
+        printf(RED "⚠️ A fila dinâmica está vazia. Nenhum condenado à espera...\n\n" RESET);
+        return;
+    }
+    // ⚔️ Exibe os condenados presentes na fila dinâmica
+    noDinamico* aux = fila->Prim;
+    int contador = 1; // Contador para numerar os condenados
+    printf(GREEN "📜 Condenados na fila dinâmica:\n\n" RESET);
+    while (aux != NULL) {
+        // Numerando cada condenado na fila com destaque
+        printf(YELLOW BOLD "👤 Condenado #%d:\n" RESET, contador++);
+        // 🪦 Exibindo os dados de cada condenado na fila
+        printf(BLUE "🪦 Nome: %s\n" RESET, aux->Pessoa.nome);
+        printf(CYAN "⏳ Idade: %d\n" RESET, aux->Pessoa.idade);
+        printf(MAGENTA "🚔 Crime: %s\n\n" RESET, aux->Pessoa.crime);
+        aux = aux->prox;
+    }
+    // Mensagem de encerramento
+    printf(GREEN BOLD "🏴 Todos os condenados da fila dinâmica foram exibidos.\n\n" RESET);
+}
+
+
+int removeFilaEstatica(filaDaMorteEstatica *fila, Pessoas *pessoa) 
+{
+    // Verifica se a fila é nula ou está vazia
+    if (fila == NULL || fila->N == 0)
+        return 0;
+
+    // Remove o elemento da posição inicial da fila e atualiza o índice de início
+    *pessoa = fila->Pessoa[fila->IF];
+    fila->IF = (fila->IF + 1) % MAX_FILA;
+    fila->N--;
+    return 1;
+}
+
+int removeFilaDinamica(filaDaMorteDinamica *fila, Pessoas *pessoa)
+{
+  noDinamico* aux;
+  if (fila == NULL || fila->Prim == NULL) // Verifica se a fila é válida e não está vazia
+    return 0;
+
+  *pessoa = fila->Prim->Pessoa;              // Captura o valor do primeiro elemento
+  aux = fila->Prim;                      // Ponteiro auxiliar para liberar memória
+  fila->Prim = fila->Prim->prox;          // Atualiza a cabeça da fila
+  if (fila->Prim == NULL)
+    fila->Ult = NULL;                    // Se a fila ficou vazia, atualiza o final
+  free(aux);                            // Libera a memória do nó removido
+  return 1;
+}
+
+int consultaFilaEstatica(filaDaMorteEstatica *fila, Pessoas *pessoas) 
+{
+    // Verifica se a fila é nula ou está vazia
+    if (fila == NULL || fila->N == 0)
+        return 0;
+    
+    // Consulta o elemento na posição inicial da fila
+    *pessoas = (fila)->Pessoa[fila->IF];
+    return 1; // Retorna 1 indicando sucesso na consulta
+}
+
+int consultaFilaDinamica(filaDaMorteDinamica *fila, Pessoas *pessoa)
+{
+  if (fila == NULL || fila->Prim == NULL) // Verifica se a fila é válida e não está vazia
+    return 0;
+  *pessoa = fila->Prim->Pessoa;              // Retorna o valor do primeiro elemento
+  return 1;
+}
+
+void analiseFilaEstatica(filaDaMorteEstatica *fila, Pessoas *pessoa, double* tempos)
+{
+  double start, finish;
+  int cont = 0;
+  int entradas[] = {1000, 3000, 5000, 10000, 25000};
+  for (int i = 0; i < 5; i++)
+  {
+    start = (double) clock();
+    for (int j = 0; j < entradas[i]; j++)
+    {
+        inserirFilaEstatica(fila, gerarDados());
+    }
+    finish = (double) clock();
+    tempos[cont++] = finish - start;
+
+    start = (double) clock();
+
+    exibirFilaEstatica(fila);
+    
+    finish = (double) clock();
+    tempos[cont++] = finish - start;
+
+    start = (double) clock();
+    for (int j = 0; j < entradas[i]; j++)
+    {
+        removeFilaEstatica(fila, pessoa);
+    }
+    finish = (double) clock();
+    tempos[cont++] = finish - start;
+  }
+
+}
+
+void analiseFilaDinamica(filaDaMorteDinamica *fila, Pessoas *pessoa, double* tempos) {
+    double start, finish;
+    int cont = 0;
+    int entradas[] = {1000, 3000, 5000, 10000, 25000};
+    
+    for (int i = 0; i < 5; i++) {
+        // Medindo o tempo de inserção
+        start = (double) clock();
+        for (int j = 0; j < entradas[i]; j++) {
+            inserirFilaDinamica(fila, gerarDados()); // Alterado para a função de inserção da fila dinâmica
+        }
+        finish = (double) clock();
+        tempos[cont++] = finish - start; // Armazenando o tempo de inserção
+
+        // Medindo o tempo de exibição
+        start = (double) clock();
+        exibirFilaDinamica(fila); // Alterado para a função de exibição da fila dinâmica
+        finish = (double) clock();
+        tempos[cont++] = finish - start; // Armazenando o tempo de exibição
+
+        // Medindo o tempo de remoção
+        start = (double) clock();
+        for (int j = 0; j < entradas[i]; j++) {
+            removeFilaDinamica(fila, pessoa); // Alterado para a função de remoção da fila dinâmica
+        }
+        finish = (double) clock();
+        tempos[cont++] = finish - start; // Armazenando o tempo de remoção
+    }
+}
+
+
+// Função para gerar uma sequência de números aleatórios
+void gerarSequencia(int *sequencia, int tamanho) {
+    for (int i = 0; i < tamanho; i++) {
+        sequencia[i] = rand() % 10; // Números de 0 a 9
+    }
+}
+
+// Função para exibir a sequência para o condenado por um curto período
+void exibirSequencia(int *sequencia, int tamanho) {
+    printf(GREEN "⚔️ A sequência de números será exibida por 3 segundos!\n\n" RESET);
+    printf("\t\t");
+    for (int i = 0; i < tamanho; i++) {
+        printf(YELLOW "%d " RESET, sequencia[i]);
+    }
+    printf("\n");
+
+    sleep(3);  // Espera 3 segundos para o condenado memorizar
+
+    limparImediato();
+    printf(RED "\n💥 A sequência desapareceu! Você tem 7 segundos para adivinhar...\n" RESET);
+}
+
+// Função para desafiar o condenado a adivinhar a sequência
+// Função para desafiar o condenado a adivinhar a sequência
+int desafiarCondenado() {
+    int sequencia[TAM_SEQUENCIA];
+    int tentativa[TAM_SEQUENCIA];
+    int acertou = 0;
+
+    srand(time(NULL));  // Inicializa o gerador de números aleatórios
+
+    // Gera a sequência aleatória
+    gerarSequencia(sequencia, TAM_SEQUENCIA);
+
+    // Exibe a sequência para o condenado por um curto tempo
+    exibirSequencia(sequencia, TAM_SEQUENCIA);
+
+    // Espera 7 segundos para o condenado tentar gerar a sequência
+    printf(CYAN "\n⏳ Você tem 10 segundos para tentar adivinhar a sequência de números. Comece agora!\n" RESET);
+    sleep(1);  // Pequena pausa antes de começar
+
+    time_t start_time = time(NULL);  // Registra o tempo de início
+
+    // Tenta gerar a sequência automaticamente até acertar ou o tempo acabar
+    while (time(NULL) - start_time < 10) {  // Enquanto não passar 7 segundos
+        // Gera uma nova tentativa aleatória
+        gerarSequencia(tentativa, TAM_SEQUENCIA);
+
+        // Exibe a tentativa gerada para o condenado (opcional)
+        printf(MAGENTA "Tentativa gerada: ");
+        for (int i = 0; i < TAM_SEQUENCIA; i++) {
+            printf("%d ", tentativa[i]);
+        }
+        printf("\n");
+
+        // Verifica se a tentativa está correta
+        int acerto = 1;
+        for (int i = 0; i < TAM_SEQUENCIA; i++) {
+            if (sequencia[i] != tentativa[i]) {
+                acerto = 0;
+                break;
+            }
+        }
+
+        if (acerto) {
+            acertou = 1;
+            break;  // Se acertou, sai do loop
+        }
+    }
+
+    if (acertou) {
+        printf(GREEN "🎉 Parabéns, você acertou a sequência! Você escapou da morte!\n" RESET);
+        limpar();
+    } else {
+        printf(RED "💥 Que pena, você errou a sequência. Foi removido da fila...\n" RESET);
+        limpar();
+    }
+
+    return acertou;
+}

@@ -1,0 +1,109 @@
+#ifndef PONTO_H
+#define PONTO_H
+
+/* TAD: Ponto (x,y) */
+/* Tipo exportado */
+
+/* Definição do tipo Ponto como uma struct */
+/* A struct Ponto pode conter informações como as coordenadas x e y */
+typedef struct ponto Ponto;
+
+/* Funções exportadas */
+
+/*
+ * Função cria - Aloca e retorna um ponto com coordenadas (x, y)
+ * A função aloca memória para um novo ponto, inicializa suas coordenadas
+ * com os valores fornecidos e armazena o endereço desse ponto no ponteiro
+ * fornecido. Parâmetros:
+ *  - x: coordenada x do ponto
+ *  - y: coordenada y do ponto
+ *  - p: ponteiro para um ponteiro do tipo Ponto onde o ponto será armazenado
+ * Observação: Certifique-se de que o ponteiro **p está inicialmente apontando
+ * para NULL.
+ */
+void pto_cria(float x, float y, Ponto **p);
+
+/*
+ * Função libera - Libera a memória de um ponto previamente criado
+ * A função desaloca a memória associada ao ponto na posição especificada pelo
+ * índice, evitando vazamentos de memória. Parâmetros:
+ *  - p: ponteiro para um ponteiro do tipo Ponto que será liberado
+ *  - indice: índice do ponto a ser liberado
+ * Observação: Após a liberação, o ponteiro **p é definido como NULL.
+ */
+void pto_libera(Ponto **p, int indice);
+
+/*
+ * Função acessa - Retorna os valores das coordenadas de um ponto
+ * A função imprime ou retorna as coordenadas x e y do ponto fornecido.
+ * Parâmetros:
+ *  - p: ponteiro para o ponto cujas coordenadas serão acessadas
+ * Observação: Certifique-se de que o ponteiro p não é NULL antes de chamar esta
+ * função.
+ */
+void pto_acessa(Ponto *p);
+
+/*
+ * Função atribui - Atribui novos valores às coordenadas de um ponto
+ * A função atualiza as coordenadas x e y de um ponto existente.
+ * Parâmetros:
+ *  - p: ponteiro para o ponto cujas coordenadas serão modificadas
+ *  - x: nova coordenada x do ponto
+ *  - y: nova coordenada y do ponto
+ * Observação: A função não aloca nova memória, apenas modifica o ponto
+ * existente.
+ */
+void pto_atribui(Ponto *p, float x, float y);
+
+/*
+ * Função distancia - Retorna a distância entre dois pontos
+ * A função calcula a distância euclidiana entre dois pontos indicados pelos
+ * índices fornecidos. Parâmetros:
+ *  - p: ponteiro para o primeiro ponto
+ *  - indice_1: índice do primeiro ponto
+ *  - indice_2: índice do segundo ponto
+ * Retorna:
+ *  - A distância entre os dois pontos
+ * Observação: A função supõe que os pontos em p são válidos e já foram
+ * alocados.
+ */
+float pto_distancia(Ponto *p, int indice_1, int indice_2);
+
+/*
+ * Função limparbuffer - Limpa o buffer de entrada
+ * A função descarta qualquer caractere residual no buffer de entrada, útil para
+ * evitar comportamentos inesperados ao ler entradas subsequentes.
+ */
+void limparbuffer(void);
+
+/*
+ * Função limpar - Limpa a tela do terminal
+ * A função utiliza comandos do sistema para limpar a tela, melhorando a clareza
+ * da saída do programa. Observação: A implementação depende do sistema
+ * operacional.
+ */
+void limpar(void);
+
+/*
+ * Função buscar_ponto - Busca um ponto a partir de seu índice
+ * A função percorre uma lista de pontos e retorna o ponto correspondente ao
+ * índice fornecido. Parâmetros:
+ *  - p: ponteiro para o primeiro ponto da lista
+ *  - indice: índice do ponto a ser buscado
+ * Retorna:
+ *  - Ponteiro para o ponto encontrado, ou NULL se o índice for inválido
+ * Observação: A função assume que a lista de pontos está devidamente
+ * inicializada.
+ */
+Ponto *buscar_ponto(Ponto *p, int indice);
+
+/*
+ * Função liberar - Libera um ponto
+ * A função desaloca a memória associada a um ponto individual.
+ * Parâmetros:
+ *  - p: ponteiro para o ponto a ser liberado
+ * Observação: Após a liberação, o ponteiro p é definido como NULL.
+ */
+void liberar(Ponto *p);
+
+#endif

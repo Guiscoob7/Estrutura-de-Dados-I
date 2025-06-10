@@ -1,0 +1,154 @@
+//funcoes.c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include "funcoes.h"
+
+// Função para limpar a tela e aguardar a pressão de ENTER 🚿⏳
+void limpar() 
+{
+    printf("\n\n%s🛑 %sPressione ENTER para continuar... %s🛑%s: ", LIGHT_CYAN, LIGHT_YELLOW, LIGHT_CYAN, RESET);
+    getchar();  // ⏳ Espera a entrada do usuário
+    #ifdef _WIN32
+        system("cls");  // 🖥️ Comando específico para Windows para limpar a tela
+    #else
+        system("clear");  // 🍏 Comando específico para Linux/Mac para limpar a tela
+    #endif
+}
+
+// Função para limpar o buffer de entrada 🧹
+void limparbuffer() 
+{
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+// Função para exibir mensagens de boas-vindas sobre uma pilha de palíndromos 🌌💤
+void boasVindas() 
+{
+    printf("\n" PINK BOLD "╔════════════════════════════════════════════════════════════════════════════╗" RESET "\n");
+    printf(PINK BOLD "║" RESET " 🌟✨ " BOLD PINK "Bem-vindo à " RESET PINK BOLD "Pilha dos palíndromos" RESET PINK BOLD " ✨🌟 " PINK BOLD "                               ║" RESET "\n");
+    printf(PINK BOLD "║" RESET " 🌈🎉 " LIGHT_YELLOW "Os palíndromos são a chave para a diversão, entre e descubra!" RESET PINK BOLD " 🎉🌈 " PINK BOLD "   ║" RESET "\n");
+    printf(PINK BOLD "║" RESET " 🌠🎈 " MAGENTA "Cada palíndromo aqui é único, prepare-se para se surpreender!" RESET PINK BOLD " 🎈🌠 " PINK BOLD "   ║" RESET "\n");
+    printf(PINK BOLD "║" RESET " 💖🌙 " GREEN "Mergulhe na sua mente e deixe os palíndromos fluírem!" RESET PINK BOLD " 🌙💖 " PINK BOLD "           ║" RESET "\n");
+    printf(PINK BOLD "╚════════════════════════════════════════════════════════════════════════════╝" RESET "\n\n");
+    limpar();  // Limpa a tela após a mensagem de boas-vindas
+}
+
+
+// Função para criar uma pilha dinâmica de caracteres
+pilhaDinamica* criarPilhaDinamica(void)
+{
+    pilhaDinamica* Ptp = (pilhaDinamica*)malloc(sizeof(pilhaDinamica));  // Aloca memória para a pilha
+    if (Ptp != NULL)
+        Ptp->topo = NULL;  // Inicializa o topo da pilha como NULL
+    return Ptp;  // Retorna o ponteiro para a pilha
+}
+
+// Função para verificar se a pilha está vazia 🛑
+int pilhaVaziaDinamica(pilhaDinamica* Ptp)
+{
+    if (Ptp == NULL)
+        return -1;  // Retorna -1 se a pilha for nula
+    return Ptp->topo == NULL;  // Retorna 1 se a pilha estiver vazia
+}
+
+// Função para empilhar um caractere na pilha dinâmica
+int pushPilhaDinamica(pilhaDinamica* Ptp, char letra)
+{
+    if (Ptp == NULL) {
+        printf("Erro: Pilha nula. ❌\n");  // Mensagem de erro se a pilha for nula
+        return -1;  // Retorna -1 em caso de erro
+    }
+
+    Nodo* novoNodo = (Nodo*)malloc(sizeof(Nodo));  // Aloca memória para o novo nó
+    if (novoNodo == NULL) {
+        printf("Erro: Falha na alocação de memória. ❌\n");  // Mensagem de erro se a alocação falhar
+        return -1;  // Retorna -1 em caso de erro
+    }
+
+    novoNodo->letra = letra;  // Armazena a letra no novo nó
+    novoNodo->proximo = Ptp->topo;  // O novo nó aponta para o antigo topo
+    Ptp->topo = novoNodo;  // O topo da pilha é atualizado para o novo nó
+    return 0;  // Retorna 0 em caso de sucesso
+}
+
+// Função para desempilhar um caractere da pilha dinâmica
+int popPilhaDinamica(pilhaDinamica* Ptp, char* letraRemovida) {
+    if (Ptp == NULL || pilhaVaziaDinamica(Ptp)) {
+        printf(RED "💤 A pilha está vazia ou nula.\n" RESET);  // Mensagem de erro se a pilha estiver vazia
+        return -1;  // Retorna -1 em caso de erro
+    }
+
+    Nodo* temp = Ptp->topo;  // Armazena o topo da pilha em uma variável temporária
+    *letraRemovida = temp->letra;  // Remove a letra do topo
+    Ptp->topo = temp->proximo;  // Atualiza o topo da pilha
+    free(temp);  // Libera a memória do nó removido
+    return 0;  // Retorna 0 em caso de sucesso
+}
+
+// Função para consultar o caractere no topo da pilha dinâmica
+int consultaTopoDinamica(pilhaDinamica* Ptp, char* letraConsultada)
+{
+    if (Ptp == NULL || pilhaVaziaDinamica(Ptp)) {
+        printf(RED "💤 A pilha está vazia ou nula.\n" RESET);  // Mensagem de erro se a pilha estiver vazia
+        return -1;  // Retorna -1 em caso de erro
+    }
+
+    *letraConsultada = Ptp->topo->letra;  // Armazena a letra no topo na variável fornecida
+    return 0;  // Retorna 0 em caso de sucesso
+}
+
+// Função para liberar a memória alocada para a pilha dinâmica
+void liberarPilhaDinamica(pilhaDinamica* Ptp) {
+    if (Ptp != NULL) {
+        Nodo* atual = Ptp->topo;  // Começa do topo da pilha
+        while (atual != NULL) {  // Enquanto houver nós na pilha
+            Nodo* temp = atual;  // Armazena o nó atual
+            atual = atual->proximo;  // Avança para o próximo nó
+            free(temp);  // Libera a memória do nó
+        }
+        free(Ptp);  // Libera a memória da estrutura da pilha
+    }
+}
+
+// Função para processar cada token e verificar palíndromos
+int processarToken(pilhaDinamica* pilha, char* token, char* nomeDepois) {
+    int cont;  // Contador para controlar a posição em nomeDepois
+
+    // Inicializa o contador e limpa nomeDepois
+    cont = 0;
+    memset(nomeDepois, 0, sizeof(nomeDepois));  // Limpa nomeDepois para evitar lixo de memória
+
+    // Insere a palavra na pilha
+    for (int i = 0; token[i] != '\0'; i++) {
+        if (pushPilhaDinamica(pilha, token[i]) == -1) {  // Tenta empilhar cada caractere
+            printf(RED "Erro ao empilhar a palavra: %s\n" RESET, token);  // Mensagem de erro ao empilhar
+            return 0;  // Retorna 0 se houver erro ao empilhar
+        }
+    }
+
+    // Remove elementos da pilha e armazena em nomeDepois
+    while (pilha->topo != NULL) {
+        char letraRemovida;  // Variável para armazenar letra removida
+        if (popPilhaDinamica(pilha, &letraRemovida) == 0) {  // Tenta desempilhar
+            nomeDepois[cont++] = letraRemovida;  // Armazena o caractere removido
+        }
+    }
+    nomeDepois[cont] = '\0';  // Adiciona o terminador de string
+
+    // Verifica se é palíndromo
+    return strcasecmp(token, nomeDepois) == 0;  // Compara a palavra original com a revertida
+}
+
+// Função para substituir caracteres não alfanuméricos por '\0' 🧼
+void substituirCaracteresEspeciais(char *str)
+{
+    for (int i = 0; str[i] != '\0'; i++)
+    {
+        if (!isalnum((unsigned char)str[i]))  // Verifica se o caractere não é alfanumérico
+            str[i] = '\0';  // Substitui por '\0' se não for alfanumérico
+    }
+}

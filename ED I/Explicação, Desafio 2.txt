@@ -1,0 +1,22 @@
+Explicação, Desafio 2:
+
+como 
+- sizeof(vetor) = retorna a quantidade de bytes que o array possui(a quantidade de bytes de um vetor de inteiros é igual à soma dos bytes de todos os seus elementos) 
+ou seja, tamanho de bytes de um array = n (quantidade de elementos) * tamanho de um int
+
+- sizeof(int) = retorna a quantidade de bytes que uma variável inteira possui
+
+logo
+- sizeof(vetor)/sizeof(int) = (n * tamanho de um int)/tamanho de um int, posso cortar tamanho de um int e sobra n = quantidade de elementos de um vetor inteiro (no caso)
+
+no for
+
+for (int i = 0; i < (sizeof(vet)/sizeof(int))/2; i++){
+    vet[i] = vet[i] + vet[(sizeof(vet)/sizeof(int)) - i - 1];
+    vet[(sizeof(vet)/sizeof(int)) - i - 1] = vet[i] - vet[(sizeof(vet)/sizeof(int)) - i - 1];
+    vet[i] = vet[i] - vet[(sizeof(vet)/sizeof(int)) - i - 1];
+  }
+
+o vetor é percorrido até a metade e dividido em duas partes onde há a troca do primeiro elemento da primeira parte com o último elemento da segunda metade, segundo elemento da primeira parte com o penúltimo elemento da segunda metade, e assim por diante..., parando quando se chega a metade do vetor e as duas metades se encontram, tornando ilógico a continuação do processo.
+
+e assim é possível inverter o vetor

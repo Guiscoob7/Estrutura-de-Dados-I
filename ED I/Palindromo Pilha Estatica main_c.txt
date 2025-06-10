@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "funcoes.h"
+
+int main() {
+    pilhaEstatica* pilha;  // Ponteiro para a pilha estática 🌟
+    char frase[100];  // Vetor para armazenar a frase do usuário ✍️
+    char nomeDepois[26];  // Vetor para armazenar a palavra revertida 🔄
+    char* token;  // Ponteiro para armazenar cada palavra tokenizada 🏷️
+    int cont;  // Contador para controlar a posição em nomeDepois 📏
+
+    // Criando a pilha estática 📦
+    pilha = criarPilhaEstatica();
+    if (pilha == NULL) {
+        printf(RED "Erro ao criar a pilha. ❌\n" RESET);  // Mensagem de erro se a pilha não for criada ⚠️
+        return 1;  // Sai do programa se houver erro ao criar a pilha 🚪
+    }
+
+    // Exibe mensagem de boas-vindas 👋
+    boasVindas();
+
+    // Captura a frase do usuário 🗣️
+    printf(GREEN "Digite uma frase: " RESET);  // Mensagem para o usuário 💬
+    scanf("%99[^\n]", frase);  // Captura a frase 📜
+    limparbuffer();  // Limpa o buffer de entrada 🧹
+    limpar();  // Limpa a tela 🔍
+
+    // Tokeniza a frase em palavras usando o delimitador espaço " "
+    token = strtok(frase, " ");
+    
+    // Processa cada token enquanto houver palavras
+    while (token != NULL) {
+        substituirCaracteresEspeciais(token);  // Substitui caracteres especiais na palavra
+        // Verifica se o token é palíndromo
+        if (processarToken(pilha, token, nomeDepois)) {  
+            printf(CYAN "\n\n✨ Palíndromo! 🎉✨\n\nAntes: " BOLD GREEN "%s" RESET "\n" BOLD YELLOW "Depois: " RESET LIGHT_YELLOW "%s\n\n" RESET, token, nomeDepois);
+        } else {
+            printf(MAGENTA "\n\n🚫 Não é palíndromo! ❌\n\nAntes: " BOLD LIGHT_BLUE "%s" RESET "\n" BOLD RED "Depois: " RESET LIGHT_RED "%s\n\n" RESET, token, nomeDepois);
+        }
+        limpar();
+        token = strtok(NULL, " ");  // Pega a próxima palavra
+    }
+
+    // Libera a memória da pilha 🧠
+    liberarPilhaEstatica(pilha);  // Libera a memória alocada para a pilha 💻
+
+    // Mensagem de agradecimento ao usuário
+    printf(YELLOW "\n🌈 Obrigado por usar o programa! Até mais! 🌈\n\n" RESET);  // Mensagem de agradecimento 🙏
+    
+    return 0;  // Finaliza o programa com sucesso 🎊
+}

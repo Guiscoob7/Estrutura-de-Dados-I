@@ -1,0 +1,202 @@
+#include "ponto.h"
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+/* Definição da estrutura Ponto */
+/* A struct Ponto representa um ponto no plano cartesiano com coordenadas x e y.
+ */
+/* O ponteiro 'prox' aponta para o próximo ponto na lista, permitindo criar uma
+ * lista encadeada de pontos. */
+struct ponto {
+  float x;            // Coordenada x do ponto
+  float y;            // Coordenada y do ponto
+  struct ponto *prox; // Ponteiro para o próximo ponto na lista
+};
+
+/*
+ * Função liberar - Libera a memória de uma lista de pontos
+ * A função percorre a lista de pontos e libera a memória alocada para cada
+ * ponto, prevenindo vazamentos de memória. Parâmetros:
+ *  - p: ponteiro para o primeiro ponto da lista
+ */
+void liberar(Ponto *p) {
+  Ponto *temp = NULL;
+  while (p != NULL) {
+    temp = p;    // Armazena o ponto atual em temp
+    p = p->prox; // Avança para o próximo ponto na lista
+    free(temp);  // Libera a memória do ponto armazenado em temp
+  }
+}
+
+/*
+ * Função limpar - Limpa a tela do terminal
+ * A função espera que o usuário pressione ENTER antes de limpar a tela,
+ * permitindo ao usuário ver a mensagem antes de continuar.
+ */
+void limpar(void) {
+  printf("\nPressione ENTER para continuar...");
+  getchar();           // Aguarda o usuário pressionar ENTER
+  printf("\e[H\e[2J"); // Comando ANSI para limpar a tela (funciona em terminais
+                       // compatíveis)
+}
+
+/*
+ * Função limparbuffer - Limpa o buffer de entrada
+ * A função descarta qualquer caractere residual no buffer de entrada,
+ * útil para evitar comportamentos inesperados ao ler entradas subsequentes.
+ */
+void limparbuffer(void) {
+  int c;
+  while ((c = getchar()) != '\n' && c != EOF)
+    ; // Loop para descartar todos os caracteres do buffer
+}
+
+/*
+ * Função pto_acessa - Imprime as coordenadas de todos os pontos na lista
+ * A função percorre a lista de pontos e imprime as coordenadas x e y de cada
+ * ponto. Parâmetros:
+ *  - p: ponteiro para o primeiro ponto da lista
+ */
+void pto_acessa(Ponto *p) {
+  if (p == NULL) {
+    printf("\nNão há pontos!\n"); // Mensagem exibida se a lista estiver vazia
+    return;
+  }
+  printf("-Pontos-\n");
+
+  Ponto *temp = p; // Ponteiro temporário para percorrer a lista
+  int cont = 0;
+  while (temp != NULL) {
+    printf("Ponto %d: (%.2f, %.2f)\n", cont++, temp->x,
+           temp->y);   // Imprime as coordenadas do ponto
+    temp = temp->prox; // Avança para o próximo ponto na lista
+  }
+}
+
+/*
+ * Função buscar_ponto - Retorna o ponteiro para o ponto na posição indicada
+ * A função percorre a lista de pontos até encontrar o ponto no índice
+ * fornecido. Parâmetros:
+ *  - p: ponteiro para o primeiro ponto da lista
+ *  - indice: índice do ponto a ser buscado
+ * Retorna:
+ *  - Ponteiro para o ponto encontrado, ou NULL se o índice for inválido
+ */
+Ponto *buscar_ponto(Ponto *p, int indice) {
+  Ponto *temp = p;
+  int cont = 0;
+  while (temp != NULL && cont++ != indice)
+    temp = temp->prox; // Avança para o próximo ponto na lista até encontrar o
+                       // índice desejado
+  if (temp == NULL) {
+    printf("\nÍndice inválido!\n"); // Mensagem exibida se o índice for inválido
+    limpar();                       // Limpa a tela após exibir a mensagem
+  }
+  return temp; // Retorna o ponteiro para o ponto encontrado ou NULL
+}
+
+/*
+ * Função pto_cria - Cria um novo ponto com as coordenadas fornecidas e o
+ * adiciona à lista A função aloca memória para um novo ponto, inicializa suas
+ * coordenadas e o adiciona ao final da lista. Parâmetros:
+ *  - x: coordenada x do novo ponto
+ *  - y: coordenada y do novo ponto
+ *  - p: ponteiro para o ponteiro do primeiro ponto da lista
+ */
+void pto_cria(float x, float y, Ponto **p) {
+  Ponto *novo = malloc(sizeof(Ponto)); // Aloca memória para um novo ponto
+  if (novo == NULL) {
+    printf("Erro ao alocar memória\n"); // Mensagem de erro se a alocação falhar
+    return;
+  }
+  novo->x = x; // Atribui a coordenada x ao novo ponto
+  novo->y = y; // Atribui a coordenada y ao novo ponto
+  novo->prox =
+      NULL; // O novo ponto não aponta para nenhum outro (é o último da lista)
+  if (*p == NULL) {
+    *p = novo; // Se a lista estiver vazia, o novo ponto se torna o primeiro
+               // ponto
+  } else {
+    Ponto *temp = *p; // Ponteiro temporário para percorrer a lista
+    while (temp->prox != NULL)
+      temp = temp->prox; // Avança para o último ponto na lista
+    temp->prox = novo;   // Adiciona o novo ponto ao final da lista
+  }
+}
+
+/*
+ * Função pto_libera - Remove um ponto da lista com base no índice fornecido
+ * A função remove o ponto na posição indicada e libera sua memória, atualizando
+ * os ponteiros da lista. Parâmetros:
+ *  - p: ponteiro para o ponteiro do primeiro ponto da lista
+ *  - indice: índice do ponto a ser removido
+ */
+void pto_libera(Ponto **p, int indice) {
+  Ponto *anterior = NULL;
+  Ponto *atual = *p;
+  int cont = 0;
+  if (atual == NULL)
+    return; // Se a lista estiver vazia, não há nada a remover
+
+  while (atual != NULL && cont++ != indice) {
+    anterior = atual;    // Armazena o ponto anterior
+    atual = atual->prox; // Avança para o próximo ponto na lista
+  }
+
+  if (atual == NULL) {
+    printf("\nValor não encontrado!\n"); // Mensagem exibida se o índice não for
+                                         // encontrado
+    return;
+  }
+  (anterior == NULL) ? (*p = atual->prox) : (anterior->prox = atual->prox);
+  /* Se o ponto removido for o primeiro, atualiza o ponteiro de início da lista;
+     caso contrário, conecta o ponto anterior ao próximo ponto, removendo o
+     ponto atual */
+  free(atual); // Libera a memória do ponto removido
+  printf("\nElemento removido com sucesso!\n");
+  limpar();       // Limpa a tela após a remoção
+  pto_acessa(*p); // Exibe os pontos restantes na lista
+}
+
+/*
+ * Função pto_atribui - Atribui novos valores às coordenadas de um ponto
+ * existente A função atualiza as coordenadas x e y de um ponto. Parâmetros:
+ *  - p: ponteiro para o ponto a ser modificado
+ *  - x: nova coordenada x
+ *  - y: nova coordenada y
+ */
+void pto_atribui(Ponto *p, float x, float y) {
+  if (p != NULL) {
+    p->x = x; // Atribui a nova coordenada x ao ponto
+    p->y = y; // Atribui a nova coordenada y ao ponto
+  }
+}
+
+/*
+ * Função pto_distancia - Calcula a distância entre dois pontos na lista
+ * A função calcula a distância euclidiana entre os pontos em duas posições
+ * fornecidas na lista. Parâmetros:
+ *  - p: ponteiro para o primeiro ponto da lista
+ *  - indice_1: índice do primeiro ponto
+ *  - indice_2: índice do segundo ponto
+ * Retorna:
+ *  - A distância entre os dois pontos, ou -1 se algum dos pontos não for
+ * encontrado
+ */
+float pto_distancia(Ponto *p, int indice_1, int indice_2) {
+  Ponto *p1 = NULL;
+  Ponto *p2 = NULL;
+  p1 = p2 = p;
+  p1 = buscar_ponto(p, indice_1); // Busca o primeiro ponto
+  p2 = buscar_ponto(p, indice_2); // Busca o segundo ponto
+  float d = -1;
+  float dx, dy;
+  if (p1 != NULL && p2 != NULL) {
+    dx = p2->x - p1->x;          // Calcula a diferença entre as coordenadas x
+    dy = p2->y - p1->y;          // Calcula a diferença entre as coordenadas y
+    d = sqrt(dx * dx + dy * dy); // Calcula a distância euclidiana
+  }
+  return d; // Retorna a distância calculada ou -1 se algum ponto não foi
+            // encontrado
+}

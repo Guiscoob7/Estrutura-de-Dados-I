@@ -1,0 +1,40 @@
+#ifndef FUNCOES_H
+#define FUNCOES_H
+
+// Definição da estrutura de nó para a lista encadeada
+typedef struct no {
+  int valor;       // Valor armazenado no nó
+  struct no *prox; // Ponteiro para o próximo nó na lista
+} No;
+
+// Protótipos das funções utilizadas para manipulação da lista encadeada
+
+// Função para liberar a memória alocada para a lista encadeada
+void liberar(No *cabeca);
+
+// Função para limpar a tela e esperar que o usuário pressione ENTER
+void limpar(void);
+
+// Função para limpar o buffer de entrada, removendo caracteres extras
+void limparbuffer(void);
+
+// Função para exibir os elementos da lista encadeada (par ou ímpar)
+void exibir(No *cabeca, int op);
+
+// Função para inserir um novo elemento na lista encadeada
+void inserir(No **cabeca, int valor, int *tam);
+
+// Função para remover a primeira ocorrência de um valor na lista encadeada
+void remover(No **cabeca, int valor);
+
+// Função para buscar o valor em uma posição específica da lista encadeada
+int buscar(No *cabeca, int posicao);
+
+// Função para salvar os elementos da lista em um arquivo (binário e texto)
+void salvar(No *cabeca, int op);
+
+// Função para carregar os elementos de um arquivo binário e criar a lista
+// encadeada
+No *ler(void);
+
+#endif

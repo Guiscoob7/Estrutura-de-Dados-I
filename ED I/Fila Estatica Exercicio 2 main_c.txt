@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "funcoes.h"
+
+// 🌟 Função principal
+int main() {
+    srand((unsigned int)time(NULL)); // 🎲 Inicializa o gerador de números aleatórios com base no tempo atual
+
+    // Mensagem de boas-vindas
+    boasVindas(); // Exibe a mensagem de boas-vindas
+    limpar();     // Limpa a tela do terminal
+
+    // 📋 Criando novas filas
+    Fila *filas[3]; // Declara um array de ponteiros para filas
+
+    // 🆕 Cria três filas
+    for (int i = 0; i < 3; i++) {
+        filas[i] = Cria_fila(); // Cria uma nova fila e armazena o ponteiro no array
+    }
+
+    // ❗ Verifica se as filas foram criadas corretamente
+    if (filas[0] == NULL || filas[1] == NULL || filas[2] == NULL) {
+        // Mensagem de erro em vermelho se a criação das filas falhar
+        printf(RED "🚨 Erro ao criar filas. %s\n", RESET); 
+        return 1; // Finaliza o programa com código de erro
+    }
+
+    // 🚀 Insere elementos aleatórios nas filas F1 e F2
+    for (int j = 0; j < 2; j++) {
+        for (int i = 0; i < MAX_FILA; i++) {
+            // Insere um número aleatório (0-99) na fila
+            filas[j] = Insere_fila(filas[j], rand() % 100);
+        }
+    }
+
+    // 📊 Imprime as filas F1 e F2
+    for (int i = 0; i < 2; i++) {
+        // Título da fila em azul e negrito
+        printf(BLUE "🖨️ %sFila F%2d: %s" RESET, BOLD, i + 1, RESET); 
+        // Imprime o conteúdo da fila
+        Imprime_fila(filas[i]);
+        printf("\n");
+    }
+    limpar(); // Limpa a tela do terminal
+
+    // 🔗 Mescla F1 e F2 em F3 e 📜 Imprime a fila resultante da mesclagem
+    Mesclar_filas(filas[0], filas[1], filas[2]); // Mescla F1 e F2 em F3
+    limpar(); // Limpa a tela do terminal
+
+    // 🗑️ Libera a memória das filas
+    for (int i = 0; i < 3; i++) {
+        // Mensagem de liberação de memória em laranja
+        printf(ORANGE "🧹 Limpando a memória da Fila F%d... %s\n", i + 1, RESET);
+        // Libera a memória alocada para a fila e define o ponteiro como NULL
+        filas[i] = Libera_fila(filas[i]);
+    }
+    limpar(); // Limpa a tela do terminal
+
+    // ✅ Finaliza o programa
+    printf(GREEN "✅ Programa concluído com sucesso! %s\n", RESET); // Mensagem de sucesso em verde
+
+    return 0; // Retorna 0 indicando que o programa foi concluído com sucesso
+}

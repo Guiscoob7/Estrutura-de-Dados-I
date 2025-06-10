@@ -1,0 +1,201 @@
+// funcoes.c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include "funcoes.h"
+
+// Função para limpar a tela e aguardar a pressão de ENTER 🚿⏳
+void limpar() 
+{
+    printf("\n\n%s🛑 %sPressione ENTER para continuar... %s🛑%s: ", LIGHT_CYAN, LIGHT_YELLOW, LIGHT_CYAN, RESET);
+    getchar();  // ⏳ Espera a entrada do usuário
+    #ifdef _WIN32
+        system("cls");  // 🖥️ Comando específico para Windows para limpar a tela
+    #else
+        system("clear");  // 🍏 Comando específico para Linux/Mac para limpar a tela
+    #endif
+}
+
+// Função para limpar o buffer de entrada 🧹
+void limparbuffer() 
+{
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);  // 🧽 Limpa o buffer até encontrar o fim da linha ou o final do arquivo
+}
+
+// Função para exibir mensagens de boas-vindas sobre árvore binária 🌳🌿
+void boasVindas() 
+{
+   printf("\n" LIME BOLD "╔════════════════════════════════════════════════════════════════════════════╗" RESET "\n");
+   printf(LIME BOLD "║" RESET " 🌟✨ " BOLD PINK "Bem-vindo à " RESET PINK BOLD "Árvore Binária de Busca" RESET PINK BOLD " ✨🌟 " LIME BOLD "                             ║" RESET "\n");
+   printf(LIME BOLD "║" RESET " 🌳🌿 " LIGHT_YELLOW "Cada nó da árvore guarda um info único e organizado!" RESET LIME BOLD " 🌿🌳 " LIME BOLD "            ║" RESET "\n");
+   printf(LIME BOLD "║" RESET " 🌲🌀 " MAGENTA "Explore a árvore, insira, busque e descubra!" RESET LIME BOLD " 🌀🌲 " LIME BOLD "                    ║" RESET "\n");
+   printf(LIME BOLD "║" RESET " 🍃🔍 " GREEN "A eficiência está nas suas ramificações! Vamos começar?" RESET LIME BOLD " 🔍🍃 " LIME BOLD "         ║" RESET "\n");
+   printf(LIME BOLD "╚════════════════════════════════════════════════════════════════════════════╝" RESET "\n\n");
+
+   limpar();  // 🚿 Limpa a tela após a mensagem de boas-vindas
+}
+
+// Função para criar uma árvore binária 🌳
+No* criarArvore(int info)
+{
+    printf(LIME "\n🌿 Inseri na arvore! info: %d\n" RESET, info); 
+    return criarNo(info);  // 🌱 Cria o nó raiz da árvore
+}
+
+// Função para criar um novo nó 🌿
+No* criarNo(int info)
+{
+    No* novoNo = (No*) malloc(sizeof(No));  // 💾 Aloca memória para o novo nó
+    if (novoNo == NULL)  // 🚨 Verifica se a memória foi alocada com sucesso
+    {
+        printf(RED BOLD "❌ Erro ao alocar memória!" RESET);
+        exit(EXIT_FAILURE);  // ❌ Encerra o programa em caso de erro
+    }
+    novoNo->info = info;  // 🌱 Atribui o valor ao novo nó
+    novoNo->direita = NULL;  // 👉 Inicializa o ponteiro da direita como NULL
+    novoNo->esquerda = NULL;  // 👈 Inicializa o ponteiro da esquerda como NULL
+    return novoNo;  // 🌿 Retorna o novo nó
+}
+
+// Função para inserir um info na árvore binária 🌲
+No* inserir(No* arvore, int info)
+{      
+    if (arvore == NULL)
+        return arvore;  // 🌳 Se a árvore está vazia, retorna NULL
+
+    No* aux = arvore;  // 🔎 Variável auxiliar para percorrer a árvore
+
+    while (aux != NULL)
+    {
+        if (info < aux->info)  // 🌿 Insere na subárvore esquerda se o info for menor
+        {
+            if (aux->esquerda == NULL)
+            {
+                aux->esquerda = criarNo(info);  // 🌱 Cria um novo nó na esquerda
+                printf(LIGHT_GREEN "\n🌱 Inseri na esquerda! info: %d\n" RESET, info);  // 🌿 Mensagem de inserção na esquerda
+                return arvore;  // 🔙 Retorna a árvore após inserção
+            }
+            aux = aux->esquerda;  // 👈 Avança para o nó à esquerda
+        }
+        else  // 👉 Insere na subárvore direita se o info for maior ou igual
+        {
+            if (aux->direita == NULL)
+            {
+                aux->direita = criarNo(info);  // 🌱 Cria um novo nó na direita
+                printf(LIGHT_BLUE "\n🌳 Inseri na direita! info: %d\n" RESET, info);  // 🌳 Mensagem de inserção na direita
+                return arvore;  // 🔙 Retorna a árvore após inserção
+            }
+            aux = aux->direita;  // 👉 Avança para o nó à direita
+        }
+    }
+    return arvore;  // 🔙 Retorna a árvore completa após a inserção
+}
+
+// Função para percorrer a árvore usando o algoritmo Morris 🌲
+void morrisTraversal(No* arvore) { 
+    No* atual = arvore;  // 🌳 Inicializa o nó atual
+
+    while (atual != NULL) {
+        if (atual->esquerda == NULL) {
+            // Se não houver filho à esquerda, processa o nó e vai para a direita
+            printf(LIME "\n🌳 Visitando nó: %d\n" RESET, atual->info);
+            atual = atual->direita;  // 👉 Avança para a direita
+        } else {
+            // Encontrar o predecessor in-order do nó atual
+            No* predecessor = atual->esquerda;  // 🌿 Inicializa o predecessor
+            while (predecessor->direita != NULL && predecessor->direita != atual) {
+                predecessor = predecessor->direita;  // 👉 Avança para a direita do predecessor
+            }
+
+            if (predecessor->direita == NULL) {
+                // Criar um link temporário para voltar ao nó atual após processar a subárvore esquerda
+                predecessor->direita = atual;  // 🔗 Estabelece um link temporário
+                printf(LIME "\n🌿 Visitando nó: %d\n" RESET, atual->info);
+                atual = atual->esquerda;  // 👈 Vai para a subárvore esquerda
+            } else {
+                // Remover o link temporário e processar o nó atual
+                predecessor->direita = NULL;  // ❌ Remove o link temporário
+                printf(LIME "\n🌲 Visitando nó: %d\n" RESET, atual->info);
+                atual = atual->direita;  // 👉 Avança para a direita
+            }
+        }
+    }
+}
+
+// Função para encontrar o nó mínimo na subárvore 🌱
+No* encontrarMinimo(No* arvore) {
+    while (arvore && arvore->esquerda != NULL) {
+        arvore = arvore->esquerda;  // 👉 Percorre até encontrar o nó mais à esquerda
+    }
+    return arvore;  // 🌿 Retorna o nó mínimo
+}
+
+// Função para remover um nó da árvore de forma iterativa 🌳
+No* remover(No* arvore, int valor) {
+    No* pai = NULL;  // 👨‍👦 Inicializa o pai como NULL
+    No* atual = arvore;  // 🌳 Inicializa o nó atual
+
+    // Encontrar o nó a ser removido e seu pai
+    while (atual != NULL && atual->info != valor) {
+        pai = atual;  // 📍 Atualiza o pai
+        if (valor < atual->info) {
+            atual = atual->esquerda;  // 👈 Avança para a esquerda
+        } else {
+            atual = atual->direita;  // 👉 Avança para a direita
+        }
+    }
+
+    // Se o nó não foi encontrado
+    if (atual == NULL) {
+        printf("Nó com valor %d não encontrado.\n", valor);  // ⚠️ Mensagem de erro
+        return arvore;  // 🔙 Retorna a árvore sem alterações
+    }
+
+    // Caso 1: Nó com apenas um filho ou sem filhos 🌿
+    if (atual->esquerda == NULL) {
+        if (pai == NULL) {
+            // Se não houver pai, significa que estamos removendo a raiz
+            No* temp = atual->direita;  // 👉 Guarda o filho à direita
+            free(atual);  // 🌱 Libera a memória do nó
+            return temp;  // Retorna o filho à direita ou NULL se não houver
+        } else if (pai->esquerda == atual) {
+            pai->esquerda = atual->direita;  // Conecta o filho à esquerda
+        } else {
+            pai->direita = atual->direita;  // Conecta o filho à direita
+        }
+        free(atual);  // 🌱 Libera a memória do nó
+    } else if (atual->direita == NULL) {
+        // Caso 2: Nó com apenas filho à esquerda 🌳
+        if (pai == NULL) {
+            No* temp = atual->esquerda;  // 👉 Guarda o filho à esquerda
+            free(atual);  // 🌱 Libera a memória do nó
+            return temp;  // Retorna o filho à esquerda ou NULL se não houver
+        } else if (pai->esquerda == atual) {
+            pai->esquerda = atual->esquerda;  // Conecta o filho à esquerda
+        } else {
+            pai->direita = atual->esquerda;  // Conecta o filho à direita
+        }
+        free(atual);  // 🌱 Libera a memória do nó
+    } else {
+        // Caso 3: Nó com dois filhos 🌳
+        No* sucessor = encontrarMinimo(atual->direita);  // 🌱 Encontra o nó mínimo na subárvore direita
+        int valorSucessor = sucessor->info;  // Armazena o valor do sucessor
+        remover(arvore, valorSucessor);  // Remove o sucessor
+        atual->info = valorSucessor;  // Atribui o valor do sucessor ao nó atual
+    }
+
+    return arvore;  // 🔙 Retorna a árvore após a remoção
+}
+
+// Função para liberar a memória da árvore 🌳🧹
+void liberarArvore(No* arvore) {
+    if (arvore != NULL) {
+        liberarArvore(arvore->esquerda);  // 👈 Libera a subárvore esquerda
+        liberarArvore(arvore->direita);  // 👉 Libera a subárvore direita
+        printf(GREEN "🌱 Liberando nó com valor: %d 🌱\n" RESET, arvore->info);
+        free(arvore);  // 🌱 Libera o nó atual
+    }
+}

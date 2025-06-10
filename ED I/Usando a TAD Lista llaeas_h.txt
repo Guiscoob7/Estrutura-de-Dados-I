@@ -1,0 +1,60 @@
+// Declaração do tipo opaco 'Lista' utilizando a técnica de typedef
+// Aqui, 'Lista' é definida como um ponteiro para uma estrutura anônima,
+// cujos detalhes de implementação são ocultos do usuário.
+typedef struct lista Lista;
+
+// Declaração das funções associadas à manipulação da lista
+
+// Função para exibir todos os elementos da lista
+// Retorna -1 se a lista não foi inicializada, 1 se a lista está vazia, e 0 em sucesso.
+void Exibir_lista(Lista* Ptl);
+
+// Função para salvar os elementos da lista em um arquivo de texto
+// O nome do arquivo é fornecido pelo usuário
+void Salvar_lista(Lista *Ptl);
+
+// Função auxiliar para limpar a tela do console e pausar a execução até que o usuário pressione ENTER
+void limpar();
+
+// Função auxiliar para limpar o buffer de entrada, removendo caracteres extras,
+// especialmente útil após uma leitura com scanf.
+void limparbuffer();
+
+// Função para criar e inicializar uma nova lista
+// Retorna um ponteiro para a lista recém-criada ou NULL em caso de erro de alocação.
+Lista* Cria_lista(void);
+
+// Função para liberar a memória alocada pela lista
+// Retorna NULL após liberar a lista.
+Lista* Libera_lista(Lista* Ptl);
+
+// Função para inserir um novo elemento no final da lista
+// Retorna a lista atualizada.
+Lista* Insere_elem(Lista* Ptl, int elem);
+
+// Função para remover um elemento específico da lista, com movimentação dos dados
+// Os elementos após o elemento removido são deslocados para preencher o espaço vazio.
+// Retorna a lista atualizada.
+Lista* Remove_elem_mov(Lista* Ptl, int elem);
+
+// Função para remover um elemento específico da lista, sem movimentação dos dados
+// O elemento removido é substituído pelo último elemento da lista.
+// Retorna a lista atualizada.
+Lista* Remove_elem(Lista* Ptl, int elem);
+
+// Função para consultar o valor de um elemento em uma posição específica da lista
+// Armazena o valor do elemento na variável apontada por 'info' e retorna 1 em sucesso.
+// Retorna 0 se a posição for inválida ou a lista for nula.
+int Consulta_nodo(Lista* Ptl, int pos, int* info);
+
+// Função para obter o tamanho atual da lista (número de elementos armazenados)
+// Retorna o número de elementos ou -1 se a lista for nula.
+int Tamanho_lista(Lista* Ptl);
+
+// Função para verificar se a lista está cheia
+// Retorna 1 se a lista estiver cheia, 0 se houver espaço, e -1 se a lista for nula.
+int E_cheia(Lista* Ptl);
+
+// Função para verificar se a lista está vazia
+// Retorna 1 se a lista estiver vazia, 0 se contiver elementos, e -1 se a lista for nula.
+int E_vazia(Lista* Ptl);

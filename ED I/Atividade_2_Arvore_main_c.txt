@@ -1,0 +1,44 @@
+// main.c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "funcoes.h"
+
+int main() {
+    boasVindas();  // 🌟 Chama a função de boas-vindas
+
+    No* arvore = criarArvore(7);  // 🌱 Cria a árvore com o nó raiz contendo 7
+    arvore = inserir(arvore, 50);  // 👉 Insere o nó com valor 50
+    arvore = inserir(arvore, 30);  // 👉 Insere o nó com valor 30
+    arvore = inserir(arvore, 20);  // 👉 Insere o nó com valor 20
+    arvore = inserir(arvore, 40);  // 👉 Insere o nó com valor 40
+    arvore = inserir(arvore, 70);  // 👉 Insere o nó com valor 70
+    arvore = inserir(arvore, 60);  // 👉 Insere o nó com valor 60
+    arvore = inserir(arvore, 80);  // 👉 Insere o nó com valor 80
+
+    limpar();  // 🚿 Limpa a tela
+
+    printf(GREEN BOLD "🌳 Árvore em ordem antes da remoção: 🌳\n" RESET);
+    morrisTraversal(arvore);  // 🌿 Realiza a travessia Morris na árvore
+    printf("\n");
+    limpar();  // 🚿 Limpa a tela
+
+    arvore = remover(arvore, 20);  // 🌳 Remove o nó com valor 20
+    printf(YELLOW BOLD "🌼 Árvore em ordem após remover 20: 🌼\n" RESET);
+    morrisTraversal(arvore);  // 🌿 Realiza a travessia Morris na árvore
+    printf("\n");
+    limpar();  // 🚿 Limpa a tela
+
+    arvore = remover(arvore, 30);  // 🌳 Remove o nó com valor 30
+    printf(BLUE BOLD "🔵 Árvore em ordem após remover 30: 🔵\n" RESET);
+    morrisTraversal(arvore);  // 🌿 Realiza a travessia Morris na árvore
+    printf("\n");
+    limpar();  // 🚿 Limpa a tela
+
+    liberarArvore(arvore);  // 🌳 Libera a memória da árvore
+
+    limpar();  // 🚿 Limpa a tela
+
+    return 0;  // 🔚 Finaliza o programa
+}

@@ -1,0 +1,17 @@
+// main.c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "funcoes.h"
+
+int main() {
+
+    boasVindas();
+    No* arvore = criarArvore(7);
+    arvore = inserir(arvore, 10);
+    arvore = inserir(arvore, 5);
+    arvore = inserir(arvore, 15);
+    
+    return 0;
+}

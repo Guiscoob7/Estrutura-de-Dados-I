@@ -1,0 +1,75 @@
+#ifndef FUNCOES_H
+#define FUNCOES_H
+
+// Define o tamanho máximo inicial dos vetores
+#define MAX_SIZE 100
+
+// Protótipos das funções utilizadas para manipulação dos vetores
+
+/**
+ * Libera a memória alocada para o vetor.
+ * @param vetor Ponteiro para o vetor a ser liberado.
+ */
+void liberar(int *vetor);
+
+/**
+ * Limpa a tela e aguarda o usuário pressionar ENTER.
+ */
+void limpar(void);
+
+/**
+ * Limpa o buffer de entrada para evitar problemas com funções de leitura como scanf.
+ */
+void limparbuffer(void);
+
+/**
+ * Exibe os elementos do vetor no console.
+ * @param vetor Ponteiro para o vetor a ser exibido.
+ * @param tam Número de elementos no vetor.
+ * @param op Indica o tipo de vetor: 1 para par, 2 para ímpar.
+ */
+void exibir(int *vetor, int tam, int op);
+
+/**
+ * Insere um valor no vetor, redimensionando a memória se necessário.
+ * @param vetor Ponteiro para o ponteiro do vetor a ser atualizado.
+ * @param tam Ponteiro para o número de elementos no vetor.
+ * @param valor Valor a ser inserido no vetor.
+ * @param capacidade Ponteiro para a capacidade atual do vetor.
+ */
+void inserir(int **vetor, int *tam, int valor, int *capacidade);
+
+/**
+ * Remove a primeira ocorrência de um valor do vetor.
+ * @param vetor Ponteiro para o ponteiro do vetor a ser atualizado.
+ * @param tam Ponteiro para o número de elementos no vetor.
+ * @param valor Valor a ser removido do vetor.
+ */
+void remover(int **vetor, int *tam, int valor);
+
+/**
+ * Busca e retorna o valor na posição especificada do vetor.
+ * @param vetor Ponteiro para o vetor a ser consultado.
+ * @param tam Número de elementos no vetor.
+ * @param posicao Posição no vetor a ser consultada.
+ * @return Valor na posição especificada, ou -1 se a posição for inválida.
+ */
+int buscar(int *vetor, int tam, int posicao);
+
+/**
+ * Salva os elementos do vetor em dois arquivos: um binário e um de texto.
+ * @param vetor Ponteiro para o vetor a ser salvo.
+ * @param tam Número de elementos no vetor.
+ * @param op Indica o tipo de vetor: 1 para par, 2 para ímpar.
+ */
+void salvar(int *vetor, int tam, int op);
+
+/**
+ * Lê os elementos de um vetor de um arquivo binário.
+ * @param vetor Ponteiro para o ponteiro do vetor a ser atualizado.
+ * @param tam Ponteiro para o número de elementos no vetor.
+ * @param capacidade Ponteiro para a capacidade atual do vetor.
+ */
+void ler(int **vetor, int *tam, int *capacidade);
+
+#endif

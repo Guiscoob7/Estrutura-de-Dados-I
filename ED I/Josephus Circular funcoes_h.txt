@@ -1,0 +1,76 @@
+// Definindo códigos de cor ANSI para formatação do texto no terminal
+#define RESET "\033[0m"           // Código para resetar as configurações de cor e estilo
+#define BOLD "\033[1m"            // Código para texto em negrito
+#define UNDERLINE "\033[4m"       // Código para texto sublinhado
+#define GREEN "\033[32m"          // Código para texto verde
+#define YELLOW "\033[33m"         // Código para texto amarelo
+#define CYAN "\033[36m"           // Código para texto ciano
+#define MAGENTA "\033[35m"        // Código para texto magenta
+#define RED "\033[31m"            // Código para texto vermelho
+#define BLUE "\033[34m"           // Código para texto azul
+#define LIGHT_BLUE  "\033[94m"    // Código para texto azul claro
+#define LIGHT_YELLOW  "\033[93m"  // Código para texto amarelo claro
+#define LIGHT_CYAN   "\033[96m"   // Código para texto ciano claro
+#define LIGHT_GREEN   "\033[92m"  // Código para texto verde claro     
+#define PURPLE "\x1B[35m"         // Código para texto roxo    
+#define ORANGE "\033[38;5;208m"   // Código para texto laranja
+#define DOURADO "\033[1;33m"      // Código para texto dourado
+#define BLACK "\033[0;30m"        // Código para texto preto
+
+// Estrutura principal que contém a lista de Pessoas
+struct pessoa {                
+  struct pessoa *prox;  // Ponteiro para o próximo Pessoa na lista (lista circular)
+  char nome[50];        // Nome do participante (Pessoa) na lista
+  int posicao;          // Posição ou número do participante na lista
+};
+
+// Define o tipo `Pessoa` como uma forma simplificada de usar a struct `pessoa`
+typedef struct pessoa Pessoa;                
+
+// Função para limpar a tela e solicitar ao usuário pressionar ENTER para continuar
+void limpar(); 
+// Esta função exibe uma mensagem e aguarda o usuário pressionar ENTER para continuar, 
+// depois limpa a tela com o comando adequado para o sistema operacional.
+
+// Função para limpar o buffer de entrada, removendo caracteres extras
+void limparbuffer(); 
+// Função que esvazia o buffer de entrada para evitar problemas com entradas de múltiplos caracteres.
+
+// Função para criar uma nova lista de Pessoas e inicializá-la
+Pessoa* Cria_lista(void);
+// Inicializa uma lista vazia (retorna NULL).
+
+// Função para inserir um novo Pessoa na lista
+Pessoa* Insere_elem(Pessoa* Ptl, char *nome);
+// Insere um novo elemento (Pessoa) na lista circular, mantendo a ordem e atualizando o ponteiro para o último elemento.
+
+// Função para exibir todos os elementos da lista de Pessoas
+void Exibir_lista(Pessoa* Ptl);
+// Exibe todos os elementos da lista de Pessoas, com formatação de cores e emojis.
+
+// Função para remover um Pessoa da lista na posição especificada
+Pessoa* Remove_elem(Pessoa* Ptl, int suicidio, int *posicao);
+// Remove o elemento da lista com base na posição sorteada (suicidio), ajustando a lista circular e as posições dos elementos restantes.
+
+// Função para liberar a memória alocada para a lista de Pessoas
+Pessoa *Libera_lista(Pessoa *Ptl);
+// Libera a memória alocada para todos os nós da lista, evitando vazamentos de memória.
+
+// Função para salvar a lista de perdedores em um arquivo
+void Salvar_lista(Pessoa *Ptl, int suicidio);
+// Salva a lista de participantes que foram eliminados em um arquivo de texto, junto com suas posições.
+
+// Função para obter o tamanho da lista de Pessoas
+int Tamanho_Lista(Pessoa* Ptl);
+// Calcula e retorna o número de elementos presentes na lista circular.
+
+// Função para salvar o ganhador da competição em um arquivo
+void Salvar_Ganhador(Pessoa *Ptl);
+// Salva o nome do último sobrevivente (ganhador) da lista em um arquivo de texto.
+
+// Função para exibir a lista de Pessoas (duplicada aqui, possivelmente por erro de cópia)
+void Exibir_lista(Pessoa* Ptl);
+
+// Função para exibir uma mensagem de boas-vindas
+void boasVindas();
+// Exibe uma mensagem estilizada de boas-vindas ao usuário com cores e emojis.

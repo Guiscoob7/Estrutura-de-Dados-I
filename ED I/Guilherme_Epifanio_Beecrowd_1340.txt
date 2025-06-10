@@ -1,0 +1,136 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define TAM_MAX 1000
+
+// 📦 Estrutura da Pilha
+typedef struct {
+  int elementos[TAM_MAX];  // 📊 Array para armazenar os dados da pilha
+  int indiceTopo;          // 🚩 Indica o índice do topo da pilha
+} EstruturaPilha;
+
+// 🚐 Estrutura da Fila
+typedef struct {
+  int elementos[TAM_MAX];  // 📊 Array para armazenar os dados da fila
+  int indiceCauda;         // 🚀 Índice do início da fila
+  int indiceCabeca;        // 🎯 Índice do final da fila
+} EstruturaFila;
+
+// 🏆 Estrutura da Fila de Prioridade
+typedef struct {
+  int elementos[TAM_MAX];  // 📊 Array para os dados de prioridade
+  int tamanho;             // 📏 Tamanho atual da fila de prioridade
+} EstruturaFilaPrioridade;
+
+// 🧱 Inicializa a pilha vazia
+void inicializaPilha(EstruturaPilha* pilha) { 
+  pilha->indiceTopo = -1;  // 🚫 Define o topo como -1, indicando pilha vazia
+}
+
+// ➕ Adiciona elemento ao topo da pilha
+void adicionaPilha(EstruturaPilha* pilha, int valor) { 
+  pilha->elementos[++pilha->indiceTopo] = valor;  // 🔼 Incrementa o topo e insere o valor
+}
+
+// ➖ Remove e retorna elemento do topo da pilha
+int removePilha(EstruturaPilha* pilha) { 
+  return pilha->elementos[pilha->indiceTopo--];  // 🔽 Retorna o valor do topo e decrementa
+}
+
+// 🚀 Inicializa a fila vazia
+void inicializaFila(EstruturaFila* fila) { 
+  fila->indiceCauda = fila->indiceCabeca = -1;  // 🔄 Define índices para indicar fila vazia
+}
+
+// ➕ Adiciona elemento ao final da fila
+void adicionaFila(EstruturaFila* fila, int valor) {
+  if (fila->indiceCabeca == -1) fila->indiceCauda = fila->indiceCabeca = 0;  // 🚩 Primeira inserção
+  else fila->indiceCabeca++;  // 🎯 Avança a cabeça
+  fila->elementos[fila->indiceCabeca] = valor;  // 💾 Armazena o valor na posição da cabeça
+}
+
+// ➖ Remove e retorna elemento do início da fila
+int removeFila(EstruturaFila* fila) {
+  int valor = fila->elementos[fila->indiceCauda];  // 🚀 Guarda o valor da cauda
+  if (fila->indiceCauda == fila->indiceCabeca) fila->indiceCauda = fila->indiceCabeca = -1;  // 🔄 Fila vazia após remoção
+  else fila->indiceCauda++;  // 📍 Avança a cauda
+  return valor;  // 🔙 Retorna o valor removido
+}
+
+// 🏆 Inicializa a fila de prioridade vazia
+void inicializaFilaPrioridade(EstruturaFilaPrioridade* filaPrioridade) { 
+  filaPrioridade->tamanho = 0;  // ⚙️ Define tamanho inicial como 0
+}
+
+// ➕ Adiciona elemento mantendo a prioridade
+void adicionaFilaPrioridade(EstruturaFilaPrioridade* filaPrioridade, int valor) {
+  int indiceAtual = filaPrioridade->tamanho++;  // 📏 Expande o tamanho e inicia índice
+  while (indiceAtual > 0 && filaPrioridade->elementos[(indiceAtual - 1) / 2] < valor) {  // 🔄 Move para cima se necessário
+    filaPrioridade->elementos[indiceAtual] = filaPrioridade->elementos[(indiceAtual - 1) / 2];
+    indiceAtual = (indiceAtual - 1) / 2;
+  }
+  filaPrioridade->elementos[indiceAtual] = valor;  // 📥 Insere o valor na posição correta
+}
+
+// 🔝 Remove e retorna o elemento de maior prioridade
+int removeFilaPrioridade(EstruturaFilaPrioridade* filaPrioridade) {
+  int valorMaximo = filaPrioridade->elementos[0];  // 🏆 Pega o valor máximo no topo
+  filaPrioridade->elementos[0] = filaPrioridade->elementos[--filaPrioridade->tamanho];  // 🔽 Substitui topo pelo último e reduz tamanho
+  int indicePai = 0, indiceFilho;
+  while (2 * indicePai + 1 < filaPrioridade->tamanho) {  // 🔄 Ajusta a estrutura de heap
+    indiceFilho = 2 * indicePai + 1;
+    if (indiceFilho + 1 < filaPrioridade->tamanho && filaPrioridade->elementos[indiceFilho + 1] > filaPrioridade->elementos[indiceFilho]) indiceFilho++;
+    if (filaPrioridade->elementos[indicePai] >= filaPrioridade->elementos[indiceFilho]) break;
+    int temp = filaPrioridade->elementos[indicePai];
+    filaPrioridade->elementos[indicePai] = filaPrioridade->elementos[indiceFilho];
+    filaPrioridade->elementos[indiceFilho] = temp;
+    indicePai = indiceFilho;
+  }
+  return valorMaximo;  // 🔙 Retorna o valor máximo removido
+}
+
+// 🖥️ Função de saída para verificar tipo de estrutura de dados
+void verificaEstrutura(int numOperacoes, int opList[][2]) {
+  EstruturaPilha pilha;  // 📦 Pilha auxiliar
+  EstruturaFila fila;  // 🚐 Fila auxiliar
+  EstruturaFilaPrioridade filaPrioridade;  // 🏆 Fila de prioridade auxiliar
+  int ePilha = 1, eFila = 1, eFilaPrioridade = 1;  // ⚖️ Flags de verificação
+
+  inicializaPilha(&pilha);  // 🧱 Inicializa pilha
+  inicializaFila(&fila);  // 🚀 Inicializa fila
+  inicializaFilaPrioridade(&filaPrioridade);  // 🏆 Inicializa fila de prioridade
+
+  // 🔄 Processa as operações para verificar estrutura
+  for (int operacaoIndice = 0; operacaoIndice < numOperacoes; operacaoIndice++) {  // Alterado de operacaoIndex para operacaoIndice
+    if (opList[operacaoIndice][0] == 1) {  // ➕ Operação de inserção
+      adicionaPilha(&pilha, opList[operacaoIndice][1]);  // 🗃️ Adiciona à pilha
+      adicionaFila(&fila, opList[operacaoIndice][1]);  // 🚚 Adiciona à fila
+      adicionaFilaPrioridade(&filaPrioridade, opList[operacaoIndice][1]);  // 🏅 Adiciona à fila de prioridade
+    } else {  // ➖ Operação de remoção
+      if (ePilha && (pilha.indiceTopo == -1 || removePilha(&pilha) != opList[operacaoIndice][1])) ePilha = 0;
+      if (eFila && (fila.indiceCauda == -1 || removeFila(&fila) != opList[operacaoIndice][1])) eFila = 0;
+      if (eFilaPrioridade && (filaPrioridade.tamanho == 0 || removeFilaPrioridade(&filaPrioridade) != opList[operacaoIndice][1])) eFilaPrioridade = 0;
+    }
+  }
+
+  // 🖨️ Determina qual estrutura corresponde às operações
+  if (ePilha && !eFila && !eFilaPrioridade) printf("stack\n");
+  else if (!ePilha && eFila && !eFilaPrioridade) printf("queue\n");
+  else if (!ePilha && !eFila && eFilaPrioridade) printf("priority queue\n");
+  else if (!ePilha && !eFila && !eFilaPrioridade) printf("impossible\n");
+  else printf("not sure\n");
+}
+
+// 🏁 Função principal
+int main() {
+  int numOperacoes;
+  int opList[TAM_MAX][2];
+
+  // 🔄 Lê o número de operações e dados até o final da entrada
+  while (scanf("%d", &numOperacoes) != EOF) {
+    for (int i = 0; i < numOperacoes; i++) scanf("%d %d", &opList[i][0], &opList[i][1]);
+    verificaEstrutura(numOperacoes, opList);  // ⚙️ Chama função de saída para análise
+  }
+
+  return 0;  // 🏆 Fim do programa
+}

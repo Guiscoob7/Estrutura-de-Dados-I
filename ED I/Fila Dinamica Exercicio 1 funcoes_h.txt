@@ -1,0 +1,78 @@
+// funcoes.h - Cabeçalho com definições de constantes e funções para manipulação de filas
+
+// Definindo o tamanho máximo da fila
+#define MAX_FILA 10
+
+// Definindo códigos de cor ANSI para formatação do texto no terminal
+// Estes códigos são usados para alterar a cor e o estilo do texto exibido no terminal
+#define RESET "\033[0m"           // Código para resetar as configurações de cor e estilo para o padrão
+#define BOLD "\033[1m"            // Código para aplicar negrito ao texto
+#define UNDERLINE "\033[4m"       // Código para sublinhar o texto
+#define GREEN "\033[32m"          // Código para texto na cor verde
+#define YELLOW "\033[33m"         // Código para texto na cor amarelo
+#define CYAN "\033[36m"           // Código para texto na cor ciano
+#define MAGENTA "\033[35m"        // Código para texto na cor magenta
+#define RED "\033[31m"            // Código para texto na cor vermelho
+#define BLUE "\033[34m"           // Código para texto na cor azul
+#define LIGHT_BLUE  "\033[94m"    // Código para texto na cor azul claro
+#define LIGHT_YELLOW  "\033[93m"  // Código para texto na cor amarelo claro
+#define LIGHT_CYAN   "\033[96m"   // Código para texto na cor ciano claro
+#define LIGHT_GREEN   "\033[92m"  // Código para texto na cor verde claro     
+#define PURPLE "\x1B[35m"         // Código para texto na cor roxo
+#define ORANGE "\033[38;5;208m"   // Código para texto na cor laranja
+#define DOURADO "\033[1;33m"      // Código para texto na cor dourado
+#define BLACK "\033[0;30m"        // Código para texto na cor preto
+
+// Estrutura que define um nó da fila
+// Cada nó contém um valor e um ponteiro para o próximo nó
+typedef struct no
+{ 
+  int info;              // Valor armazenado no nó
+  struct no* prox;       // Ponteiro para o próximo nó
+} No;
+
+// Estrutura que define a fila
+// A fila contém ponteiros para o primeiro e o último nó
+typedef struct
+{
+  No *Prim;              // Ponteiro para o primeiro nó
+  No *Ult;               // Ponteiro para o último nó
+} Fila;
+
+// Função que cria uma nova fila
+// Retorna um ponteiro para a fila criada
+Fila* Cria_Fila(void);
+
+// Função que insere um elemento na fila
+// Recebe o ponteiro da fila e o elemento a ser inserido
+Fila *Insere_Fila(Fila *Ptf, int elem);
+
+// Função que remove um elemento da fila
+// Armazena o valor removido no ponteiro elem e retorna 1 se bem-sucedido
+int Remove_fila(Fila *Ptf, int *elem);
+
+// Função que consulta o primeiro elemento da fila sem removê-lo
+// Armazena o valor consultado no ponteiro elem e retorna 1 se bem-sucedido
+int Consulta_fila(Fila *Ptf, int *elem);
+
+// Função que libera a memória de todos os nós da fila
+// Retorna NULL após liberar a fila
+Fila *Libera_fila(Fila *Ptf);
+
+// Função que exibe os elementos da fila
+// Exibe os valores contidos na fila no formato: | valor |
+void Exibir_Fila(Fila* Ptf);
+
+// Função que manipula uma fila, redistribuindo os elementos conforme regras predefinidas
+void Manipular_fila(Fila* filas[]);
+
+// Função que limpa o buffer de entrada, removendo caracteres extras
+void limparbuffer();
+
+// Função para limpar a tela do terminal
+// Limpa a tela e aguarda o usuário pressionar ENTER
+void limpar();
+
+// Função para exibir mensagens de boas-vindas
+// Exibe uma mensagem de boas-vindas formatada no terminal
+void boasVindas();

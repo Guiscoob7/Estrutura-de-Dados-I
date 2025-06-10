@@ -1,0 +1,93 @@
+#include "ponto.h"
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+/* Função liberar - Libera a memória de um vetor de pontos */
+void liberar(Ponto vetor[], int *n) {
+    *n = 0;  // Define o número de pontos como 0
+}
+
+/* Função limpar - Limpa a tela do terminal */
+void limpar(void) {
+    printf("\nPressione ENTER para continuar...");
+    getchar();
+    printf("\e[H\e[2J");
+}
+
+/* Função limparbuffer - Limpa o buffer de entrada */
+void limparbuffer(void) {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+/* Função pto_acessa - Imprime as coordenadas de todos os pontos no vetor */
+void pto_acessa(Ponto vetor[], int n) {
+    if (n == 0) {
+        printf("\nNão há pontos!\n");
+        return;
+    }
+    printf("-Pontos-\n");
+    for (int i = 0; i < n; i++) {
+        printf("Ponto %d: (%.2f, %.2f)\n", i, vetor[i].x, vetor[i].y);
+    }
+}
+
+/* Função buscar_ponto - Retorna o ponteiro para o ponto no índice indicado */
+Ponto* buscar_ponto(Ponto vetor[], int n, int indice) {
+    if (indice < 0 || indice >= n) {
+        printf("\nÍndice inválido!\n");
+        limpar();
+        return NULL;
+    }
+    return &vetor[indice];
+}
+
+/* Função pto_cria - Cria um novo ponto e o adiciona ao vetor */
+void pto_cria(float x, float y, Ponto vetor[], int *n) {
+    if (*n < MAX_PONTOS) {
+        vetor[*n].x = x;
+        vetor[*n].y = y;
+        (*n)++;
+        printf("\nPonto criado com sucesso!\n");
+    } else {
+        printf("Erro: limite de pontos atingido.\n");
+    }
+    limpar();
+    pto_acessa(vetor, *n);
+    limpar();
+}
+
+/* Função pto_libera - Remove um ponto do vetor */
+void pto_libera(Ponto vetor[], int *n, int indice) {
+    if (indice < 0 || indice >= *n) {
+        printf("\nValor não encontrado!\n");
+        return;
+    }
+    for (int i = indice; i < (*n) - 1; i++) {
+        vetor[i] = vetor[i + 1];
+    }
+    (*n)--;
+    printf("\nElemento removido com sucesso!\n");
+    limpar();
+    pto_acessa(vetor, *n);
+}
+
+/* Função pto_atribui - Atribui novos valores a um ponto existente */
+void pto_atribui(Ponto *p, float x, float y) {
+    if (p != NULL) {
+        p->x = x;
+        p->y = y;
+    }
+}
+
+/* Função pto_distancia - Calcula a distância entre dois pontos no vetor */
+float pto_distancia(Ponto vetor[], int n, int indice_1, int indice_2) {
+    if (indice_1 < 0 || indice_1 >= n || indice_2 < 0 || indice_2 >= n) {
+        printf("Erro: Um ou ambos os índices são inválidos.\n");
+        return -1;
+    }
+    float dx = vetor[indice_2].x - vetor[indice_1].x;
+    float dy = vetor[indice_2].y - vetor[indice_1].y;
+    return sqrt(dx * dx + dy * dy);
+}

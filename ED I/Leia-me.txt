@@ -1,0 +1,10 @@
+Bom dia/tarde/noite, Professora Daniele/Julia,
+
+Espero que esteja bem.
+
+Gostaria de informar que os códigos foram criados e implementados no Replit, uma IDE que suporta emojis, acentos e outros símbolos visuais. Optei por uma abordagem mais "visual" para tornar a interface mais atraente e menos monótona, saindo do padrão preto e branco.
+
+Estou à disposição para quaisquer dúvidas ou ajustes que possam surgir.
+
+Atenciosamente,
+Guilherme Epifânio

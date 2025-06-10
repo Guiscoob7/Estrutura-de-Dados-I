@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "funcoes.h"
+
+int main() {
+    // Aloca memória para uma nova lista duplamente encadeada
+    ListaDuplamenteEncadeada* lista = (ListaDuplamenteEncadeada*)malloc(sizeof(ListaDuplamenteEncadeada));
+    if (lista == NULL) {
+        // Mensagem de erro se a alocação de memória falhar
+        printf(RED "❌ Erro ao alocar memória para a lista.\n" RESET);
+        return 1;  // Retorna código de erro
+    }
+    // Inicializa a lista chamando Cria_lista, que define a cauda como NULL
+    lista->cabeca = Cria_lista(lista);
+
+    // Exibe uma mensagem de boas-vindas ao usuário
+    boasVindas();
+    limpar();  // Limpa a tela para melhor visualização
+
+    // Insere 7 Emojis na lista
+    for (int i = 0; i < 7; i++) {
+        Insere(lista);  // Chama a função para inserir um novo Emoji na lista
+        limpar();       // Limpa a tela após cada inserção
+    }
+
+    // Exibe a lista de Emojis antes de ordená-la
+    Exibe(lista);
+    limpar();  // Limpa a tela
+
+    // Ordena a lista de Emojis usando Stooge Sort
+    ordenarLista(lista);
+    limpar();  // Limpa a tela
+
+    // Consulta um Emoji específico na lista
+    const char* emojiParaConsultar = "😂";
+    printf(CYAN "\n🔍 Consultando o emoji: %s\n" RESET, emojiParaConsultar);
+    Consulta_elem(lista, emojiParaConsultar);
+    limpar();  // Limpa a tela
+
+    // Remove todos os Emojis com uma popularidade específica
+    int flag;
+    int popularidadeParaRemover = 15;
+    Exibe(lista);  // Exibe a lista antes da remoção
+    printf(CYAN "\n🗑️ Removendo emojis com popularidade: %d\n" RESET, popularidadeParaRemover);
+    Remove_elem(lista, popularidadeParaRemover, &flag);
+
+    // Exibe a lista após a remoção dos Emojis
+    printf(CYAN "\n🔄 Lista após remoção:\n" RESET);
+    Exibe(lista);
+
+    // Libera a memória alocada para a lista e para os Emojis
+    Libera_lista(lista);
+    free(lista);  // Libera a memória alocada para a estrutura da lista
+
+    return 0;  // Retorna 0 para indicar que o programa foi concluído com sucesso
+}

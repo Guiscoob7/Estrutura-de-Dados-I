@@ -1,0 +1,213 @@
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
+  #include "llaeas.h"
+
+  // Define o tamanho máximo da lista
+  #define MAX 10
+
+  // Definição da estrutura da lista
+  struct lista{
+     int FL;          // Indica o número de elementos atualmente na lista (Fim da Lista)
+     int dados[MAX];  // Array que armazena os elementos da lista
+  };
+
+  // Função para limpar a tela e solicitar ao usuário pressionar ENTER para continuar
+  void limpar() {
+    printf("\n\nPressione ENTER para continuar...");
+    getchar();
+    // Limpa a tela do console (funciona em sistemas Unix)
+    printf("\e[H\e[2J");
+  }
+
+  // Função para limpar o buffer de entrada, removendo caracteres extras
+  void limparbuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+  }
+
+  // Função para exibir todos os elementos da lista
+  void Exibir_lista(Lista* Ptl){
+    int i = 0;
+
+    // Verifica se a lista foi inicializada
+    if (Ptl == NULL){
+      printf("Lista nao inicializada!\n");
+      return;
+    }
+
+    // Verifica se a lista está vazia
+    if (E_vazia(Ptl)){
+      printf("Lista vazia!\n");
+      return;
+    }
+
+    // Exibe todos os elementos da lista
+    printf("\nLista:\n");
+    while (i < Ptl->FL){
+      printf("Elemento %d: %d\n", i+1, Ptl->dados[i]);
+      i++;
+    }
+  }
+
+  // Função para salvar os elementos da lista em um arquivo de texto
+  void Salvar_lista(Lista *Ptl) {
+    FILE *file;
+
+    // Define o nome do arquivo com base na escolha do usuário
+    printf("Digite o nome do arquivo para salvar a lista: ");
+    char nome[100];
+    scanf("%s", nome);
+    limparbuffer();
+    strcat(nome, ".txt"); // Extensão para o arquivo textual
+    file = fopen(nome, "w");
+
+    // Verifica se o arquivo foi aberto corretamente
+    if (file == NULL) {
+      printf("\nErro ao abrir o arquivo!\n");
+      limpar();
+      return;
+    }
+
+    // Grava cada elemento da lista no arquivo
+    for (int i = 0; i < Ptl->FL; i++) {
+      fprintf(file, "%d\n", Ptl->dados[i]);
+    }
+
+    // Fecha o arquivo
+    fclose(file);
+    printf("Elemento(s) salvo(s) com sucesso!\n");
+  }
+
+  // Função para criar e inicializar uma nova lista
+  Lista* Cria_lista(void)
+  {
+     Lista* pt = (Lista*)malloc(sizeof(Lista));
+
+     // Verifica se a alocação de memória foi bem-sucedida e inicializa o FL
+     if(pt != NULL)
+         pt->FL = 0;
+     return pt;
+  }
+
+  // Função para liberar a memória alocada pela lista
+  Lista* Libera_lista(Lista* Ptl)
+  {
+     free(Ptl);
+     return NULL;
+  }
+
+  // Função para inserir um novo elemento no final da lista
+  Lista* Insere_elem(Lista* Ptl, int elem)
+  {
+     // Verifica se a lista é válida e se ainda há espaço para inserir elementos
+     if (Ptl == NULL || Ptl->FL == MAX){
+         return Ptl;
+     }
+
+     // Insere o elemento no final da lista
+     Ptl->dados[Ptl->FL] = elem;
+     Ptl->FL++;
+     return Ptl;
+  }
+
+  // Função para remover um elemento da lista com movimentação dos dados
+  Lista* Remove_elem_mov(Lista* Ptl, int elem)
+  {
+     int i, k;
+
+     // Verifica se a lista é válida e não está vazia
+     if (Ptl == NULL || Ptl->FL == 0)
+        return Ptl;
+
+     // Procura o elemento na lista
+     i = 0;
+     while(i < Ptl->FL && Ptl->dados[i] != elem)
+           i++;
+
+     // Verifica se o elemento foi encontrado
+     if (i == Ptl->FL){ // Elemento não encontrado
+        printf("Elemento nao encontrado!\n"); 
+        return Ptl;
+     }
+
+     // Remove o elemento e movimenta os outros elementos para preencher o espaço
+     for (k = i; k < Ptl->FL-1; k++)
+         Ptl->dados[k] = Ptl->dados[k+1];
+
+     // Atualiza o número de elementos na lista
+     Ptl->FL--;
+     return Ptl;
+  }
+
+  // Função para remover um elemento da lista sem movimentação dos dados
+  Lista* Remove_elem(Lista* Ptl, int elem)
+  {
+     int i;
+
+     // Verifica se a lista é válida
+     if (Ptl != NULL)
+     {
+       // Procura o elemento na lista
+       i = 0;
+       while(i < Ptl->FL && Ptl->dados[i] != elem)
+           i++;
+
+       // Verifica se o elemento foi encontrado
+       if (i == Ptl->FL)
+         return Ptl; // Lista vazia ou elemento não encontrado
+
+       // Remove o elemento substituindo-o pelo último elemento da lista
+       Ptl->dados[i] = Ptl->dados[Ptl->FL-1];
+
+       // Atualiza o número de elementos na lista
+       Ptl->FL--;
+       printf("Elemento removido com sucesso!\n");
+     }
+     return Ptl;
+  }
+
+  // Função para consultar o valor de um elemento em uma posição específica da lista
+  int Consulta_nodo(Lista* Ptl, int pos, int* info)
+  {
+    // Verifica se a lista é válida e se a posição está dentro dos limites
+    if (Ptl == NULL)
+        return 0;
+    if (pos <= 0 ||  pos > Ptl->FL)
+       return 0;
+
+    // Retorna o valor do elemento na posição especificada
+    *info = Ptl->dados[pos-1];
+    return 1;
+  }
+
+  // Função para retornar o tamanho da lista
+  int Tamanho_lista(Lista* Ptl)
+  {
+     if (Ptl == NULL)
+        return -1;
+     else return Ptl->FL;
+  }
+
+  // Função para verificar se a lista está cheia
+  int E_cheia(Lista* Ptl)
+  {
+     if (Ptl == NULL)
+        return -1;
+     if (Ptl->FL == MAX){
+        printf("Lista cheia!\n");
+        limpar();
+        return 1;
+     }
+     return 0;
+  }
+
+  // Função para verificar se a lista está vazia
+  int E_vazia(Lista* Ptl)
+  {
+     if (Ptl == NULL)
+       return -1;
+     if (Ptl->FL == 0)
+        return 1;
+     return 0;
+  }

@@ -1,0 +1,140 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "funcoes.h"
+
+// 🚀 Função para criar uma fila nova
+Fila* Cria_Fila(void)
+{
+  Fila *Ptf;
+  Ptf = (Fila*)malloc(sizeof(Fila));  // Alocação de memória para uma nova fila
+  if (Ptf == NULL)                    // Verifica se a alocação foi bem-sucedida
+    return NULL;
+  Ptf->Prim = NULL;                   // Inicializa a cabeça e o final da fila como NULL
+  Ptf->Ult = NULL;
+  return Ptf;
+}
+
+// ➕ Função para inserir um elemento na fila
+Fila *Insere_Fila(Fila *Ptf, int elem)
+{
+  No *Pt;
+  Pt = (No*)malloc(sizeof(No));        // Aloca memória para um novo nó
+  if (Pt == NULL)
+    return Ptf;
+  Pt->info = elem;                     // Atribui o valor ao nó
+  Pt->prox = NULL;                     // Define o próximo nó como NULL
+  if (Ptf->Ult == NULL)                // Se a fila está vazia
+    Ptf->Prim = Pt;
+  else
+    Ptf->Ult->prox = Pt;               // Adiciona o novo nó ao final da fila
+  
+  Ptf->Ult = Pt;                       // Atualiza o ponteiro do final da fila
+  return Ptf;
+}
+
+// ➖ Função para remover um elemento da fila
+int Remove_fila(Fila *Ptf, int *elem)
+{
+  No* aux;
+  if (Ptf == NULL || Ptf->Prim == NULL) // Verifica se a fila é válida e não está vazia
+    return 0;
+
+  *elem = Ptf->Prim->info;              // Captura o valor do primeiro elemento
+  aux = Ptf->Prim;                      // Ponteiro auxiliar para liberar memória
+  Ptf->Prim = Ptf->Prim->prox;          // Atualiza a cabeça da fila
+  if (Ptf->Prim == NULL)
+    Ptf->Ult = NULL;                    // Se a fila ficou vazia, atualiza o final
+  free(aux);                            // Libera a memória do nó removido
+  return 1;
+}
+
+// 🔍 Função para consultar o primeiro elemento da fila (sem remover)
+int Consulta_fila(Fila *Ptf, int *elem)
+{
+  if (Ptf == NULL || Ptf->Prim == NULL) // Verifica se a fila é válida e não está vazia
+    return 0;
+  *elem = Ptf->Prim->info;              // Retorna o valor do primeiro elemento
+  return 1;
+}
+
+// 🗑️ Função para liberar a memória de toda a fila
+Fila *Libera_fila(Fila *Ptf)
+{
+    No *aux;
+    if (Ptf == NULL)
+        return NULL;
+    while (Ptf->Prim != NULL)
+    {
+        aux = Ptf->Prim;               // Libera nó por nó da fila
+        Ptf->Prim = Ptf->Prim->prox;
+        free(aux);
+    }
+    free(Ptf);                         // Libera a estrutura da fila
+    return NULL;
+}
+
+// 🖨️ Função para exibir todos os elementos da fila
+void Exibir_Fila(Fila* Ptf)
+{
+    int elem;
+    printf(" | ");
+    while (Ptf->Ult != NULL){          // Exibe e remove os elementos da fila
+        Remove_fila(Ptf, &elem);
+        printf(GREEN "%02d" RESET " | ", elem);
+    }
+}
+
+// 🔄 Função para manipular as filas (distribuição por múltiplos)
+void Manipular_fila(Fila* filas[])
+{
+  No *atual = filas[0]->Prim;
+  while (atual != NULL)
+  {
+      int info = atual->info;
+
+      if (info % 2 == 0)                  // Verifica se o número é múltiplo de 2
+      {
+          filas[1] = Insere_Fila(filas[1], info);
+      }
+      if (info % 3 == 0)                  // Verifica se o número é múltiplo de 3
+      {
+          filas[2] = Insere_Fila(filas[2], info);
+      }
+      if (info % 2 != 0 && info % 3 != 0) // Caso não seja múltiplo de 2 nem 3
+      {
+          filas[3] = Insere_Fila(filas[3], info); 
+      }
+      atual = atual->prox;                // Avança para o próximo nó
+  }
+}
+
+// 🧹 Função para limpar a tela
+void limpar() {
+    // Mensagem para o usuário pressionar ENTER
+    printf("\n%s🛑 %sPressione ENTER para continuar... %s🛑%s: ", LIGHT_CYAN, ORANGE, LIGHT_CYAN, RESET);
+
+    // Pausa até o usuário pressionar ENTER
+    getchar();
+
+    #ifdef _WIN32
+        system("cls");  // Comando para limpar a tela no Windows
+    #else
+        system("clear");  // Comando para limpar a tela em Unix/Linux
+    #endif
+}
+
+// 🧼 Função para limpar o buffer de entrada, removendo caracteres extras
+void limparbuffer() {
+  int c;
+  while ((c = getchar()) != '\n' && c != EOF);  // Limpa todos os caracteres até o ENTER
+}
+
+// Função para exibir mensagens de boas-vindas
+void boasVindas() {
+    printf("\n" BLUE BOLD "╔════════════════════════════════════════════════════════════════════════════╗" RESET "\n");
+    printf(BLUE BOLD "║" RESET " 🚀📥 " GREEN BOLD "Bem-vindo ao" RESET " " CYAN BOLD "Gerenciador de Filas" GREEN " 📥🚀 " BLUE BOLD "                               ║" RESET "\n");
+    printf(BLUE BOLD "║" RESET " 🏃‍♂️🔄 " LIGHT_GREEN "Prepare-se para manipular suas filas com eficiência!" BLUE " 🔄🏃‍♂️ " BLUE BOLD "          ║" RESET "\n");
+    printf(BLUE BOLD "║" RESET " 📊✅ " YELLOW "Organize, insira e remova elementos com facilidade!" BLUE " ✅📊 " BLUE BOLD "             ║" RESET "\n");
+    printf(BLUE BOLD "║" RESET " 💡🗃️ " LIGHT_CYAN "Vamos otimizar seu gerenciamento de dados em filas!" BLUE " 🗃️💡 " BLUE BOLD "             ║" RESET "\n");
+    printf(BLUE BOLD "╚════════════════════════════════════════════════════════════════════════════╝" RESET "\n\n");
+}

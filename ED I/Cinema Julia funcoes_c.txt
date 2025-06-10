@@ -1,0 +1,272 @@
+#include "funcoes.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Função para limpar a tela e solicitar ao usuário pressionar ENTER para continuar
+void limpar() {
+    // Mensagem para o usuário
+    printf("\n\n%s🛑 %sPressione ENTER para continuar... %s🛑%s: ", LIGHT_CYAN, LIGHT_YELLOW, LIGHT_CYAN, RESET);
+
+    // Pausa até o usuário pressionar ENTER
+    getchar();
+
+    #ifdef _WIN32
+        system("cls");  // Comando para Windows
+    #else
+        system("clear");  // Comando para Unix/Linux
+    #endif
+}
+
+// Função para limpar o buffer de entrada, removendo caracteres extras
+void limparbuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+Ingresso* Libera_lista(Ingresso* Ptl){
+    Ingresso *atual = Ptl;
+    Ingresso *proximoNo;
+    // Se a lista estiver vazia, não há nada a liberar
+    if (Ptl == NULL)
+        return NULL;   
+    // Libera todos os elementos da lista
+    while (atual != NULL) {
+        proximoNo = atual->prox;
+        free(atual);
+        atual = proximoNo;
+    }
+    return NULL; // Ptl = NULL; return Ptl;
+}
+
+Ingresso *Cria_lista(void) {
+    // Cria uma lista vazia
+    return NULL;
+}
+
+int E_vazia(Ingresso *Ptl) {
+    // Verifica se a lista está vazia
+    if (Ptl == NULL)
+        return 1;
+    return 0;
+}
+
+void Exibir_lista(Ingresso *Ptl, char* filme, int* flag) {
+    // Verifica se a lista está vazia
+    if (E_vazia(Ptl) == 1) {
+        printf("%s%s🔍 %sA lista está vazia! Nada para exibir.%s\n", LIGHT_BLUE, BOLD, RESET, RESET);
+        return;
+    }
+    Ingresso *aux = Ptl;
+    int cont = 0;
+    // Exibe todos os elementos da lista relacionados ao filme
+    printf("%s%s🎬 %sLista de Ingressos para o filme %s: %s\n", MAGENTA, BOLD, RESET, RESET, filme);
+    while (aux != NULL) {
+        // Imprime o número e nome do filme se corresponder ao filme fornecido
+        if (strcasecmp(aux->filme, filme) == 0){
+            *flag = 1;
+            printf("\n%s%s%d. %s%s%s\n", LIGHT_GREEN, BOLD, ++cont, LIGHT_YELLOW, aux->filme, RESET);
+            // Imprime o número do assento
+            printf("   %s🎟️ Nº Assento: %s%d%s\n", GREEN, BOLD, aux->assento, RESET);
+        }
+        aux = aux->prox;
+    }
+    if (*flag)
+        printf("\n%s%s✨ Fim da lista! ✨%s\n", MAGENTA, BOLD, RESET);
+    else
+        printf("\n%s%s🚫 Nenhum filme encontrado!%s\n", YELLOW, BOLD, RESET);
+}
+
+void Exibir_lista_total(Ingresso *Ptl) {
+    // Verifica se a lista está vazia
+    if (E_vazia(Ptl) == 1) {
+        printf("%s%s🔍 %sA lista está vazia! Nada para exibir.%s\n", LIGHT_BLUE, BOLD, RESET, RESET);
+        return;
+    } 
+    Ingresso *aux = Ptl;
+    int cont = 0;
+    // Exibe todos os elementos da lista
+    printf("%s%s🎬 %sLista de Ingressos%s:%s\n", MAGENTA, BOLD, RESET, ORANGE, RESET);
+    while (aux != NULL) {
+        // Imprime o número e nome do filme
+        printf("\n%s%s%d. %s%s%s\n", LIGHT_GREEN, BOLD, ++cont, LIGHT_YELLOW, aux->filme, RESET);
+        // Imprime o número do assento
+        printf("   %s🎟️ Nº Assento: %s%d%s\n", GREEN, BOLD, aux->assento, RESET);
+        aux = aux->prox;
+    }
+    printf("\n%s%s✨ Fim da lista! ✨%s\n", MAGENTA, BOLD, RESET);
+}
+
+Ingresso* Remove_elem(Ingresso* Ptl, int elem, char* filme, int *flag) {
+    // Verifica se o número do ingresso é válido
+    if (elem < 1 || elem > 10) {
+        printf("%s⚠️ Erro: Número de Ingresso inválido!%s\n", RED, RESET);
+        *flag = 0;
+        return Ptl;
+    }
+    // Remove o elemento da lista
+    if (Ptl == NULL) {
+        printf("%s🔍 A lista já está vazia!%s\n", YELLOW, RESET);
+        *flag = 0;
+        return Ptl;
+    }
+
+    Ingresso *atual, *aux;
+
+    atual = Ptl;
+    // Procura o elemento a ser removido
+    while (atual != NULL && (atual->assento != elem || (strcasecmp(atual->filme, filme) != 0))) {
+        atual = atual->prox;
+    }
+    // Se o elemento não for encontrado
+    if (atual == NULL) {
+        printf("%s⚠️ Erro: Número de Ingresso não disponível!%s\n", RED, RESET);
+        *flag = 0;
+        return Ptl;
+    }
+    // Se o elemento a ser removido é o único da lista
+    if (atual == Ptl && atual->prox == NULL){
+      free(atual);
+      *flag = 1;
+      return Ptl;
+    }
+
+    // Ajusta os ponteiros para remover o elemento
+    if (atual == Ptl)
+      Ptl = atual->prox;
+    else
+      atual->ant->prox = atual->prox;
+
+    if (atual->prox != NULL)
+      atual->prox->ant = atual->ant;
+
+    free(atual);
+  
+    *flag = 1;
+    return Ptl;  
+}
+
+/*
+cd C:\Importante\C
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+.\programa.exe
+*/
+
+// Função para exibir mensagens de boas-vindas
+void boasVindas() {
+    printf("\n" ORANGE BOLD "╔══════════════════════════════════════════════════════════════════════════╗" RESET "\n");
+    printf(ORANGE BOLD "║" RESET " 🎥🍿 " RED BOLD "Bem-vindo ao " RESET MAGENTA "Programa de Cinema" ORANGE " 🍿🎥 " ORANGE BOLD "                               ║" RESET "\n");
+    printf(ORANGE BOLD "║" RESET " 🌟🎬 " YELLOW "Descubra os melhores filmes e ingressos!" ORANGE " 🎬🌟 " ORANGE BOLD "                      ║" RESET "\n");
+    printf(ORANGE BOLD "║" RESET " 🌠🎥 " GREEN "Que a diversão comece agora!" ORANGE " 🎥🌠 " ORANGE BOLD "                                  ║" RESET "\n");
+    printf(ORANGE BOLD "║" RESET " 🌌🍿 " MAGENTA "Vamos explorar o mundo do cinema juntos!" ORANGE " 🍿🌌 " ORANGE BOLD "                      ║" RESET "\n");
+    printf(ORANGE BOLD "╚══════════════════════════════════════════════════════════════════════════╝" RESET "\n\n");
+}
+
+Ingresso* Insere_elem(Ingresso* Ptl, int num, char *filme) {
+    Ingresso *Ptno;
+    // Aloca memória para um novo ingresso
+    Ptno = (Ingresso*)malloc(sizeof(Ingresso));
+    if (Ptno == NULL){
+        return Ptl;
+    }
+    Ptno->assento = num;
+    strcpy(Ptno->filme, filme);
+    Ptno->prox = NULL;
+    // Se a lista estiver vazia, o novo ingresso será o primeiro
+    if (Ptl == NULL){
+      Ptno->ant = NULL;
+      return Ptno;
+    }
+    Ingresso *aux = Ptl;
+    // Encontra o final da lista
+    while (aux->prox != NULL)
+      aux = aux->prox;
+
+    Ptno->ant = aux;
+    aux->prox = Ptno;
+    return Ptl;
+}
+
+Ingresso* inicializarFilmes(Ingresso *lista) {
+
+    // Adiciona filmes à lista
+    lista = Insere_elem(lista, 1, "Daniele no Mundo");
+    lista = Insere_elem(lista, 3, "Daniele no Mundo");
+    lista = Insere_elem(lista, 2, "Daniele no Mundo");
+    lista = Insere_elem(lista, 4, "Daniele e o Valor");
+    lista = Insere_elem(lista, 5, "Daniele e o Valor");
+    lista = Insere_elem(lista, 6, "Filme da Daniele");
+    lista = Insere_elem(lista, 7, "Filme da Daniele");
+    lista = Insere_elem(lista, 8, "Daniele e Guardiões");
+    lista = Insere_elem(lista, 9, "Daniele e Aventura");
+    lista = Insere_elem(lista, 10, "Daniele e Destino");
+
+    return lista;
+}
+
+Ingresso* Dividir_Lista (Ingresso* Ptl){
+    // Se a lista estiver vazia ou tiver apenas um elemento, retorna a própria lista
+    if (!Ptl || !Ptl->prox)
+        return Ptl;
+    
+    Ingresso* Anda_2 = Ptl;
+    Ingresso* Anda_1 = Ptl;
+    Ingresso* Anterior = NULL;
+
+    // Encontra o meio da lista
+    while (Anda_2 && Anda_2->prox){
+        Anda_2 = Anda_2->prox->prox;
+        Anterior = Anda_1;
+        Anda_1 = Anda_1->prox;
+    }
+
+    // Ajusta o ponteiro do final da primeira metade
+    if (Anterior)
+        Anterior->prox = NULL;
+    
+    // Ajusta o ponteiro do início da segunda metade
+    if(Anda_1)
+        Anda_1->ant = NULL;
+
+    return Anda_1;
+}
+
+Ingresso* Juntar_Lista(Ingresso* Esquerda, Ingresso* Direita){
+    Ingresso Inutil;
+    Ingresso* Cabeca = &Inutil;
+    Inutil.prox = NULL;
+    Inutil.ant = NULL;
+
+    // Junta as duas metades ordenadas
+    while (Esquerda && Direita){
+        if(Esquerda->assento < Direita->assento){
+            Cabeca->prox = Esquerda;
+            Esquerda->ant = Cabeca;
+            Esquerda = Esquerda->prox;
+        }
+        else{
+            Cabeca->prox = Direita;
+            Direita->ant = Cabeca;
+            Direita = Direita->prox;
+        }
+        Cabeca = Cabeca->prox;
+    }
+    Cabeca->prox = (Esquerda) ? Esquerda : Direita;
+    if(Cabeca->prox)
+        Cabeca->prox->ant = Cabeca;
+
+    return Inutil.prox;
+}
+
+Ingresso* Ordenar(Ingresso* Cabeca){
+    // Se a lista estiver vazia ou tiver um único elemento, retorna a própria lista
+    if (!Cabeca || !Cabeca->prox)
+        return Cabeca;
+
+    // Divide a lista em duas metades, ordena e junta as duas metades
+    Ingresso* Meio = Dividir_Lista(Cabeca);
+    Ingresso* Esquerda = Ordenar(Cabeca);
+    Ingresso* Direita = Ordenar(Meio);
+
+    return Juntar_Lista(Esquerda, Direita);
+}

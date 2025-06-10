@@ -1,0 +1,141 @@
+#include "funcoes.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+// Função principal
+int main() {
+    boasVindas();  // Exibe a mensagem de boas-vindas
+    limpar();      // Limpa a tela
+
+    int opcao, assento, aux = 0;
+    char filme[50];
+    Ingresso *lista_disponiveis, *lista_vendidos; // Inicializa os ponteiros para listas de ingressos
+    lista_disponiveis = Cria_lista(); // Cria a lista de ingressos disponíveis
+    lista_vendidos = Cria_lista(); // Cria a lista de ingressos vendidos
+    lista_disponiveis = inicializarFilmes(lista_disponiveis);
+
+    do {
+        // Exibe o menu de opções para o usuário
+        printf("\n" CYAN BOLD "🎬🍿 Menu Cinema: 🍿🎬" RESET "\n");
+        printf("🌟 " BOLD GREEN "[1]" RESET " 🎟️ " BOLD MAGENTA "Vender Ingresso" RESET " 🎟️\n");
+        printf("🌟 " BOLD GREEN "[2]" RESET " 🔄 " BOLD YELLOW "Cancelar Ingresso" RESET " 🔄\n");
+        printf("🌟 " BOLD GREEN "[3]" RESET " 🗂️ " BOLD BLUE "Listar Ingressos Disponíveis" RESET " 🗂️\n");
+        printf("🌟 " BOLD GREEN "[4]" RESET " 📜 " BOLD CYAN "Consultar Ingressos Vendidos" RESET " 📜\n");
+        printf("🌟 " BOLD GREEN "[5]" RESET " 🚪 " BOLD "Sair" RESET " 🚪\n");
+
+        // Solicita ao usuário a opção desejada
+        printf("\n" CYAN BOLD "Escolha uma opção: " RESET);
+        scanf("%d", &opcao);
+        limparbuffer(); // Limpa o buffer do teclado para evitar problemas com entrada de dados
+        limpar();       // Limpa a tela para uma melhor visualização
+
+        // Processa a opção escolhida pelo usuário
+        switch (opcao) {
+            case 1: {
+                // Vender Ingresso
+                printf(BOLD MAGENTA "\n🎟️ Vender Ingresso 🎟️\n" RESET);
+                limpar();
+                printf(BOLD MAGENTA "\n🗂️ Lista de Ingressos Disponíveis 🗂️\n\n" RESET);
+                Exibir_lista_total(lista_disponiveis);
+                printf("\n%s%s🗂️ %sPor favor, insira o nome do%s%s %sfilme%s%s que deseja comprar ingressos:%s ",
+                   CYAN, BOLD, RESET, BOLD, GREEN, RESET, BOLD, RED, RESET);
+                scanf("%49[^\n]", filme);
+                limparbuffer();
+                limpar();
+                printf(BOLD MAGENTA "\n🗂️ Lista de Ingressos Disponíveis 🗂️\n\n" RESET);
+                Exibir_lista(lista_disponiveis, filme, &aux); // Exibe todos os ingressos disponíveis
+                if (aux){
+                    printf("\n%s%s🔢 %sPor favor, insira o número do%s%s %sassento%s%s que deseja comprar:%s ",
+                    CYAN, BOLD, RESET, BOLD, GREEN, RESET, BOLD, RED, RESET);
+                    scanf("%d", &assento);
+                    limparbuffer();
+                    printf("\n%s📋 Você tem certeza?%s\n%s\n[1] - Sim%s\t%s[0] - Não%s\n\n%sEscolha: %s" ,PURPLE, RESET, GREEN, RESET, RED, RESET, ORANGE, RESET);
+                    scanf("%d", &opcao);
+                    limparbuffer();
+                    if (opcao == 1) {
+                        lista_disponiveis = Remove_elem(lista_disponiveis, assento, filme, &aux);
+                        if (aux) {
+                            // Exibe a confirmação de operação
+                            printf("\n%s🗑️ Comprando o Ingresso nº %d....%s\n", LIGHT_YELLOW, assento, RESET);
+                            // Mensagem de sucesso
+                            printf("%s✅ Ingresso vendido com sucesso!%s\n", GREEN, RESET);
+                            lista_vendidos = Insere_elem(lista_vendidos, assento, filme);
+                        }
+                    } else {
+                        printf("%s❌ Venda cancelada!%s\n", RED, RESET);
+                    }
+                }
+                limpar();
+                break;
+            }
+            case 2:
+                // Cancelar Ingresso
+                printf(BOLD MAGENTA "\n🔄 Cancelar Ingresso 🔄\n" RESET);
+                limpar();
+                printf("\n%s%s📜 %sPor favor, insira o nome do%s%s %sfilme%s%s que deseja cancelar ingresso:%s ",
+                   CYAN, BOLD, RESET, BOLD, GREEN, RESET, BOLD, RED, RESET);
+                scanf("%49[^\n]", filme);
+                limparbuffer();
+                Exibir_lista(lista_vendidos, filme, &aux); // Exibe a lista atual de ingressos vendidos
+                if (aux){
+                    printf("\n%s%s🔢 %sPor favor, insira o número do%s%s %sassento%s%s do ingresso que deseja cancelar:%s ",
+                    CYAN, BOLD, RESET, BOLD, GREEN, RESET, BOLD, RED, RESET);
+                    scanf("%d", &assento);
+                    limparbuffer();
+                    printf("\n%s📋 Você tem certeza?%s\n%s\n[1] - Sim%s\t%s[0] - Não%s\n\n%sEscolha: %s" ,PURPLE, RESET, GREEN, RESET, RED, RESET, ORANGE, RESET);
+                    scanf("%d", &opcao);
+                    limparbuffer();
+                    if (opcao == 1) {
+                        lista_vendidos = Remove_elem(lista_vendidos, assento, filme, &aux);
+                        if (aux) {
+                            // Exibe a confirmação de operação
+                            printf("\n%s🗑️ Cancelando o Ingresso nº %d....%s\n", LIGHT_YELLOW, assento, RESET);
+                            // Mensagem de sucesso
+                            printf("%s✅ Ingresso cancelado com sucesso!%s\n", GREEN, RESET);
+                            lista_disponiveis = Insere_elem(lista_disponiveis, assento, filme);
+                        }
+                    } else {
+                        printf("%s❌ Cancelamento cancelado!%s\n", RED, RESET);
+                    }
+                }
+                limpar();
+                break;
+            case 3:
+                // Listar Ingressos Disponíveis
+                printf(BOLD MAGENTA "\n🗂️ Listar Ingressos Disponíveis 🗂️\n" RESET);
+                limpar();
+                Exibir_lista_total(lista_disponiveis);
+                printf("\n%s%s🔍 %sPor favor, insira o nome do%s%s %sfilme%s%s que deseja ver ingressos disponíveis:%s ",
+                   CYAN, BOLD, RESET, BOLD, GREEN, RESET, BOLD, RED, RESET);
+                scanf("%49[^\n]", filme);
+                limparbuffer();
+                printf(BOLD MAGENTA "\n🗂️ Lista de Ingressos Disponíveis 🗂️\n" RESET);
+                limpar();
+                lista_disponiveis = Ordenar(lista_disponiveis);
+                Exibir_lista(lista_disponiveis, filme, &aux); // Exibe todos os ingressos disponíveis
+                limpar();
+                break;
+            case 4:
+                // Consultar Ingressos Vendidos
+                printf(BOLD MAGENTA "\n📜 Listar Ingressos Vendidos 📜\n" RESET);
+                limpar();
+                printf(BOLD MAGENTA "\n📜 Lista de Ingressos Vendidos 📜\n\n" RESET);
+                Exibir_lista_total(lista_vendidos); // Exibe a lista de ingressos vendidos
+                limpar();
+                break;
+            case 5:
+                // Sair do programa
+                printf("🚪 " BOLD "Saindo do programa..." RESET " 🚪\n");
+                lista_disponiveis = Libera_lista(lista_disponiveis); // Libera a memória alocada para a lista de ingressos disponíveis
+                lista_vendidos = Libera_lista(lista_vendidos); // Libera a memória alocada para a lista de ingressos vendidos
+                limpar();
+                break;
+            default:
+                // Opção inválida fornecida pelo usuário
+                printf(RED BOLD "⚠️ Opção inválida. Por favor, escolha um número de 1 a 5. ⚠️" RESET "\n");
+                break;
+        }
+    } while (opcao != 5); // Loop até que o usuário escolha sair
+
+    return 0; // Finaliza o programa
+}

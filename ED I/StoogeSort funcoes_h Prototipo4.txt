@@ -1,0 +1,93 @@
+// funcoes.h
+
+// Definindo códigos de cor ANSI para formatação do texto no terminal
+// Estes códigos são usados para alterar a cor e estilo do texto exibido no terminal
+#define RESET "\033[0m"           // Código para resetar as configurações de cor e estilo para o padrão
+#define BOLD "\033[1m"            // Código para aplicar negrito ao texto
+#define UNDERLINE "\033[4m"       // Código para sublinhar o texto
+#define GREEN "\033[32m"          // Código para texto na cor verde
+#define YELLOW "\033[33m"         // Código para texto na cor amarelo
+#define CYAN "\033[36m"           // Código para texto na cor ciano
+#define MAGENTA "\033[35m"        // Código para texto na cor magenta
+#define RED "\033[31m"            // Código para texto na cor vermelho
+#define BLUE "\033[34m"           // Código para texto na cor azul
+#define LIGHT_BLUE  "\033[94m"    // Código para texto na cor azul claro
+#define LIGHT_YELLOW  "\033[93m"  // Código para texto na cor amarelo claro
+#define LIGHT_CYAN   "\033[96m"   // Código para texto na cor ciano claro
+#define LIGHT_GREEN   "\033[92m"  // Código para texto na cor verde claro     
+#define PURPLE "\x1B[35m"         // Código para texto na cor roxo
+#define ORANGE "\033[38;5;208m"   // Código para texto na cor laranja
+#define DOURADO "\033[1;33m"      // Código para texto na cor dourado
+#define BLACK "\033[0;30m"        // Código para texto na cor preto
+
+// Estrutura principal que representa um Emoji
+struct emoji {                
+  struct emoji *prox;  // Ponteiro para o próximo Emoji na lista 
+  struct emoji *ant;   // Ponteiro para o emoji anterior na lista
+  char simbolo[16];    // Representa o símbolo ou nome do emoji (máximo de 15 caracteres + null terminator)
+  int popularidade;    // Popularidade do emoji (ou qualquer outra métrica usada para ordenação)
+};
+
+// Define o tipo `Emoji` como uma forma simplificada de usar a struct `emoji`
+typedef struct emoji Emoji; 
+
+// Estrutura para representar a lista duplamente encadeada de Emojis
+struct listaDuplamenteEncadeada {
+  Emoji* cabeca;       // Ponteiro para o primeiro emoji da lista
+  Emoji* cauda;        // Ponteiro para o último emoji da lista
+};
+
+// Define o tipo `ListaDuplamenteEncadeada` como uma forma simplificada de usar a struct `listaDuplamenteEncadeada`
+typedef struct listaDuplamenteEncadeada ListaDuplamenteEncadeada; 
+
+// Função para limpar a tela e solicitar ao usuário pressionar ENTER para continuar
+void limpar(); 
+
+// Função para limpar o buffer de entrada, removendo caracteres extras
+void limparbuffer(); 
+
+// Função para criar a lista de Emojis
+Emoji *Cria_lista(ListaDuplamenteEncadeada *lista); // Cria e inicializa uma nova lista
+
+// Função para inserir um Emoji na lista
+Emoji* Insere(ListaDuplamenteEncadeada *ptL); // Adiciona um novo Emoji ao final da lista
+
+// Função para exibir a lista de Emojis
+void Exibe(ListaDuplamenteEncadeada *ptL); // Exibe todos os Emojis na lista
+
+// Função para remover Emoji(s) da lista com a popularidade especificada
+Emoji* Remove_elem(ListaDuplamenteEncadeada* Ptl, int popularidade, int *flag); // Remove Emojis com a popularidade especificada
+
+// Função para consultar um Emoji com base no símbolo
+int Consulta_elem(ListaDuplamenteEncadeada* Ptl, const char* Emoji); // Verifica a existência de um Emoji
+
+// Função para liberar a memória alocada para a lista de Emojis
+void Libera_lista(ListaDuplamenteEncadeada *Ptl); // Libera a memória de todos os nós da lista
+
+// Função para exibir uma mensagem de boas-vindas
+void boasVindas(); // Exibe uma mensagem de boas-vindas ao usuário
+
+// Função para trocar os dados de dois nós
+void trocar(Emoji* a, Emoji* b); // Troca os dados entre dois Emojis
+
+// Função de ordenação Stooge Sort para listas duplamente encadeadas
+void stoogeSort(ListaDuplamenteEncadeada* Ptl, Emoji *l, Emoji *h); // Ordena a lista usando Stooge Sort
+
+// Função para ordenar a lista usando Stooge Sort e exibir o resultado
+void ordenarLista(ListaDuplamenteEncadeada* Ptl); // Ordena a lista e exibe os resultados
+
+// Função para exibir o menu de opções
+void exibeMenu(); // Exibe as opções do menu
+
+// Função para unir duas listas duplamente encadeadas
+void unirListas(ListaDuplamenteEncadeada* lista1, ListaDuplamenteEncadeada* lista2); // Une duas listas
+
+void analiseTempo(ListaDuplamenteEncadeada* lista3); // Análise de complexidade de execução
+
+Emoji* Insere_alt(ListaDuplamenteEncadeada *ptL, char *simbolo, int popularidade); // Insere um Emoji de maneira alternativa na lista
+
+void ordenarLista_alt(ListaDuplamenteEncadeada* Ptl); // Ordena a lista usando Stooge Sort alternativa
+
+void reiniciarLista(ListaDuplamenteEncadeada* lista); // Reinicia a lista liberando a memória
+
+void analiseEstabilidade(ListaDuplamenteEncadeada* lista1); // Análise de estabilidade de execução

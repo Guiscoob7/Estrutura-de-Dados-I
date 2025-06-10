@@ -1,0 +1,111 @@
+// funcoes.h - Cabeçalho com definições de constantes e funções para manipulação de filas
+
+#ifndef FUNCOES_H
+#define FUNCOES_H
+
+// 🛠️ Definindo o tamanho máximo da fila
+#define MAX_FILA 25000
+
+// 🎨 Definindo códigos de cor ANSI para formatação do texto no terminal
+// Estes códigos são usados para alterar a cor e estilo do texto exibido no terminal
+#define RESET "\033[0m"           // Código para resetar as configurações de cor e estilo para o padrão
+#define BOLD "\033[1m"            // Negrito 🔥
+#define UNDERLINE "\033[4m"       // Sublinhado ✍️
+#define GREEN "\033[32m"          // Verde 🌿
+#define YELLOW "\033[33m"         // Amarelo 🌟
+#define CYAN "\033[36m"           // Ciano 💧
+#define MAGENTA "\033[35m"        // Magenta 🎨
+#define RED "\033[31m"            // Vermelho 🚨
+#define BLUE "\033[34m"           // Azul 🌊
+#define LIGHT_BLUE  "\033[94m"    // Azul claro 💎
+#define LIGHT_YELLOW  "\033[93m"  // Amarelo claro 🌼
+#define LIGHT_CYAN   "\033[96m"   // Ciano claro 🌀
+#define LIGHT_GREEN   "\033[92m"  // Verde claro 🌱     
+#define PURPLE "\x1B[35m"         // Roxo 🍇
+#define ORANGE "\033[38;5;208m"   // Laranja 🍊
+#define DOURADO "\033[1;33m"      // Dourado 🏆
+#define BLACK "\033[0;30m"        // Preto ⚫
+#define LIME "\x1b[38;5;154m"     // Verde limão 🍈
+#define AQUA "\x1b[38;5;51m"      // Azul água 🌊
+#define PINK "\x1b[38;5;200m"     // Rosa 💖
+
+//////////////////////
+// Fila Estática 👥 //
+//////////////////////
+
+// 🧱 Estrutura que define um nó da fila estática
+// Cada nó contém os dados de uma pessoa: nome, idade e crime
+typedef struct 
+{ 
+  char nome[50];   // 🧑‍🏫 Nome da pessoa
+  int idade;       // 🎂 Idade da pessoa
+  char crime[50];  // 🚔 "Crime" cometido pela pessoa
+} Pessoas;
+
+// 📚 Estrutura para representar a fila estática
+typedef struct 
+{
+    Pessoas Pessoa[MAX_FILA];  // 👥 Vetor que armazena os elementos da fila
+    int IF;  // 🔢 Índice do Início da Fila (primeiro elemento)
+    int FF;  // 🔚 Índice do Fim da Fila (último elemento)
+    int N;   // 👥 Número de elementos presentes na fila
+} filaDaMorteEstatica;
+
+// 🛠️ Funções específicas da Fila Estática
+
+filaDaMorteEstatica* criarFilaEstatica(filaDaMorteEstatica* fila);  // 🛠️ Cria uma nova fila estática
+int filaCheiaEstatica(filaDaMorteEstatica* fila);  // 🚧 Verifica se a fila está cheia
+int filaVaziaEstatica(filaDaMorteEstatica* fila);  // 🕳️ Verifica se a fila está vazia
+int inserirFilaEstatica(filaDaMorteEstatica* fila, Pessoas dados);   // ➕ Insere uma pessoa na fila
+int removeFilaEstatica(filaDaMorteEstatica* fila, Pessoas* pessoa);  // ➖ Remove uma pessoa da fila
+int consultaFilaEstatica(filaDaMorteEstatica* fila, Pessoas* pessoa);  // 🔍 Consulta uma pessoa na fila
+void exibirFilaEstatica(filaDaMorteEstatica* fila);  // 👀 Exibe os elementos da fila estática
+void analiseFilaEstatica(filaDaMorteEstatica *fila, Pessoas *pessoa, double* tempos);  // 🔍 Análise da fila estática
+
+//////////////////////
+// Fila Dinâmica 🔄 //
+//////////////////////
+
+// 🧱 Estrutura que define um nó da fila dinâmica
+// Cada nó contém os dados de uma pessoa: nome, idade, crime e ponteiro para o próximo nó
+typedef struct nodinamico
+{ 
+  Pessoas Pessoa;                // 🧑‍🏫 Dados da pessoa
+  struct nodinamico* prox;       // 👉 Ponteiro para o próximo nó da fila
+} noDinamico;
+
+// 📚 Estrutura que define a fila dinâmica
+typedef struct
+{
+  noDinamico *Prim;  // 👑 Ponteiro para o primeiro nó da fila
+  noDinamico *Ult;   // 🏁 Ponteiro para o último nó da fila
+} filaDaMorteDinamica;
+
+// 🛠️ Funções específicas da Fila Dinâmica
+
+filaDaMorteDinamica* criarFilaDinamica(filaDaMorteDinamica* fila);  // 🛠️ Cria uma nova fila dinâmica
+int filaVaziaDinamica(filaDaMorteDinamica* fila);  // 🕳️ Verifica se a fila dinâmica está vazia
+void inserirFilaDinamica(filaDaMorteDinamica* fila, Pessoas dados);  // ➕ Insere uma pessoa na fila
+int removeFilaDinamica(filaDaMorteDinamica* fila, Pessoas* pessoa);  // ➖ Remove uma pessoa da fila
+int consultaFilaDinamica(filaDaMorteDinamica* fila, Pessoas* pessoa);   // 🔍 Consulta uma pessoa na fila dinâmica
+void exibirFilaDinamica(filaDaMorteDinamica* fila);  // 👀 Exibe os elementos da fila dinâmica
+filaDaMorteDinamica* liberarFilaDinamica(filaDaMorteDinamica* fila);  // 🔓 Libera a memória da fila dinâmica
+void analiseFilaDinamica(filaDaMorteDinamica *fila, Pessoas *pessoa, double* tempos);  // 🔍 Análise da fila dinâmica
+
+//////////////////////
+// Funções Gerais 🌍 //
+//////////////////////
+
+void limpar();  // ✨ Função para limpar a tela ou interface
+void limparImediato();
+void limparbuffer();  // 🧹 Função para limpar o buffer de entrada
+void boasVindas();  // 🎉 Exibe mensagem de boas-vindas
+void exibeMenu();  // 📜 Exibe o menu principal de opções
+Pessoas gerarDados();  // 🎲 Gera dados aleatórios de uma pessoa
+Pessoas gerarProfessores();  // 📖 Gera dados aleatórios de um professor
+char gerarCaractereAleatorio();  // 🔤 Gera um caractere aleatório
+int gerarNumeroAleatorio();  // 🎲 Gera um número aleatório
+void gerarStringAleatoria(char* str, int tamanho); // 🔡 Gera uma string aleatória
+int desafiarCondenado();
+
+#endif // FUNCOES_H

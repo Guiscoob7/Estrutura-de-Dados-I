@@ -1,0 +1,145 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Estrutura do nó da árvore binária 🌳
+typedef struct Nozinho {
+    char dado;            // Valor armazenado no nó 🌟
+    struct Nozinho* esquerda;   // Ponteiro para o filho à esquerda 👈
+    struct Nozinho* direita;    // Ponteiro para o filho à direita 👉
+} *ArvoreBinaria;
+
+// Função para criar uma árvore vazia 🌱
+ArvoreBinaria criarArvoreVazia() {
+    return NULL;  // Retorna uma árvore sem elementos 🌿
+}
+
+// Função para adicionar um valor à árvore binária de busca 🔧
+ArvoreBinaria adicionarValor(ArvoreBinaria raiz, const char dado) {
+    // Aloca memória para o novo nó 🧩
+    ArvoreBinaria novoNozinho = (ArvoreBinaria)malloc(sizeof(struct Nozinho));
+    if (novoNozinho == NULL) return raiz;  // Verifica se a alocação falhou ❌
+    novoNozinho->dado = dado;            // Atribui o valor ao novo nó 🌟
+    novoNozinho->esquerda = NULL;          // Define o filho à esquerda como NULL 🚫
+    novoNozinho->direita = NULL;           // Define o filho à direita como NULL 🚫
+
+    // Se a árvore estiver vazia, define o novo nó como raiz 🌱
+    if (raiz == NULL) return novoNozinho;
+
+    // Variáveis auxiliares para encontrar o local de inserção 🧭
+    ArvoreBinaria atual = raiz;  // Começa da raiz
+    ArvoreBinaria pai = NULL;    // Guarda o nó pai para a inserção
+
+    // Percorre a árvore até encontrar uma posição vazia ⚙️
+    while (atual != NULL) {
+        pai = atual;  // Atualiza o pai para o nó atual
+        if (dado < atual->dado) {
+            atual = atual->esquerda;  // Move para a esquerda 👈
+        } else {
+            atual = atual->direita;   // Move para a direita 👉
+        }
+    }
+
+    // Insere o novo nó à esquerda ou à direita do pai 🔑
+    if (dado < pai->dado) {
+        pai->esquerda = novoNozinho;   // Insere à esquerda 👈
+    } else {
+        pai->direita = novoNozinho;    // Insere à direita 👉
+    }
+
+    return raiz;  // Retorna a raiz atualizada 🏡
+}
+
+// Função para buscar um valor na árvore 🔍
+ArvoreBinaria buscarValor(ArvoreBinaria raiz, const char dado) {
+    ArvoreBinaria atual = raiz;  // Começa da raiz
+    while (atual != NULL) {
+        if (dado == atual->dado) {
+            return atual;  // Retorna o nó encontrado 🎯
+        } else if (dado < atual->dado) {
+            atual = atual->esquerda;  // Move para a esquerda 👈
+        } else {
+            atual = atual->direita;   // Move para a direita 👉
+        }
+    }
+    return NULL;  // Retorna NULL se o valor não for encontrado ❌
+}
+
+// Percurso infixo (esquerda, raiz, direita) 🔄
+void percorrerEmOrdemInfixa(ArvoreBinaria raiz, int *espaco) {
+    if (raiz != NULL) {
+        percorrerEmOrdemInfixa(raiz->esquerda, espaco);  // Percorre à esquerda 👈
+        if (!(*espaco)) 
+            printf(" ");  // Espaço entre valores
+        printf("%c", raiz->dado);  // Imprime o valor do nó 🌟
+        *espaco = 0;  // Remove o espaço para a próxima impressão
+        percorrerEmOrdemInfixa(raiz->direita, espaco);  // Percorre à direita 👉
+    }
+}
+
+// Percurso prefixo (raiz, esquerda, direita) 📜
+void percorrerEmOrdemPrefixa(ArvoreBinaria raiz, int *espaco) {
+    if (raiz != NULL) {
+        if (!(*espaco)) 
+            printf(" ");
+        printf("%c", raiz->dado);  // Imprime o valor do nó 🌟
+        *espaco = 0;
+        percorrerEmOrdemPrefixa(raiz->esquerda, espaco);  // Percorre à esquerda 👈
+        percorrerEmOrdemPrefixa(raiz->direita, espaco);   // Percorre à direita 👉
+    }
+}
+
+// Percurso posfixo (esquerda, direita, raiz) 🔚
+void percorrerEmOrdemPosfixa(ArvoreBinaria raiz, int *espaco) {
+    if (raiz != NULL) {
+        percorrerEmOrdemPosfixa(raiz->esquerda, espaco);  // Percorre à esquerda 👈
+        percorrerEmOrdemPosfixa(raiz->direita, espaco);   // Percorre à direita 👉
+        
+        if (!(*espaco)) 
+            printf(" ");
+        printf("%c", raiz->dado);  // Imprime o valor do nó 🌟
+        *espaco = 0;
+    }
+}
+
+// Função para processar comandos e interagir com o usuário 🎮
+void processarOperacoes(ArvoreBinaria *raiz) {
+    char cmd[10];   // Comando recebido do usuário
+    char dado;     // Valor associado ao comando
+
+    // Lê os comandos enquanto houver entrada 📥
+    while (scanf("%s", cmd) != EOF) {
+        if (cmd[0] == 'I' && cmd[1] == '\0') {
+            scanf(" %c", &dado);   // Lê o valor para inserção
+            *raiz = adicionarValor(*raiz, dado);  // Adiciona o valor 🌱
+        } else if (cmd[0] == 'P' && cmd[1] == '\0') {
+            scanf(" %c", &dado);  // Lê o valor para busca
+            // Busca o valor e imprime o resultado 🔍
+            if (buscarValor(*raiz, dado)) 
+                printf("%c existe\n", dado);  // Valor encontrado ✔️
+            else 
+                printf("%c nao existe\n", dado);  // Valor não encontrado ❌
+        } else if (strcmp(cmd, "INFIXA") == 0) {
+            int espaco = 1;
+            percorrerEmOrdemInfixa(*raiz, &espaco);  // Percorre em ordem infixa 🌟
+            printf("\n");  // Quebra de linha após o percurso
+        } else if (strcmp(cmd, "PREFIXA") == 0) {
+            int espaco = 1;
+            percorrerEmOrdemPrefixa(*raiz, &espaco);  // Percorre em ordem prefixa 🌟
+            printf("\n");  // Quebra de linha após o percurso
+        } else if (strcmp(cmd, "POSFIXA") == 0) {
+            int espaco = 1;
+            percorrerEmOrdemPosfixa(*raiz, &espaco);  // Percorre em ordem posfixa 🌟
+            printf("\n");  // Quebra de linha após o percurso
+        }
+    }
+}
+
+// Função principal 🚀
+int main() {
+    ArvoreBinaria raiz = criarArvoreVazia();  // Inicializa a árvore vazia 🌱
+
+    processarOperacoes(&raiz);  // Inicia a interação com o usuário 🎮
+
+    return 0;  // Finaliza o programa com sucesso 🏁
+}

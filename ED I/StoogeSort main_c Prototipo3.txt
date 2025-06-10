@@ -1,0 +1,87 @@
+// main.c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "funcoes.h"
+
+int main() {
+    int opcao;  // Variável para armazenar a opção escolhida pelo usuário
+    // Alocando memória para duas listas duplamente encadeadas
+    ListaDuplamenteEncadeada* lista1 = (ListaDuplamenteEncadeada*)malloc(sizeof(ListaDuplamenteEncadeada));
+    ListaDuplamenteEncadeada* lista2 = (ListaDuplamenteEncadeada*)malloc(sizeof(ListaDuplamenteEncadeada));
+
+    // Verifica se a alocação de memória foi bem-sucedida
+    if (lista1 == NULL || lista2 == NULL) {
+        printf(RED "❌ Erro ao alocar memória para as listas.\n" RESET);
+        return 1;  // Retorna erro se a alocação falhar
+    }
+
+    // Cria as listas, inicializando a cabeça
+    lista1->cabeca = Cria_lista(lista1);
+    lista2->cabeca = Cria_lista(lista2);
+
+    boasVindas();  // Exibe mensagem de boas-vindas
+    limpar();      // Limpa a tela após a mensagem de boas-vindas
+
+    // Menu interativo
+    do {
+        exibeMenu();  // Exibe o menu de opções
+        scanf("%d", &opcao);  // Lê a opção escolhida
+        limparbuffer();  // Limpa o buffer de entrada
+        limpar();  // Limpa a tela após cada interação
+
+        // Switch para tratar a opção escolhida
+        switch (opcao) {
+            case 1:  // Inserir Emoji
+                Insere(lista1);
+                limpar();
+                break;
+            case 2:  // Exibir Emojis
+                Exibe(lista1);
+                limpar();
+                break;
+            case 3:  // Ordenar Emojis
+                ordenarLista(lista1);
+                limpar();
+                break;
+            case 4: {  // Consultar Emoji
+                char emojiParaConsultar[16];  // Tamanho suficiente para um emoji UTF-8
+                printf(CYAN "\n🔍 Digite o emoji para consultar: " RESET);
+                scanf("%16s", emojiParaConsultar);  // Lê até 16 caracteres
+                limparbuffer();
+                Consulta_elem(lista1, emojiParaConsultar);  // Consulta o emoji
+                limpar();
+                break;
+            }
+            case 5: {  // Remover Emoji por popularidade
+                int flag;  // Flag para verificar se algum Emoji foi removido
+                int popularidadeParaRemover;  // Armazena a popularidade do emoji a ser removido
+                printf(CYAN "\n🗑️  Digite a popularidade dos emojis a remover: " RESET);
+                scanf("%d", &popularidadeParaRemover);
+                limparbuffer();
+                Remove_elem(lista1, popularidadeParaRemover, &flag);  // Remove o emoji
+                limpar();
+                break;
+            }
+            case 6: {  // Unir duas listas
+                unirListas(lista1, lista2);  // Chama a função de unir listas
+                limpar();
+                break;
+            }
+            case 7:  // Sair do programa
+                printf(GREEN "👋 Saindo do programa. Até logo!\n" RESET);
+                break;
+            default:  // Opção inválida
+                printf(RED "❌ Opção inválida. Tente novamente.\n" RESET);
+                limpar();
+        }
+    } while (opcao != 7);  // Continua até que o usuário escolha sair
+
+    // Libera a memória alocada para as listas e as estruturas
+    Libera_lista(lista1);
+    Libera_lista(lista2);
+    free(lista1);
+    free(lista2);
+
+    return 0;  // Retorna 0 ao finalizar com sucesso
+}

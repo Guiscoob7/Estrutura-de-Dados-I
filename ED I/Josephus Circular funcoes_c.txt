@@ -1,0 +1,252 @@
+#include "funcoes.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Função para limpar a tela e solicitar ao usuário pressionar ENTER para continuar
+void limpar() {
+    // Mensagem para o usuário pressionar ENTER
+    printf("\n\n%s🛑 %sPressione ENTER para continuar... %s🛑%s: ", LIGHT_CYAN, LIGHT_YELLOW, LIGHT_CYAN, RESET);
+
+    // Pausa até o usuário pressionar ENTER
+    getchar();
+
+    #ifdef _WIN32
+        system("cls");  // Comando para limpar a tela no Windows
+    #else
+        system("clear");  // Comando para limpar a tela em Unix/Linux
+    #endif
+}
+
+// Função para limpar o buffer de entrada, removendo caracteres extras
+void limparbuffer() {
+    int c;
+    // Lê até o fim da linha ou fim do arquivo (EOF) para limpar o buffer
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+// Função para liberar a memória da lista circular
+Pessoa* Libera_lista(Pessoa* Ptl) {
+    Pessoa *pt, *aux;
+    
+    // Se a lista estiver vazia, não há nada a liberar
+    if (Ptl == NULL)
+        return NULL;  
+
+    // Libera todos os elementos da lista
+    pt = Ptl->prox;
+    while (pt != Ptl) {
+        aux = pt;
+        pt = pt->prox;
+        free(aux);  // Libera cada elemento
+    }
+    free(Ptl);  // Libera o último elemento (cabeça)
+    
+    return NULL;  // Retorna NULL, indicando que a lista foi liberada
+}
+
+// Função para criar uma lista vazia (retorna NULL)
+Pessoa *Cria_lista(void) {
+    return NULL;
+}
+
+// Função para verificar se a lista está vazia
+int E_vazia(Pessoa *Ptl) {
+    // Se a lista é NULL, ela está vazia
+    return (Ptl == NULL);
+}
+
+// Função para inserir um elemento na lista circular
+Pessoa* Insere_elem(Pessoa* Ptl, char *nome) {
+    Pessoa *Ptno;
+
+    // Aloca memória para o novo elemento da lista
+    Ptno = (Pessoa*)malloc(sizeof(Pessoa));
+    if (Ptno == NULL) {
+        return Ptl;  // Se não foi possível alocar, retorna a lista original
+    }
+
+    // Define a posição do novo elemento
+    int num = Tamanho_Lista(Ptl) + 1;
+    Ptno->posicao = num;
+    strcpy(Ptno->nome, nome);  // Copia o nome para o novo elemento
+
+    // Se a lista estiver vazia, o novo elemento aponta para ele mesmo
+    if (Ptl == NULL) {
+        Ptl = Ptno;
+        Ptno->prox = Ptno;
+    } else {
+        // Insere o novo elemento logo após a cabeça da lista
+        Ptno->prox = Ptl->prox;
+        Ptl->prox = Ptno;
+        Ptl = Ptno;  // O novo elemento se torna a nova cabeça da lista
+    }
+
+    return Ptl;
+}
+
+// Função para remover um elemento da lista circular
+Pessoa* Remove_elem(Pessoa* Ptl, int suicidio, int *posicao) {
+    // Verifica se a lista está vazia
+    if (Ptl == NULL) {
+        printf("%s🔍 A Lista já está vazia!%s\n", YELLOW, RESET);
+        return Ptl;
+    }
+
+    Pessoa *ant, *atual;
+    atual = Ptl->prox;
+    ant = Ptl;
+    int cont_pos = 1;
+
+    // Ajusta a posição da pessoa a ser removida
+    if (*posicao + suicidio > Tamanho_Lista(Ptl)) 
+	cont_pos++;
+    if (*posicao) {
+        // Percorre até a posição indicada
+        while (cont_pos < *posicao) {
+            ant = atual;
+            atual = atual->prox;
+            cont_pos++;
+        }
+    }
+    
+    cont_pos = 1;
+    // Localiza o elemento a ser removido com base no número sorteado (suicidio)
+    while (cont_pos < suicidio) {
+        ant = atual;
+        atual = atual->prox;
+        cont_pos++;
+    }
+
+    // Obtém a posição do elemento a ser removido
+    int cont = Tamanho_Lista(Ptl);
+    *posicao = atual->posicao;
+
+    // Exibe mensagem informando quem será removido
+    printf("%s💣🔥 A pessoa que será eliminada é da posição %d! 🔥💣%s\n", RED, *posicao, RESET);
+    limpar();  // Pausa para o usuário visualizar
+
+    // Exibe a forma como a pessoa "se suicidou"
+    printf("%s\n(%dºLugar)\n💀 %s %s %s %s %s Se suicidou com 50 tiros nas costas. 💀%s\n",
+           PURPLE, cont, RESET, LIGHT_CYAN, atual->nome, RESET, RED, RESET);
+    
+    // Salva a posição do eliminado em um arquivo
+    Salvar_lista(Ptl, *posicao);
+
+    // Caso a lista tenha apenas um elemento
+    if (atual == Ptl && atual->prox == Ptl) {
+        free(atual);
+        return Ptl;  // Retorna a lista vazia
+    } else {
+        // Remove o elemento atual
+        ant->prox = atual->prox;
+        if (atual == Ptl) {
+            Ptl = ant;  // Se o último foi removido, ajusta a cabeça
+        }
+        free(atual);  // Libera a memória do elemento removido
+    }
+
+    return Ptl;  
+}
+
+// Função para contar o número de elementos na lista circular
+int Tamanho_Lista(Pessoa* Ptl) {
+    Pessoa *pt;
+    int cont = 0;
+
+    // Se a lista estiver vazia, retorna 0
+    if (Ptl == NULL)
+        return 0;
+
+    // Percorre a lista para contar os elementos
+    pt = Ptl->prox;
+    cont = 1;
+    while (pt != Ptl) {
+        pt = pt->prox;
+        cont++;
+    }
+
+    return cont;  // Retorna o número de elementos
+}
+
+// Função para salvar a posição de uma pessoa eliminada em um arquivo
+void Salvar_lista(Pessoa *Ptl, int suicidio) {
+    FILE *file;
+    file = fopen("perdedores.txt", "a");  // Abre o arquivo para adicionar conteúdo
+
+    // Verifica se o arquivo foi aberto corretamente
+    if (file == NULL) {
+        printf("%s❌ %sErro ao abrir o arquivo!%s\n", RED, BOLD, RESET);
+        limpar();
+        return;
+    }
+
+    // Procura o elemento correspondente ao número sorteado
+    Pessoa *aux = Ptl->prox;
+    int cont = Tamanho_Lista(Ptl);
+    while (1) {
+        if (aux->posicao == suicidio) {
+            // Grava as informações do perdedor no arquivo
+            fprintf(file, "%dº Lugar. %s\n", cont, aux->nome);
+            fprintf(file, "Posição: %d\n\n", aux->posicao);
+            break;
+        }
+        aux = aux->prox;
+    }
+
+    fclose(file);  // Fecha o arquivo
+}
+
+// Função para salvar o ganhador da lista no arquivo
+void Salvar_Ganhador(Pessoa *Ptl) {
+    FILE *file;
+    file = fopen("ganhador.txt", "a");  // Abre o arquivo para adicionar conteúdo
+
+    // Verifica se o arquivo foi aberto corretamente
+    if (file == NULL) {
+        printf("%s❌ %sErro ao abrir o arquivo!%s\n", RED, BOLD, RESET);
+        limpar();
+        return;
+    }    
+
+    // Grava as informações do ganhador no arquivo
+    fprintf(file, "1º Lugar. %s\n", Ptl->nome);
+    fprintf(file, "Posição: %d\n\n", Ptl->posicao);
+
+    fclose(file);  // Fecha o arquivo
+}
+
+// Função para exibir a lista de pessoas
+void Exibir_lista(Pessoa* Ptl) {
+    // Verifica se a lista está vazia
+    if (Ptl == NULL) {
+        printf("%s🚫 Nenhuma pessoa na lista. 🚫%s\n", MAGENTA, RESET);
+        return;
+    }
+
+    // Exibe a lista de participantes com formatação
+    printf("%s\n\n🟢 Início dos Suicídas 🟢%s\n\n", GREEN, RESET);
+    Pessoa *pt = Ptl->prox;
+    do {
+        printf("%s 👤 Nome: %s %s|%s 📍 Posição: %d 🌟%s\n\n", LIGHT_BLUE, pt->nome, RESET, PURPLE, pt->posicao, RESET);
+        pt = pt->prox;
+    } while (pt != Ptl->prox);
+
+    printf("%s🔴 Fim da Lista 🔴%s\n\n\n", RED, RESET);
+}
+
+/*
+cd C:\Importante\C
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+.\programa.exe
+*/
+
+// Função para exibir mensagens de boas-vindas
+void boasVindas() {
+    printf("\n" RED BOLD "╔════════════════════════════════════════════════════════════════════════════╗" RESET "\n");
+    printf(RED BOLD "║" RESET " 🏆🔪 " BLACK BOLD "Bem-vindo ao " RESET GREEN "Jogo de Josephus" RED " 🔪🏆 " RED BOLD "                                   ║" RESET "\n");
+    printf(RED BOLD "║" RESET " ⚔️🔄 " YELLOW "A luta pela sobrevivência começa agora!" RED " 🔄⚔️ " RED BOLD "                         ║" RESET "\n");
+    printf(RED BOLD "║" RESET " 🎯💀 " MAGENTA "Desafie a sorte e veja quem será o último sobrevivente!" RED " 💀🎯 " RED BOLD "         ║" RESET "\n");
+    printf(RED BOLD "║" RESET " 🎭🔥 " GREEN "Prepare-se para um jogo de eliminação implacável!" RED " 🔥🎭 " RED BOLD "               ║" RESET "\n");
+    printf(RED BOLD "╚════════════════════════════════════════════════════════════════════════════╝" RESET "\n\n");
+}

@@ -1,0 +1,159 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "lladae.h" // Inclui o cabeçalho que contém as definições da lista encadeada
+
+// Definição da estrutura da lista
+struct lista {
+    int dado;              // Valor que armazena os elementos da lista
+    struct lista* prox;    // Ponteiro para o próximo elemento da lista
+};
+
+// Função para limpar a tela e solicitar ao usuário pressionar ENTER para continuar
+void limpar() {
+    printf("\n\nPressione ENTER para continuar...");
+    getchar(); // Aguarda o usuário pressionar ENTER
+    // Limpa a tela do console (funciona em sistemas Unix)
+    printf("\e[H\e[2J");
+}
+
+// Função para limpar o buffer de entrada, removendo caracteres extras
+void limparbuffer() {
+    int c;
+    // Remove caracteres do buffer até encontrar uma nova linha ou EOF
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+// Função para exibir todos os elementos da lista
+void Exibir_lista(Lista* Ptl) {
+    // Verifica se a lista é válida e não está vazia
+    if (Verificacao_Lista(Ptl))
+        return;
+
+    Lista *aux = Ptl; // Ponteiro auxiliar para percorrer a lista
+    int cont = 0;     // Contador para os elementos
+
+    // Exibe todos os elementos da lista
+    printf("\nLista:\n");
+    while (aux != NULL) {
+        printf("Elemento %d: %d\n", ++cont, aux->dado); // Exibe o índice e o valor do elemento
+        aux = aux->prox; // Move para o próximo elemento
+    }
+}
+
+// Função para salvar os elementos da lista em um arquivo de texto
+void Salvar_lista(Lista *Ptl) {
+    FILE *file; // Ponteiro para o arquivo
+
+    // Solicita ao usuário o nome do arquivo para salvar a lista
+    printf("Digite o nome do arquivo para salvar a lista: ");
+    char nome[100]; // Array para armazenar o nome do arquivo
+    scanf("%s", nome);
+    limparbuffer(); // Limpa o buffer de entrada
+    strcat(nome, ".txt"); // Adiciona a extensão .txt ao nome do arquivo
+    file = fopen(nome, "w"); // Abre o arquivo em modo de escrita
+
+    // Verifica se o arquivo foi aberto corretamente
+    if (file == NULL) {
+        printf("\nErro ao abrir o arquivo!\n");
+        limpar();
+        return;
+    }
+    
+    Lista *aux = Ptl; // Ponteiro auxiliar para percorrer a lista
+    // Grava cada elemento da lista no arquivo
+    while (aux != NULL) {
+        fprintf(file, "%d\n", aux->dado); // Escreve o valor do elemento no arquivo
+        aux = aux->prox; // Move para o próximo elemento
+    }
+
+    // Fecha o arquivo
+    fclose(file);
+    printf("Elemento(s) salvo(s) com sucesso!\n");
+}
+
+// Função para criar e inicializar uma nova lista
+Lista* Cria_lista(void) {
+    return NULL; // Retorna NULL indicando que a lista está vazia
+}
+
+// Função para liberar a memória alocada pela lista
+Lista* Libera_lista(Lista* Ptl) {
+    Lista *aux = Ptl; // Ponteiro auxiliar para percorrer a lista
+    while (aux != NULL) {
+        aux = Ptl->prox; // Armazena o próximo elemento
+        free(Ptl); // Libera a memória do elemento atual
+        Ptl = aux; // Move para o próximo elemento
+    }
+    return NULL; // Retorna NULL indicando que a lista foi liberada
+}
+
+// Função para inserir um novo elemento no final da lista
+Lista* Insere_elem(Lista* Ptl, int elem) {
+    Lista *novo = malloc(sizeof(Lista)); // Aloca memória para o novo elemento
+    if (novo == NULL) {
+        printf("Erro ao alocar memória!\n");
+        exit(1); // Sai do programa em caso de falha na alocação
+    }
+
+    // Insere o elemento no final da lista
+    novo->dado = elem; // Atribui o valor ao novo elemento
+    novo->prox = NULL; // O novo elemento será o último, portanto, seu ponteiro é NULL
+
+    if (Ptl == NULL) {
+        return novo; // Se a lista estiver vazia, retorna o novo elemento como cabeça da lista
+    }
+
+    Lista *aux = Ptl; // Ponteiro auxiliar para percorrer a lista
+    while (aux->prox != NULL) {
+        aux = aux->prox; // Move para o próximo elemento até chegar ao final da lista
+    }
+    aux->prox = novo; // Insere o novo elemento ao final da lista
+    return Ptl; // Retorna a cabeça da lista
+}
+
+// Função para remover vários elementos de mesmo valor da lista
+Lista* Remove_elem(Lista* Ptl, int elem) {
+    // Verifica se a lista é válida e não está vazia
+    if (Verificacao_Lista(Ptl))
+        return Ptl;
+
+    Lista *atual = Ptl; // Ponteiro para o elemento atual da lista
+    Lista *anterior = NULL; // Ponteiro para o elemento anterior
+    int excluiu = 0; // Flag para verificar se algum elemento foi excluído
+
+    while (atual != NULL) {
+        Lista *temp; // Ponteiro temporário para armazenar o elemento a ser removido
+        // Verifica se o elemento atual contém o valor a ser removido
+        if (atual->dado == elem) {
+            temp = atual; // Armazena o elemento a ser removido
+            excluiu = 1; // Marca que um elemento foi excluído
+            if (anterior == NULL) {
+                Ptl = atual->prox; // Se for o primeiro elemento, atualiza a cabeça da lista
+            } else {
+                anterior->prox = atual->prox; // Atualiza o próximo do elemento anterior
+            }
+        }
+        anterior = atual; // Move o ponteiro anterior para o elemento atual
+        atual = atual->prox; // Move para o próximo elemento  
+        free(temp); // Libera a memória do elemento removido
+    }
+
+    // Mensagem sobre o resultado da remoção
+    if (!excluiu)
+        printf("Nenhum elemento com esse valor encontrado!");
+    else
+        printf("Elemento(s) excluídos com sucesso!\n");
+
+    return Ptl; // Retorna a cabeça da lista
+}
+
+// Função para verificar se a lista está vazia
+int Verificacao_Lista(Lista* Ptl) {
+    // Se a lista estiver vazia, exibe uma mensagem
+    if (Ptl == NULL) {
+        printf("Lista vazia!\n");
+        return 1; // Retorna 1 indicando que a lista está vazia
+    }
+    return 0; // Retorna 0 indicando que a lista não está vazia
+}
